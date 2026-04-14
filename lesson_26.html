@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Build your capstone project step by step. Follow a phased approach to implement a complete command-line application in Python, JavaScript, or C# using all the skills from this course.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 9.2: Building Your Project - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 9</a></li>
+            <li aria-current="page">Lesson 9.2: Building Your Project</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🔨 Lesson 9.2: Building Your Project</h1>
+                <p class="lead">You've got a plan. You've chosen your project, written requirements, designed your data model, and broken the work into phases. Now it's time to build. This lesson walks through the <strong>Contact Manager</strong> as a reference implementation, phase by phase. Follow along with the Contact Manager, or use the same phases to build your own chosen project. Either way, the approach is the same: <strong>build one phase at a time, test before moving on.</strong></p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will have:</p>
+                    <ul>
+                        <li><strong>Built a complete, working program</strong> using skills from the entire course</li>
+                        <li>Practiced <strong>incremental development</strong> — building and testing one phase at a time</li>
+                        <li>Combined <strong>classes, functions, collections, file I/O, and error handling</strong> in one project</li>
+                        <li>Written code that <strong>persists data</strong> between sessions using JSON</li>
+                        <li>Experienced the satisfaction of seeing a <strong>plan turn into working software</strong></li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 90 minutes</p>
+                    <p><strong>Deliverable:</strong> A working capstone project</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary><h2 style="display: inline; margin: 0;">📑 In This Lesson</h2></summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#workflow" class="toc-link">The Build Workflow</a></li>
+                        <li><a href="#phase1" class="toc-link">Phase 1: Data Foundation</a></li>
+                        <li><a href="#phase2" class="toc-link">Phase 2: File Operations</a></li>
+                        <li><a href="#phase3" class="toc-link">Phase 3: Core Features</a></li>
+                        <li><a href="#phase4" class="toc-link">Phase 4: Menu &amp; Main Loop</a></li>
+                        <li><a href="#phase5" class="toc-link">Phase 5: Polish &amp; Error Handling</a></li>
+                        <li><a href="#complete" class="toc-link">The Complete Program</a></li>
+                        <li><a href="#testing" class="toc-link">Testing Your Project</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Build Workflow -->
+            <section id="workflow" class="lesson-section">
+                <h2>The Build Workflow</h2>
+                <p>Follow this cycle for every phase: write the code, test it immediately, fix any bugs, then move on. <strong>Never move to the next phase until the current one works.</strong></p>
+
+                <div class="mermaid">
+                    flowchart LR
+                        A["Write code<br/>for one phase"] --> B["Run and<br/>test it"]
+                        B --> C{"Works?"}
+                        C -->|"Yes"| D["Move to<br/>next phase"]
+                        C -->|"No"| E["Debug and<br/>fix"]
+                        E --> B
+                        style A fill:#3b82f6,color:#fff
+                        style B fill:#6366f1,color:#fff
+                        style D fill:#22c55e,color:#fff
+                        style E fill:#f59e0b,color:#fff
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ The #1 Beginner Mistake</h4>
+                    <p>Writing the entire program before running it once. If you write 200 lines and <em>then</em> run it, you'll have 15 errors stacked on top of each other. Instead, write 10–20 lines, run, verify, repeat. Small steps = small problems.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>This is a hands-on build session. In a classroom, the ideal format is: show the phase on screen, give students 10–15 minutes to implement it in their chosen language, then quickly demo the solution. Walk the room during build time — most students will get stuck on small issues (typos, missing imports, indentation). For self-paced students, the complete code at the end serves as a reference. Emphasize that the code in each phase is additive — they should keep adding to the same file, not start a new one each phase. If students chose a different project (Weather Journal or Quiz Game), the phases still apply: data → file I/O → features → UI → polish.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Phase 1 -->
+            <section id="phase1" class="lesson-section">
+                <h2>Phase 1: Data Foundation</h2>
+                <p>Start with the data class. This is the core of your project — everything else depends on it.</p>
+
+                <div class="card card-info">
+                    <h4>📋 Phase 1 Checklist</h4>
+                    <ul>
+                        <li>Create the Contact class with properties</li>
+                        <li>Add <code>to_dict()</code> / <code>from_dict()</code> serialization methods</li>
+                        <li>Add a <code>__str__</code> / <code>toString()</code> method for display</li>
+                        <li>Test: create objects, print them, convert to dict and back</li>
+                    </ul>
+                </div>
+
+                <div class="code-tabs" data-title="Phase 1: The Contact Class">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">import json
+import os
+
+FILENAME = "contacts.json"
+
+
+class Contact:
+    """Represents a single contact in the address book."""
+
+    def __init__(self, name, email="", phone="", category="General"):
+        self.name = name
+        self.email = email
+        self.phone = phone
+        self.category = category
+
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "email": self.email,
+            "phone": self.phone,
+            "category": self.category,
+        }
+
+    @classmethod
+    def from_dict(cls, data):
+        return cls(
+            name=data["name"],
+            email=data.get("email", ""),
+            phone=data.get("phone", ""),
+            category=data.get("category", "General"),
+        )
+
+    def __str__(self):
+        return f"{self.name} | {self.email} | {self.phone} | {self.category}"
+
+
+# ---- PHASE 1 TEST (delete after verifying) ----
+if __name__ == "__main__":
+    c1 = Contact("Alice", "alice@example.com", "555-0101", "Friend")
+    c2 = Contact("Bob", "bob@work.com", "555-0202", "Work")
+    print(c1)
+    print(c2)
+
+    # Test serialization round-trip
+    d = c1.to_dict()
+    print(f"Dict: {d}")
+    c1_copy = Contact.from_dict(d)
+    print(f"Restored: {c1_copy}")
+    print("✅ Phase 1 passed!" if c1_copy.name == "Alice" else "❌ Bug!")</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">const fs = require("fs");
+const readline = require("readline");
+
+const FILENAME = "contacts.json";
+
+class Contact {
+    constructor(name, email = "", phone = "", category = "General") {
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.category = category;
+    }
+
+    toJSON() {
+        return {
+            name: this.name,
+            email: this.email,
+            phone: this.phone,
+            category: this.category,
+        };
+    }
+
+    static fromJSON(data) {
+        return new Contact(
+            data.name,
+            data.email || "",
+            data.phone || "",
+            data.category || "General"
+        );
+    }
+
+    toString() {
+        return `${this.name} | ${this.email} | ${this.phone} | ${this.category}`;
+    }
+}
+
+// ---- PHASE 1 TEST (delete after verifying) ----
+const c1 = new Contact("Alice", "alice@example.com", "555-0101", "Friend");
+const c2 = new Contact("Bob", "bob@work.com", "555-0202", "Work");
+console.log(c1.toString());
+console.log(c2.toString());
+
+const d = c1.toJSON();
+console.log("Dict:", d);
+const c1Copy = Contact.fromJSON(d);
+console.log("Restored:", c1Copy.toString());
+console.log(c1Copy.name === "Alice" ? "✅ Phase 1 passed!" : "❌ Bug!");</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">using System.Text.Json;
+using System.Text.Json.Serialization;
+
+const string Filename = "contacts.json";
+
+// ---- Contact class ----
+class Contact
+{
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = "";
+
+    [JsonPropertyName("email")]
+    public string Email { get; set; } = "";
+
+    [JsonPropertyName("phone")]
+    public string Phone { get; set; } = "";
+
+    [JsonPropertyName("category")]
+    public string Category { get; set; } = "General";
+
+    public Contact() { }
+
+    public Contact(string name, string email = "", string phone = "", string category = "General")
+    {
+        Name = name; Email = email; Phone = phone; Category = category;
+    }
+
+    public override string ToString()
+        =&gt; $"{Name} | {Email} | {Phone} | {Category}";
+}
+
+// ---- PHASE 1 TEST (delete after verifying) ----
+var c1 = new Contact("Alice", "alice@example.com", "555-0101", "Friend");
+var c2 = new Contact("Bob", "bob@work.com", "555-0202", "Work");
+Console.WriteLine(c1);
+Console.WriteLine(c2);
+
+string json = JsonSerializer.Serialize(c1);
+Console.WriteLine($"JSON: {json}");
+var c1Copy = JsonSerializer.Deserialize&lt;Contact&gt;(json)!;
+Console.WriteLine($"Restored: {c1Copy}");
+Console.WriteLine(c1Copy.Name == "Alice" ? "✅ Phase 1 passed!" : "❌ Bug!");</code></pre>
+                    </div>
+                </div>
+
+                <p><strong>Run it now.</strong> You should see two contacts printed, a round-trip serialization test, and a "Phase 1 passed!" message. If you don't, fix it before moving on.</p>
+            </section>
+
+            <!-- Phase 2 -->
+            <section id="phase2" class="lesson-section">
+                <h2>Phase 2: File Operations</h2>
+                <p>Add save and load functions. These use the JSON skills from Lesson 23 and the file I/O from Lesson 22.</p>
+
+                <div class="card card-info">
+                    <h4>📋 Phase 2 Checklist</h4>
+                    <ul>
+                        <li>Write <code>save_contacts()</code> — serialize list to JSON file</li>
+                        <li>Write <code>load_contacts()</code> — load from JSON, handle missing file</li>
+                        <li>Test: create contacts, save, load into new variable, verify match</li>
+                    </ul>
+                </div>
+
+                <div class="code-tabs" data-title="Phase 2: Save and Load">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">def save_contacts(contacts, filename=FILENAME):
+    """Save a list of Contact objects to a JSON file."""
+    data = [c.to_dict() for c in contacts]
+    with open(filename, "w") as f:
+        json.dump(data, f, indent=2)
+    print(f"💾 Saved {len(contacts)} contacts to {filename}")
+
+
+def load_contacts(filename=FILENAME):
+    """Load contacts from a JSON file. Returns empty list if file missing."""
+    if not os.path.exists(filename):
+        return []
+    try:
+        with open(filename, "r") as f:
+            data = json.load(f)
+        contacts = [Contact.from_dict(d) for d in data]
+        print(f"📂 Loaded {len(contacts)} contacts from {filename}")
+        return contacts
+    except (json.JSONDecodeError, KeyError) as e:
+        print(f"⚠️ Error reading {filename}: {e}")
+        print("Starting with empty contact list.")
+        return []
+
+
+# ---- PHASE 2 TEST ----
+if __name__ == "__main__":
+    test_contacts = [
+        Contact("Alice", "alice@example.com", "555-0101", "Friend"),
+        Contact("Bob", "bob@work.com", "555-0202", "Work"),
+    ]
+    save_contacts(test_contacts, "test_contacts.json")
+    loaded = load_contacts("test_contacts.json")
+    print(f"Loaded {len(loaded)} contacts")
+    for c in loaded:
+        print(f"  {c}")
+    os.remove("test_contacts.json")  # Clean up test file
+    print("✅ Phase 2 passed!" if len(loaded) == 2 else "❌ Bug!")</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">function saveContacts(contacts, filename = FILENAME) {
+    const data = contacts.map(c =&gt; c.toJSON());
+    fs.writeFileSync(filename, JSON.stringify(data, null, 2));
+    console.log(`💾 Saved ${contacts.length} contacts to ${filename}`);
+}
+
+function loadContacts(filename = FILENAME) {
+    if (!fs.existsSync(filename)) return [];
+    try {
+        const text = fs.readFileSync(filename, "utf-8");
+        const data = JSON.parse(text);
+        const contacts = data.map(d =&gt; Contact.fromJSON(d));
+        console.log(`📂 Loaded ${contacts.length} contacts from ${filename}`);
+        return contacts;
+    } catch (err) {
+        console.log(`⚠️ Error reading ${filename}: ${err.message}`);
+        console.log("Starting with empty contact list.");
+        return [];
+    }
+}
+
+// ---- PHASE 2 TEST ----
+const testContacts = [
+    new Contact("Alice", "alice@example.com", "555-0101", "Friend"),
+    new Contact("Bob", "bob@work.com", "555-0202", "Work"),
+];
+saveContacts(testContacts, "test_contacts.json");
+const loaded = loadContacts("test_contacts.json");
+console.log(`Loaded ${loaded.length} contacts`);
+loaded.forEach(c =&gt; console.log(`  ${c}`));
+fs.unlinkSync("test_contacts.json");
+console.log(loaded.length === 2 ? "✅ Phase 2 passed!" : "❌ Bug!");</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">static void SaveContacts(List&lt;Contact&gt; contacts, string filename = Filename)
+{
+    var options = new JsonSerializerOptions { WriteIndented = true };
+    string json = JsonSerializer.Serialize(contacts, options);
+    File.WriteAllText(filename, json);
+    Console.WriteLine($"💾 Saved {contacts.Count} contacts to {filename}");
+}
+
+static List&lt;Contact&gt; LoadContacts(string filename = Filename)
+{
+    if (!File.Exists(filename)) return new List&lt;Contact&gt;();
+    try
+    {
+        string json = File.ReadAllText(filename);
+        var contacts = JsonSerializer.Deserialize&lt;List&lt;Contact&gt;&gt;(json) ?? new List&lt;Contact&gt;();
+        Console.WriteLine($"📂 Loaded {contacts.Count} contacts from {filename}");
+        return contacts;
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"⚠️ Error reading {filename}: {ex.Message}");
+        Console.WriteLine("Starting with empty contact list.");
+        return new List&lt;Contact&gt;();
+    }
+}
+
+// ---- PHASE 2 TEST ----
+var testContacts = new List&lt;Contact&gt;
+{
+    new Contact("Alice", "alice@example.com", "555-0101", "Friend"),
+    new Contact("Bob", "bob@work.com", "555-0202", "Work"),
+};
+SaveContacts(testContacts, "test_contacts.json");
+var loadedList = LoadContacts("test_contacts.json");
+Console.WriteLine($"Loaded {loadedList.Count} contacts");
+foreach (var c in loadedList) Console.WriteLine($"  {c}");
+File.Delete("test_contacts.json");
+Console.WriteLine(loadedList.Count == 2 ? "✅ Phase 2 passed!" : "❌ Bug!");</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Phase 3 -->
+            <section id="phase3" class="lesson-section">
+                <h2>Phase 3: Core Features</h2>
+                <p>Now build the functions that do the actual work: add, display, search, edit, and delete contacts.</p>
+
+                <div class="card card-info">
+                    <h4>📋 Phase 3 Checklist</h4>
+                    <ul>
+                        <li><code>add_contact()</code> — prompt for info, create Contact, append to list</li>
+                        <li><code>display_contacts()</code> — formatted table output</li>
+                        <li><code>search_contacts()</code> — by name or category</li>
+                        <li><code>edit_contact()</code> — find by name, update fields</li>
+                        <li><code>delete_contact()</code> — find by name, confirm, remove</li>
+                    </ul>
+                </div>
+
+                <div class="code-tabs" data-title="Phase 3: Feature Functions">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">def get_input(prompt, required=False):
+    """Get user input with optional 'required' validation."""
+    while True:
+        value = input(prompt).strip()
+        if required and not value:
+            print("This field is required. Please try again.")
+            continue
+        return value
+
+
+def add_contact(contacts):
+    """Prompt user for contact info and add to the list."""
+    print("\n--- Add New Contact ---")
+    name = get_input("Name (required): ", required=True)
+    email = get_input("Email: ")
+    phone = get_input("Phone: ")
+    category = get_input("Category [General]: ") or "General"
+
+    contact = Contact(name, email, phone, category)
+    contacts.append(contact)
+    print(f"✅ Added: {contact}")
+
+
+def display_contacts(contacts):
+    """Display all contacts in a formatted table."""
+    if not contacts:
+        print("\n📭 No contacts yet.")
+        return
+
+    print(f"\n{'#':<4} {'Name':<20} {'Email':<25} {'Phone':<15} {'Category':<12}")
+    print("-" * 76)
+    for i, c in enumerate(contacts, 1):
+        print(f"{i:<4} {c.name:<20} {c.email:<25} {c.phone:<15} {c.category:<12}")
+    print(f"\nTotal: {len(contacts)} contacts")
+
+
+def search_contacts(contacts):
+    """Search contacts by name or category."""
+    if not contacts:
+        print("\n📭 No contacts to search.")
+        return
+
+    print("\nSearch by: (1) Name  (2) Category")
+    choice = get_input("Choice: ")
+    term = get_input("Search term: ").lower()
+
+    if choice == "1":
+        results = [c for c in contacts if term in c.name.lower()]
+    elif choice == "2":
+        results = [c for c in contacts if term in c.category.lower()]
+    else:
+        print("Invalid choice.")
+        return
+
+    if not results:
+        print(f"No contacts found matching '{term}'.")
+    else:
+        print(f"\nFound {len(results)} result(s):")
+        for c in results:
+            print(f"  • {c}")
+
+
+def edit_contact(contacts):
+    """Find a contact by name and update their fields."""
+    if not contacts:
+        print("\n📭 No contacts to edit.")
+        return
+
+    name = get_input("Enter name of contact to edit: ").lower()
+    found = [c for c in contacts if name in c.name.lower()]
+
+    if not found:
+        print(f"No contact found matching '{name}'.")
+        return
+    if len(found) > 1:
+        print("Multiple matches:")
+        for i, c in enumerate(found, 1):
+            print(f"  {i}. {c}")
+        idx = int(get_input("Which one? ")) - 1
+        contact = found[idx]
+    else:
+        contact = found[0]
+
+    print(f"Editing: {contact}")
+    print("(Press Enter to keep current value)")
+    contact.name = get_input(f"Name [{contact.name}]: ") or contact.name
+    contact.email = get_input(f"Email [{contact.email}]: ") or contact.email
+    contact.phone = get_input(f"Phone [{contact.phone}]: ") or contact.phone
+    contact.category = get_input(f"Category [{contact.category}]: ") or contact.category
+    print(f"✅ Updated: {contact}")
+
+
+def delete_contact(contacts):
+    """Find a contact by name and delete after confirmation."""
+    if not contacts:
+        print("\n📭 No contacts to delete.")
+        return
+
+    name = get_input("Enter name of contact to delete: ").lower()
+    found = [c for c in contacts if name in c.name.lower()]
+
+    if not found:
+        print(f"No contact found matching '{name}'.")
+        return
+
+    contact = found[0]
+    confirm = get_input(f"Delete '{contact.name}'? (y/n): ").lower()
+    if confirm == "y":
+        contacts.remove(contact)
+        print(f"🗑️ Deleted: {contact.name}")
+    else:
+        print("Cancelled.")</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// Readline helper for async prompts
+const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+const prompt = (q) =&gt; new Promise((resolve) =&gt; rl.question(q, resolve));
+
+async function getInput(question, required = false) {
+    while (true) {
+        const value = (await prompt(question)).trim();
+        if (required &amp;&amp; !value) {
+            console.log("This field is required. Please try again.");
+            continue;
+        }
+        return value;
+    }
+}
+
+async function addContact(contacts) {
+    console.log("\n--- Add New Contact ---");
+    const name = await getInput("Name (required): ", true);
+    const email = await getInput("Email: ");
+    const phone = await getInput("Phone: ");
+    const category = (await getInput("Category [General]: ")) || "General";
+
+    const contact = new Contact(name, email, phone, category);
+    contacts.push(contact);
+    console.log(`✅ Added: ${contact}`);
+}
+
+function displayContacts(contacts) {
+    if (contacts.length === 0) { console.log("\n📭 No contacts yet."); return; }
+
+    console.log(`\n${"#".padEnd(4)} ${"Name".padEnd(20)} ${"Email".padEnd(25)} ${"Phone".padEnd(15)} Category`);
+    console.log("-".repeat(76));
+    contacts.forEach((c, i) =&gt; {
+        console.log(`${String(i + 1).padEnd(4)} ${c.name.padEnd(20)} ${c.email.padEnd(25)} ${c.phone.padEnd(15)} ${c.category}`);
+    });
+    console.log(`\nTotal: ${contacts.length} contacts`);
+}
+
+async function searchContacts(contacts) {
+    if (contacts.length === 0) { console.log("\n📭 No contacts to search."); return; }
+
+    console.log("\nSearch by: (1) Name  (2) Category");
+    const choice = await getInput("Choice: ");
+    const term = (await getInput("Search term: ")).toLowerCase();
+
+    let results;
+    if (choice === "1") results = contacts.filter(c =&gt; c.name.toLowerCase().includes(term));
+    else if (choice === "2") results = contacts.filter(c =&gt; c.category.toLowerCase().includes(term));
+    else { console.log("Invalid choice."); return; }
+
+    if (results.length === 0) console.log(`No contacts found matching '${term}'.`);
+    else {
+        console.log(`\nFound ${results.length} result(s):`);
+        results.forEach(c =&gt; console.log(`  • ${c}`));
+    }
+}
+
+async function editContact(contacts) {
+    if (contacts.length === 0) { console.log("\n📭 No contacts to edit."); return; }
+
+    const name = (await getInput("Enter name of contact to edit: ")).toLowerCase();
+    const found = contacts.filter(c =&gt; c.name.toLowerCase().includes(name));
+    if (found.length === 0) { console.log(`No contact found matching '${name}'.`); return; }
+
+    const contact = found[0];
+    console.log(`Editing: ${contact}`);
+    console.log("(Press Enter to keep current value)");
+    contact.name = (await getInput(`Name [${contact.name}]: `)) || contact.name;
+    contact.email = (await getInput(`Email [${contact.email}]: `)) || contact.email;
+    contact.phone = (await getInput(`Phone [${contact.phone}]: `)) || contact.phone;
+    contact.category = (await getInput(`Category [${contact.category}]: `)) || contact.category;
+    console.log(`✅ Updated: ${contact}`);
+}
+
+async function deleteContact(contacts) {
+    if (contacts.length === 0) { console.log("\n📭 No contacts to delete."); return; }
+
+    const name = (await getInput("Enter name of contact to delete: ")).toLowerCase();
+    const idx = contacts.findIndex(c =&gt; c.name.toLowerCase().includes(name));
+    if (idx === -1) { console.log(`No contact found matching '${name}'.`); return; }
+
+    const confirm = (await getInput(`Delete '${contacts[idx].name}'? (y/n): `)).toLowerCase();
+    if (confirm === "y") {
+        console.log(`🗑️ Deleted: ${contacts[idx].name}`);
+        contacts.splice(idx, 1);
+    } else console.log("Cancelled.");
+}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">static string GetInput(string prompt, bool required = false)
+{
+    while (true)
+    {
+        Console.Write(prompt);
+        string value = Console.ReadLine()?.Trim() ?? "";
+        if (required &amp;&amp; string.IsNullOrEmpty(value))
+        { Console.WriteLine("This field is required. Please try again."); continue; }
+        return value;
+    }
+}
+
+static void AddContact(List&lt;Contact&gt; contacts)
+{
+    Console.WriteLine("\n--- Add New Contact ---");
+    string name = GetInput("Name (required): ", true);
+    string email = GetInput("Email: ");
+    string phone = GetInput("Phone: ");
+    string cat = GetInput("Category [General]: ");
+    if (string.IsNullOrEmpty(cat)) cat = "General";
+
+    var contact = new Contact(name, email, phone, cat);
+    contacts.Add(contact);
+    Console.WriteLine($"✅ Added: {contact}");
+}
+
+static void DisplayContacts(List&lt;Contact&gt; contacts)
+{
+    if (contacts.Count == 0) { Console.WriteLine("\n📭 No contacts yet."); return; }
+
+    Console.WriteLine($"\n{"#",-4} {"Name",-20} {"Email",-25} {"Phone",-15} {"Category",-12}");
+    Console.WriteLine(new string('-', 76));
+    for (int i = 0; i &lt; contacts.Count; i++)
+    {
+        var c = contacts[i];
+        Console.WriteLine($"{i + 1,-4} {c.Name,-20} {c.Email,-25} {c.Phone,-15} {c.Category,-12}");
+    }
+    Console.WriteLine($"\nTotal: {contacts.Count} contacts");
+}
+
+static void SearchContacts(List&lt;Contact&gt; contacts)
+{
+    if (contacts.Count == 0) { Console.WriteLine("\n📭 No contacts to search."); return; }
+
+    Console.WriteLine("\nSearch by: (1) Name  (2) Category");
+    string choice = GetInput("Choice: ");
+    string term = GetInput("Search term: ").ToLower();
+
+    List&lt;Contact&gt; results = choice switch
+    {
+        "1" =&gt; contacts.Where(c =&gt; c.Name.ToLower().Contains(term)).ToList(),
+        "2" =&gt; contacts.Where(c =&gt; c.Category.ToLower().Contains(term)).ToList(),
+        _ =&gt; new List&lt;Contact&gt;()
+    };
+
+    if (results.Count == 0) Console.WriteLine($"No contacts found matching '{term}'.");
+    else { Console.WriteLine($"\nFound {results.Count} result(s):"); results.ForEach(c =&gt; Console.WriteLine($"  • {c}")); }
+}
+
+static void EditContact(List&lt;Contact&gt; contacts)
+{
+    if (contacts.Count == 0) { Console.WriteLine("\n📭 No contacts to edit."); return; }
+    string name = GetInput("Enter name of contact to edit: ").ToLower();
+    var contact = contacts.FirstOrDefault(c =&gt; c.Name.ToLower().Contains(name));
+    if (contact == null) { Console.WriteLine($"No contact found matching '{name}'."); return; }
+
+    Console.WriteLine($"Editing: {contact}");
+    Console.WriteLine("(Press Enter to keep current value)");
+    string val;
+    val = GetInput($"Name [{contact.Name}]: "); if (!string.IsNullOrEmpty(val)) contact.Name = val;
+    val = GetInput($"Email [{contact.Email}]: "); if (!string.IsNullOrEmpty(val)) contact.Email = val;
+    val = GetInput($"Phone [{contact.Phone}]: "); if (!string.IsNullOrEmpty(val)) contact.Phone = val;
+    val = GetInput($"Category [{contact.Category}]: "); if (!string.IsNullOrEmpty(val)) contact.Category = val;
+    Console.WriteLine($"✅ Updated: {contact}");
+}
+
+static void DeleteContact(List&lt;Contact&gt; contacts)
+{
+    if (contacts.Count == 0) { Console.WriteLine("\n📭 No contacts to delete."); return; }
+    string name = GetInput("Enter name of contact to delete: ").ToLower();
+    var contact = contacts.FirstOrDefault(c =&gt; c.Name.ToLower().Contains(name));
+    if (contact == null) { Console.WriteLine($"No contact found matching '{name}'."); return; }
+
+    string confirm = GetInput($"Delete '{contact.Name}'? (y/n): ").ToLower();
+    if (confirm == "y") { contacts.Remove(contact); Console.WriteLine($"🗑️ Deleted: {contact.Name}"); }
+    else Console.WriteLine("Cancelled.");
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Phase 4 -->
+            <section id="phase4" class="lesson-section">
+                <h2>Phase 4: Menu &amp; Main Loop</h2>
+                <p>Wire everything together with a menu-driven main loop. This is where your program becomes <em>interactive</em>.</p>
+
+                <div class="code-tabs" data-title="Phase 4: The Main Loop">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">def show_menu():
+    """Display the main menu."""
+    print("\n╔══════════════════════════════╗")
+    print("║     📒 Contact Manager       ║")
+    print("╠══════════════════════════════╣")
+    print("║  1. Add Contact              ║")
+    print("║  2. View All Contacts        ║")
+    print("║  3. Search Contacts          ║")
+    print("║  4. Edit Contact             ║")
+    print("║  5. Delete Contact           ║")
+    print("║  6. Save &amp; Quit              ║")
+    print("╚══════════════════════════════╝")
+
+
+def main():
+    """Main program loop."""
+    print("Welcome to Contact Manager!")
+    contacts = load_contacts()
+
+    while True:
+        show_menu()
+        choice = input("Enter choice (1-6): ").strip()
+
+        if choice == "1":
+            add_contact(contacts)
+        elif choice == "2":
+            display_contacts(contacts)
+        elif choice == "3":
+            search_contacts(contacts)
+        elif choice == "4":
+            edit_contact(contacts)
+        elif choice == "5":
+            delete_contact(contacts)
+        elif choice == "6":
+            save_contacts(contacts)
+            print("Goodbye! 👋")
+            break
+        else:
+            print("❌ Invalid choice. Please enter 1-6.")
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">function showMenu() {
+    console.log("\n╔══════════════════════════════╗");
+    console.log("║     📒 Contact Manager       ║");
+    console.log("╠══════════════════════════════╣");
+    console.log("║  1. Add Contact              ║");
+    console.log("║  2. View All Contacts        ║");
+    console.log("║  3. Search Contacts          ║");
+    console.log("║  4. Edit Contact             ║");
+    console.log("║  5. Delete Contact           ║");
+    console.log("║  6. Save &amp; Quit              ║");
+    console.log("╚══════════════════════════════╝");
+}
+
+async function main() {
+    console.log("Welcome to Contact Manager!");
+    const contacts = loadContacts();
+
+    while (true) {
+        showMenu();
+        const choice = (await prompt("Enter choice (1-6): ")).trim();
+
+        if (choice === "1") await addContact(contacts);
+        else if (choice === "2") displayContacts(contacts);
+        else if (choice === "3") await searchContacts(contacts);
+        else if (choice === "4") await editContact(contacts);
+        else if (choice === "5") await deleteContact(contacts);
+        else if (choice === "6") {
+            saveContacts(contacts);
+            console.log("Goodbye! 👋");
+            rl.close();
+            break;
+        }
+        else console.log("❌ Invalid choice. Please enter 1-6.");
+    }
+}
+
+main();</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">static void ShowMenu()
+{
+    Console.WriteLine("\n╔══════════════════════════════╗");
+    Console.WriteLine("║     📒 Contact Manager       ║");
+    Console.WriteLine("╠══════════════════════════════╣");
+    Console.WriteLine("║  1. Add Contact              ║");
+    Console.WriteLine("║  2. View All Contacts        ║");
+    Console.WriteLine("║  3. Search Contacts          ║");
+    Console.WriteLine("║  4. Edit Contact             ║");
+    Console.WriteLine("║  5. Delete Contact           ║");
+    Console.WriteLine("║  6. Save &amp; Quit              ║");
+    Console.WriteLine("╚══════════════════════════════╝");
+}
+
+// ---- Main program ----
+Console.WriteLine("Welcome to Contact Manager!");
+var contacts = LoadContacts();
+
+while (true)
+{
+    ShowMenu();
+    string choice = GetInput("Enter choice (1-6): ");
+
+    switch (choice)
+    {
+        case "1": AddContact(contacts); break;
+        case "2": DisplayContacts(contacts); break;
+        case "3": SearchContacts(contacts); break;
+        case "4": EditContact(contacts); break;
+        case "5": DeleteContact(contacts); break;
+        case "6":
+            SaveContacts(contacts);
+            Console.WriteLine("Goodbye! 👋");
+            return;
+        default:
+            Console.WriteLine("❌ Invalid choice. Please enter 1-6.");
+            break;
+    }
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ Test It!</h4>
+                    <p>At this point your program should be fully functional. Test this sequence:</p>
+                    <ol>
+                        <li>Run the program — it should show the menu</li>
+                        <li>Add 2-3 contacts</li>
+                        <li>View all contacts (formatted table)</li>
+                        <li>Search by name and by category</li>
+                        <li>Edit a contact</li>
+                        <li>Delete a contact</li>
+                        <li>Quit (saves to file)</li>
+                        <li>Run again — your contacts should load from the file!</li>
+                    </ol>
+                </div>
+            </section>
+
+            <!-- Phase 5 -->
+            <section id="phase5" class="lesson-section">
+                <h2>Phase 5: Polish &amp; Error Handling</h2>
+                <p>Your program works, but real users will find ways to break it. Phase 5 adds robustness.</p>
+
+                <div class="card card-info">
+                    <h4>📋 Phase 5 Checklist</h4>
+                    <ul>
+                        <li>Handle empty contact list gracefully in all features</li>
+                        <li>Validate that required fields aren't empty</li>
+                        <li>Handle non-numeric input where numbers are expected</li>
+                        <li>Add a "press Enter to continue" pause after viewing results</li>
+                        <li>Catch KeyboardInterrupt / Ctrl+C gracefully</li>
+                    </ul>
+                </div>
+
+                <div class="code-tabs" data-title="Phase 5: Error Handling Additions">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Wrap main() to handle Ctrl+C gracefully:
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\n\n⚠️ Interrupted. Saving contacts before exit...")
+        # Note: contacts isn't accessible here in this simple version.
+        # In a production app, you'd store contacts at module level
+        # or use a class-based approach.
+        print("Goodbye! 👋")
+
+# Add to edit_contact() — handle invalid index:
+    if len(found) > 1:
+        print("Multiple matches:")
+        for i, c in enumerate(found, 1):
+            print(f"  {i}. {c}")
+        try:
+            idx = int(get_input("Which one? ")) - 1
+            if idx &lt; 0 or idx >= len(found):
+                print("Invalid selection.")
+                return
+            contact = found[idx]
+        except ValueError:
+            print("Please enter a number.")
+            return
+
+# Add a pause function for better UX:
+def pause():
+    input("\nPress Enter to continue...")</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// Handle process signals for graceful exit:
+process.on("SIGINT", () =&gt; {
+    console.log("\n\n⚠️ Interrupted. Goodbye! 👋");
+    rl.close();
+    process.exit(0);
+});
+
+// Add a pause function for better UX:
+async function pause() {
+    await prompt("\nPress Enter to continue...");
+}
+
+// After display or search operations, add:
+// await pause();</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// Handle Ctrl+C gracefully:
+Console.CancelKeyPress += (sender, e) =&gt;
+{
+    e.Cancel = true;  // Prevent immediate termination
+    Console.WriteLine("\n\n⚠️ Interrupted. Saving contacts before exit...");
+    SaveContacts(contacts);
+    Console.WriteLine("Goodbye! 👋");
+    Environment.Exit(0);
+};
+
+// Add a pause method:
+static void Pause()
+{
+    Console.Write("\nPress Enter to continue...");
+    Console.ReadLine();
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Complete Program -->
+            <section id="complete" class="lesson-section">
+                <h2>The Complete Program</h2>
+                <p>Here's the complete Contact Manager, all phases assembled. If you built a different project, your structure should be similar — data class → file I/O → features → menu → error handling.</p>
+
+                <details>
+                    <summary><strong>📄 View Complete Source Code (Python)</strong></summary>
+                    <div class="code-tabs" data-title="Complete Contact Manager">
+                        <div class="tab-panel" data-lang="python" data-label="Python">
+                            <pre><code class="language-python">"""
+Contact Manager — Capstone Project
+Programming Fundamentals: Three Language Approach
+"""
+import json
+import os
+
+FILENAME = "contacts.json"
+
+
+# ==================== DATA MODEL ====================
+
+class Contact:
+    def __init__(self, name, email="", phone="", category="General"):
+        self.name = name
+        self.email = email
+        self.phone = phone
+        self.category = category
+
+    def to_dict(self):
+        return {"name": self.name, "email": self.email,
+                "phone": self.phone, "category": self.category}
+
+    @classmethod
+    def from_dict(cls, data):
+        return cls(data["name"], data.get("email", ""),
+                   data.get("phone", ""), data.get("category", "General"))
+
+    def __str__(self):
+        return f"{self.name} | {self.email} | {self.phone} | {self.category}"
+
+
+# ==================== FILE OPERATIONS ====================
+
+def save_contacts(contacts, filename=FILENAME):
+    data = [c.to_dict() for c in contacts]
+    with open(filename, "w") as f:
+        json.dump(data, f, indent=2)
+    print(f"💾 Saved {len(contacts)} contacts to {filename}")
+
+def load_contacts(filename=FILENAME):
+    if not os.path.exists(filename):
+        return []
+    try:
+        with open(filename, "r") as f:
+            data = json.load(f)
+        contacts = [Contact.from_dict(d) for d in data]
+        print(f"📂 Loaded {len(contacts)} contacts from {filename}")
+        return contacts
+    except (json.JSONDecodeError, KeyError) as e:
+        print(f"⚠️ Error reading {filename}: {e}")
+        return []
+
+
+# ==================== HELPERS ====================
+
+def get_input(prompt, required=False):
+    while True:
+        value = input(prompt).strip()
+        if required and not value:
+            print("This field is required. Please try again.")
+            continue
+        return value
+
+
+# ==================== FEATURES ====================
+
+def add_contact(contacts):
+    print("\n--- Add New Contact ---")
+    name = get_input("Name (required): ", required=True)
+    email = get_input("Email: ")
+    phone = get_input("Phone: ")
+    category = get_input("Category [General]: ") or "General"
+    contacts.append(Contact(name, email, phone, category))
+    print(f"✅ Added: {contacts[-1]}")
+
+def display_contacts(contacts):
+    if not contacts:
+        print("\n📭 No contacts yet."); return
+    print(f"\n{'#':<4} {'Name':<20} {'Email':<25} {'Phone':<15} {'Category':<12}")
+    print("-" * 76)
+    for i, c in enumerate(contacts, 1):
+        print(f"{i:<4} {c.name:<20} {c.email:<25} {c.phone:<15} {c.category:<12}")
+    print(f"\nTotal: {len(contacts)} contacts")
+
+def search_contacts(contacts):
+    if not contacts:
+        print("\n📭 No contacts to search."); return
+    print("\nSearch by: (1) Name  (2) Category")
+    choice = get_input("Choice: ")
+    term = get_input("Search term: ").lower()
+    if choice == "1":
+        results = [c for c in contacts if term in c.name.lower()]
+    elif choice == "2":
+        results = [c for c in contacts if term in c.category.lower()]
+    else:
+        print("Invalid choice."); return
+    if not results:
+        print(f"No contacts found matching '{term}'.")
+    else:
+        print(f"\nFound {len(results)} result(s):")
+        for c in results: print(f"  • {c}")
+
+def edit_contact(contacts):
+    if not contacts:
+        print("\n📭 No contacts to edit."); return
+    name = get_input("Enter name of contact to edit: ").lower()
+    found = [c for c in contacts if name in c.name.lower()]
+    if not found:
+        print(f"No contact found matching '{name}'."); return
+    contact = found[0]
+    print(f"Editing: {contact}\n(Press Enter to keep current value)")
+    contact.name = get_input(f"Name [{contact.name}]: ") or contact.name
+    contact.email = get_input(f"Email [{contact.email}]: ") or contact.email
+    contact.phone = get_input(f"Phone [{contact.phone}]: ") or contact.phone
+    contact.category = get_input(f"Category [{contact.category}]: ") or contact.category
+    print(f"✅ Updated: {contact}")
+
+def delete_contact(contacts):
+    if not contacts:
+        print("\n📭 No contacts to delete."); return
+    name = get_input("Enter name of contact to delete: ").lower()
+    found = [c for c in contacts if name in c.name.lower()]
+    if not found:
+        print(f"No contact found matching '{name}'."); return
+    contact = found[0]
+    if get_input(f"Delete '{contact.name}'? (y/n): ").lower() == "y":
+        contacts.remove(contact)
+        print(f"🗑️ Deleted: {contact.name}")
+    else:
+        print("Cancelled.")
+
+
+# ==================== MAIN ====================
+
+def show_menu():
+    print("\n╔══════════════════════════════╗")
+    print("║     📒 Contact Manager       ║")
+    print("╠══════════════════════════════╣")
+    print("║  1. Add Contact              ║")
+    print("║  2. View All Contacts        ║")
+    print("║  3. Search Contacts          ║")
+    print("║  4. Edit Contact             ║")
+    print("║  5. Delete Contact           ║")
+    print("║  6. Save &amp; Quit              ║")
+    print("╚══════════════════════════════╝")
+
+def main():
+    print("Welcome to Contact Manager!")
+    contacts = load_contacts()
+    while True:
+        show_menu()
+        choice = input("Enter choice (1-6): ").strip()
+        if choice == "1": add_contact(contacts)
+        elif choice == "2": display_contacts(contacts)
+        elif choice == "3": search_contacts(contacts)
+        elif choice == "4": edit_contact(contacts)
+        elif choice == "5": delete_contact(contacts)
+        elif choice == "6":
+            save_contacts(contacts)
+            print("Goodbye! 👋"); break
+        else: print("❌ Invalid choice. Please enter 1-6.")
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\n\nGoodbye! 👋")</code></pre>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>The complete program is provided as a reference, not something to copy. Students who built their own version will naturally differ — that's good. In a classroom, have students demo their projects to each other (2 minutes each). Key things to watch for: Does it save/load correctly? Does search work? Is there a clean exit? Common issues: forgetting to call <code>save_contacts()</code> before exit, off-by-one errors in edit selection, and not handling empty lists. If students finished early, suggest they add one nice-to-have feature: CSV export, sorting, or category counts.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Testing -->
+            <section id="testing" class="lesson-section">
+                <h2>Testing Your Project</h2>
+                <p>Before calling your project done, run through this test checklist:</p>
+
+                <div class="card card-success">
+                    <h3>✅ Test Checklist</h3>
+                    <ul>
+                        <li><strong>Fresh start:</strong> Delete your data file. Does the program start with an empty list without crashing?</li>
+                        <li><strong>Add contacts:</strong> Add 3+ contacts with different categories. Do they appear in the view?</li>
+                        <li><strong>Search by name:</strong> Search for a partial name. Does it find the right contact(s)?</li>
+                        <li><strong>Search by category:</strong> Search for a category. Does it filter correctly?</li>
+                        <li><strong>Edit a contact:</strong> Change one field, keep others. Are the changes saved?</li>
+                        <li><strong>Delete a contact:</strong> Delete one. Does the list update? Does "n" cancel the delete?</li>
+                        <li><strong>Persistence:</strong> Quit the program, restart it. Are your contacts still there?</li>
+                        <li><strong>Invalid input:</strong> Enter "99" at the menu. Does it show an error (not crash)?</li>
+                        <li><strong>Empty operations:</strong> Try to search, edit, or delete with no contacts. Does it handle gracefully?</li>
+                        <li><strong>Required fields:</strong> Try to add a contact with an empty name. Is it rejected?</li>
+                    </ul>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 The "Friend Test"</h4>
+                    <p>Hand your program to someone who didn't build it. Can they figure out how to use it without reading your code? If they get confused or it crashes, those are bugs to fix. Every crash is an error you forgot to handle.</p>
+                </div>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Congratulations — You Built a Real Program!</h3>
+                    <p>If you've made it this far, you've just done something remarkable. You combined:</p>
+                    <ul>
+                        <li><strong>Classes</strong> to model your data</li>
+                        <li><strong>Functions</strong> to organize your logic</li>
+                        <li><strong>Collections</strong> to store groups of objects</li>
+                        <li><strong>File I/O and JSON</strong> to persist data between sessions</li>
+                        <li><strong>Error handling</strong> to make your program robust</li>
+                        <li><strong>Control flow</strong> for menus, loops, and user interaction</li>
+                    </ul>
+                    <p>That's not a toy exercise — that's the same architecture used in real applications. You should be proud of what you've built.</p>
+                </div>
+
+                <h3>The Build Process</h3>
+                <div class="mermaid">
+                    flowchart LR
+                        A["Phase 1<br/>Data Class"] --> B["Phase 2<br/>File I/O"]
+                        B --> C["Phase 3<br/>Features"]
+                        C --> D["Phase 4<br/>Main Loop"]
+                        D --> E["Phase 5<br/>Polish"]
+                        E --> F["✅ Done!"]
+                        style A fill:#3b82f6,color:#fff
+                        style B fill:#3b82f6,color:#fff
+                        style C fill:#6366f1,color:#fff
+                        style D fill:#6366f1,color:#fff
+                        style E fill:#22c55e,color:#fff
+                        style F fill:#f59e0b,color:#fff
+                </div>
+
+                <h3>🚀 What's Next?</h3>
+                <p>In <strong>Lesson 27: Code Review and Next Steps</strong>, you'll learn how to review your code with fresh eyes, refactor for clarity, and discover the paths forward for each language. You've built the foundation — now let's make sure it's solid and figure out where to go from here.</p>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_25.html" class="prev-lesson">← Previous: Project Planning and Design</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_27.html" class="next-lesson">Next: Code Review and Next Steps →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

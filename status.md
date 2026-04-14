@@ -62,8 +62,11 @@
 - [x] `lesson_22.html` — Reading and Writing Files
 - [x] `lesson_23.html` — Working with JSON
 - [x] `lesson_24.html` — Making API Requests
+- [x] `lesson_25.html` — Project Planning and Design
+- [x] `lesson_26.html` — Building Your Project
+- [x] `lesson_27.html` — Code Review and Next Steps
 
-### Lessons Completed: 24 of 27
+### Lessons Completed: 27 of 27 ✅
 
 ## HTML Patterns
 
@@ -118,7 +121,7 @@
 
 ## What's Left to Build
 
-### Lessons Remaining (9 of 27)
+### Lessons Remaining (0 of 27) — ALL COMPLETE ✅
 - [x] lesson_16.html — Classes and Objects ✅
 - [x] lesson_17.html — Properties, Methods, and Constructors ✅
 - [x] lesson_18.html — Inheritance and Polymorphism ✅
@@ -128,9 +131,9 @@
 - [x] lesson_22.html — Reading and Writing Files ✅
 - [x] lesson_23.html — Working with JSON ✅
 - [x] lesson_24.html — Making API Requests ✅
-- [ ] lesson_25.html — Project Planning and Design
-- [ ] lesson_26.html — Building Your Project
-- [ ] lesson_27.html — Code Review and Next Steps
+- [x] lesson_25.html — Project Planning and Design ✅
+- [x] lesson_26.html — Building Your Project ✅
+- [x] lesson_27.html — Code Review and Next Steps ✅
 
 ### Other
 - [ ] favicon.png (needs design/creation)
@@ -148,4 +151,9 @@
 - Python booleans are capitalized (True/False) — call out as common gotcha
 - String interpolation introduced early (f"", `${}`, $"") for use in exercises
 
-## Lesson Content Notes for Next Session
+## Session Log
+- **Session 1 (2026-04-13):** Built infrastructure + lessons 1-15
+- **Session 2 (2026-04-13):** Built lessons 16-24
+- **Session 3 (2026-04-13):** Built lessons 25-27 (capstone module complete)
+
+## Remaining Tasks

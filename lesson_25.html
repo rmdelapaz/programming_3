@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn to plan and design a programming project from scratch. Covers project selection, requirements gathering, breaking problems into tasks, pseudocode, data modeling, and architecture design in Python, JavaScript, and C#.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 9.1: Project Planning and Design - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 9</a></li>
+            <li aria-current="page">Lesson 9.1: Project Planning and Design</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>📐 Lesson 9.1: Project Planning and Design</h1>
+                <p class="lead">You've learned variables, control flow, functions, collections, classes, error handling, file I/O, JSON, and APIs. That's a <em>lot</em> of tools in your toolbox. Now it's time to use them together. But before you write a single line of code, you need a <strong>plan</strong>. Professional developers spend more time <em>thinking</em> about what to build than actually building it — and that planning is exactly what separates working software from frustrating spaghetti code.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li><strong>Choose a project</strong> that exercises the skills you've learned</li>
+                        <li><strong>Write clear requirements</strong> — what the program should do, step by step</li>
+                        <li><strong>Break a problem into tasks</strong> using top-down decomposition</li>
+                        <li><strong>Write pseudocode</strong> before writing real code</li>
+                        <li><strong>Plan your data model</strong> — what classes, dictionaries, and files you'll need</li>
+                        <li><strong>Design your architecture</strong> — how files, functions, and classes fit together</li>
+                        <li><strong>Create a project checklist</strong> to track your progress</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 60 minutes</p>
+                    <p><strong>Deliverable:</strong> A complete project plan ready for Lesson 26</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary><h2 style="display: inline; margin: 0;">📑 In This Lesson</h2></summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#why-plan" class="toc-link">Why Plan Before You Code?</a></li>
+                        <li><a href="#choose-project" class="toc-link">Choosing Your Project</a></li>
+                        <li><a href="#requirements" class="toc-link">Writing Requirements</a></li>
+                        <li><a href="#decomposition" class="toc-link">Breaking It Down</a></li>
+                        <li><a href="#pseudocode" class="toc-link">Writing Pseudocode</a></li>
+                        <li><a href="#data-model" class="toc-link">Planning Your Data Model</a></li>
+                        <li><a href="#architecture" class="toc-link">Designing the Architecture</a></li>
+                        <li><a href="#project-checklist" class="toc-link">Creating Your Project Checklist</a></li>
+                        <li><a href="#exercises" class="toc-link">Exercises</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Why Plan? -->
+            <section id="why-plan" class="lesson-section">
+                <h2>Why Plan Before You Code?</h2>
+                <p>It's tempting to jump straight into coding — but that almost always leads to problems. Here's what typically happens without a plan:</p>
+
+                <div class="mermaid">
+                    flowchart TD
+                        A["Start coding immediately"] --> B["Realize you need a feature<br/>you didn't think about"]
+                        B --> C["Hack it in with messy code"]
+                        C --> D["New feature breaks<br/>existing code"]
+                        D --> E["Spend hours debugging"]
+                        E --> F["Start over from scratch"]
+                        style A fill:#ef4444,color:#fff
+                        style B fill:#f59e0b,color:#fff
+                        style C fill:#f59e0b,color:#fff
+                        style D fill:#ef4444,color:#fff
+                        style E fill:#ef4444,color:#fff
+                        style F fill:#ef4444,color:#fff
+                </div>
+
+                <p>And here's what happens <em>with</em> a plan:</p>
+
+                <div class="mermaid">
+                    flowchart TD
+                        A["Write requirements"] --> B["Break into tasks"]
+                        B --> C["Write pseudocode"]
+                        C --> D["Build one piece at a time"]
+                        D --> E["Test each piece"]
+                        E --> F["Working program!"]
+                        style A fill:#3b82f6,color:#fff
+                        style B fill:#3b82f6,color:#fff
+                        style C fill:#6366f1,color:#fff
+                        style D fill:#22c55e,color:#fff
+                        style E fill:#22c55e,color:#fff
+                        style F fill:#22c55e,color:#fff
+                </div>
+
+                <p>Planning doesn't mean writing a 50-page document. For a beginner project, a plan might be a single page with a list of features, a rough sketch of your data, and some pseudocode. The goal is to <strong>think through the hard parts before you're knee-deep in syntax errors</strong>.</p>
+
+                <div class="card card-info">
+                    <h4>💡 The 80/20 Rule of Planning</h4>
+                    <p>Spending <strong>20% of your time planning</strong> can save you <strong>80% of debugging time</strong>. Most bugs come from unclear thinking, not typos. If you can explain your program in plain English, translating it to code becomes much easier.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Ask students: "How many of you have ever started a project, gotten halfway through, and realized you needed to start over?" Most will raise their hands. That's the hook for why planning matters. Emphasize that professional developers at companies like Google and Microsoft spend significant time in design and planning before writing code. A whiteboard session or a simple text document is all they need at this stage. The flowcharts above are great for visual learners — the "without a plan" path resonates because students have lived it.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Choose Your Project -->
+            <section id="choose-project" class="lesson-section">
+                <h2>Choosing Your Project</h2>
+                <p>Your capstone project should use at least four of these skill areas from the course:</p>
+
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Skill Area</th>
+                                <th>Modules</th>
+                                <th>Example Usage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Variables &amp; Data Types</strong></td>
+                                <td>Module 2</td>
+                                <td>Store user settings, scores, names</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Control Flow</strong></td>
+                                <td>Module 3</td>
+                                <td>Menu systems, game logic, validation</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Functions</strong></td>
+                                <td>Module 4</td>
+                                <td>Organize code into reusable pieces</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Collections</strong></td>
+                                <td>Module 5</td>
+                                <td>Lists of items, lookup tables, inventories</td>
+                            </tr>
+                            <tr>
+                                <td><strong>OOP (Classes)</strong></td>
+                                <td>Module 6</td>
+                                <td>Model real-world things (contacts, tasks, items)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Error Handling</strong></td>
+                                <td>Module 7</td>
+                                <td>Validate input, handle missing files</td>
+                            </tr>
+                            <tr>
+                                <td><strong>File I/O &amp; JSON</strong></td>
+                                <td>Module 8</td>
+                                <td>Save/load data between sessions</td>
+                            </tr>
+                            <tr>
+                                <td><strong>APIs</strong></td>
+                                <td>Module 8</td>
+                                <td>Fetch live data from the internet</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Three Project Options</h3>
+                <p>Pick one of these projects — or design your own that covers at least four skill areas. Each project is designed to be completable in about 90 minutes (Lesson 26).</p>
+
+                <div class="card card-info">
+                    <h3>📋 Option A: Personal Contact Manager</h3>
+                    <p>A command-line app that stores, searches, and manages contacts — like a simple address book.</p>
+                    <p><strong>Skills used:</strong> Classes (Contact), Collections (list of contacts), File I/O (save/load JSON), Error Handling (input validation), Functions, Control Flow (menu system)</p>
+                    <p><strong>Features:</strong></p>
+                    <ul>
+                        <li>Add new contacts (name, email, phone, category)</li>
+                        <li>Search contacts by name or category</li>
+                        <li>Edit and delete contacts</li>
+                        <li>Save contacts to a JSON file so they persist</li>
+                        <li>Display contacts in a formatted table</li>
+                    </ul>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🌦️ Option B: Weather Journal</h3>
+                    <p>A command-line app that fetches the current weather, lets you write a journal entry about your day, and saves both together.</p>
+                    <p><strong>Skills used:</strong> APIs (weather data), Classes (JournalEntry), File I/O (save/load JSON), Collections (list of entries), Error Handling (API failures), Functions</p>
+                    <p><strong>Features:</strong></p>
+                    <ul>
+                        <li>Fetch current weather for any city (using wttr.in)</li>
+                        <li>Write a journal entry tagged with the weather</li>
+                        <li>View past entries filtered by date or weather</li>
+                        <li>Save all entries to a JSON file</li>
+                        <li>Show statistics (entries per weather type, total entries)</li>
+                    </ul>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🎮 Option C: Quiz Game Engine</h3>
+                    <p>A command-line trivia game that pulls questions from an API or a local file, tracks scores, and maintains a leaderboard.</p>
+                    <p><strong>Skills used:</strong> APIs (Open Trivia DB), Classes (Player, Question), File I/O (leaderboard JSON), Collections (question lists, score tracking), Error Handling, Control Flow (game loop)</p>
+                    <p><strong>Features:</strong></p>
+                    <ul>
+                        <li>Fetch questions from the Open Trivia Database API</li>
+                        <li>Fall back to a local JSON file if the API is unavailable</li>
+                        <li>Multiple-choice questions with shuffled answers</li>
+                        <li>Track player score with a running tally</li>
+                        <li>Save high scores to a leaderboard file</li>
+                        <li>Display the top 10 scores</li>
+                    </ul>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Let students pick whichever project excites them most — enthusiasm matters more than difficulty. Option A (Contact Manager) is the most straightforward and is a good default for students who feel unsure. Option B (Weather Journal) appeals to creative students and has the API component. Option C (Quiz Game) is the most fun and has the richest feature set. If a student has their own project idea, that's great — just verify it covers at least four skill areas and is scoped to ~90 minutes of building. Help students avoid scope creep: "A working Contact Manager with 5 features beats a half-finished RPG."</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Writing Requirements -->
+            <section id="requirements" class="lesson-section">
+                <h2>Writing Requirements</h2>
+                <p>A <strong>requirement</strong> is a clear statement of what your program should do. Good requirements are specific, testable, and written from the user's perspective.</p>
+
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>❌ Vague Requirement</th>
+                                <th>✅ Clear Requirement</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>"The app manages contacts"</td>
+                                <td>"The user can add a contact with name, email, phone, and category"</td>
+                            </tr>
+                            <tr>
+                                <td>"It saves stuff"</td>
+                                <td>"All contacts are saved to contacts.json when the user exits"</td>
+                            </tr>
+                            <tr>
+                                <td>"Handle errors"</td>
+                                <td>"If the user enters an invalid email format, show an error and ask again"</td>
+                            </tr>
+                            <tr>
+                                <td>"Search works"</td>
+                                <td>"The user can search contacts by name (case-insensitive partial match)"</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Example: Contact Manager Requirements</h3>
+                <div class="code-tabs" data-title="Requirements Document (Plain Text)">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Contact Manager — Requirements
+# ================================
+# Language: Python
+#
+# 1. CORE FEATURES
+#    a. Add a new contact (name, email, phone, category)
+#    b. View all contacts in a formatted table
+#    c. Search contacts by name (case-insensitive, partial match)
+#    d. Search contacts by category
+#    e. Edit an existing contact's fields
+#    f. Delete a contact (with confirmation)
+#
+# 2. DATA PERSISTENCE
+#    a. Save all contacts to contacts.json on exit
+#    b. Load contacts from contacts.json on startup
+#    c. If contacts.json doesn't exist, start with empty list
+#
+# 3. USER INTERFACE
+#    a. Menu-driven: show numbered options, accept user choice
+#    b. Clear prompts for each action
+#    c. "Press Enter to continue" after viewing results
+#
+# 4. ERROR HANDLING
+#    a. Invalid menu choice → show error, redisplay menu
+#    b. Empty name → reject, ask again
+#    c. Duplicate name → warn but allow (people can share names)
+#    d. File read error → start with empty list, warn user
+#
+# 5. NICE-TO-HAVE (if time permits)
+#    a. Export contacts to CSV
+#    b. Sort contacts by name or category
+#    c. Count contacts per category</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// Contact Manager — Requirements
+// ================================
+// Language: JavaScript (Node.js)
+//
+// 1. CORE FEATURES
+//    a. Add a new contact (name, email, phone, category)
+//    b. View all contacts in a formatted table
+//    c. Search contacts by name (case-insensitive, partial match)
+//    d. Search contacts by category
+//    e. Edit an existing contact's fields
+//    f. Delete a contact (with confirmation)
+//
+// 2. DATA PERSISTENCE
+//    a. Save all contacts to contacts.json on exit
+//    b. Load contacts from contacts.json on startup
+//    c. If contacts.json doesn't exist, start with empty list
+//
+// 3. USER INTERFACE
+//    a. Menu-driven: show numbered options, accept user choice
+//    b. Clear prompts for each action
+//    c. Use readline for all user input
+//
+// 4. ERROR HANDLING
+//    a. Invalid menu choice → show error, redisplay menu
+//    b. Empty name → reject, ask again
+//    c. File read error → start with empty list, warn user
+//    d. JSON parse error → start fresh, warn user
+//
+// 5. NICE-TO-HAVE (if time permits)
+//    a. Export contacts to CSV
+//    b. Sort contacts by name or category
+//    c. Count contacts per category</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// Contact Manager — Requirements
+// ================================
+// Language: C# (.NET)
+//
+// 1. CORE FEATURES
+//    a. Add a new contact (name, email, phone, category)
+//    b. View all contacts in a formatted table
+//    c. Search contacts by name (case-insensitive, partial match)
+//    d. Search contacts by category
+//    e. Edit an existing contact's fields
+//    f. Delete a contact (with confirmation)
+//
+// 2. DATA PERSISTENCE
+//    a. Save all contacts to contacts.json on exit
+//    b. Load contacts from contacts.json on startup
+//    c. If contacts.json doesn't exist, start with empty list
+//
+// 3. USER INTERFACE
+//    a. Menu-driven: show numbered options, accept user choice
+//    b. Clear prompts for each action
+//    c. Console.ReadLine() for all input
+//
+// 4. ERROR HANDLING
+//    a. Invalid menu choice → show error, redisplay menu
+//    b. Empty name → reject, ask again
+//    c. File not found → start with empty list
+//    d. JSON deserialization error → start fresh, warn user
+//
+// 5. NICE-TO-HAVE (if time permits)
+//    a. Export contacts to CSV
+//    b. Sort contacts by name or category
+//    c. Count contacts per category</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ Requirements Writing Tips</h4>
+                    <ul>
+                        <li><strong>Start each requirement with a verb:</strong> "Add", "Display", "Save", "Validate"</li>
+                        <li><strong>Be specific about behavior:</strong> What happens when the user does X?</li>
+                        <li><strong>Separate "must-have" from "nice-to-have":</strong> Build the core first, add extras if time permits</li>
+                        <li><strong>Think about edge cases:</strong> What if the file doesn't exist? What if the user enters nothing?</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Breaking It Down -->
+            <section id="decomposition" class="lesson-section">
+                <h2>Breaking It Down</h2>
+                <p><strong>Top-down decomposition</strong> means starting with the big picture and breaking it into smaller and smaller pieces until each piece is easy to code. Think of it like an outline for an essay — you don't write the whole thing at once.</p>
+
+                <div class="mermaid">
+                    flowchart TD
+                        A["Contact Manager"] --> B["Data Layer"]
+                        A --> C["UI Layer"]
+                        A --> D["File Layer"]
+                        B --> B1["Contact class"]
+                        B --> B2["ContactList class"]
+                        C --> C1["show_menu()"]
+                        C --> C2["get_user_input()"]
+                        C --> C3["display_contacts()"]
+                        D --> D1["save_to_json()"]
+                        D --> D2["load_from_json()"]
+                        style A fill:#3b82f6,color:#fff
+                        style B fill:#6366f1,color:#fff
+                        style C fill:#6366f1,color:#fff
+                        style D fill:#6366f1,color:#fff
+                </div>
+
+                <p>Each box in the diagram becomes a function or class. When every piece is small enough to describe in one sentence, you're ready to code.</p>
+
+                <h3>The Task List</h3>
+                <p>Convert your decomposition into an ordered task list. Build from the <strong>bottom up</strong> — data first, then logic, then UI:</p>
+
+                <div class="code-tabs" data-title="Task Breakdown">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Contact Manager — Task Breakdown
+# =================================
+#
+# PHASE 1: Data Foundation (build and test first)
+#   [ ] Task 1: Create Contact class with name, email, phone, category
+#   [ ] Task 2: Add to_dict() and from_dict() methods for JSON
+#   [ ] Task 3: Test creating a few Contact objects manually
+#
+# PHASE 2: File Operations
+#   [ ] Task 4: Write save_contacts(contacts, filename) function
+#   [ ] Task 5: Write load_contacts(filename) function
+#   [ ] Task 6: Test save and load — create contacts, save, load, verify
+#
+# PHASE 3: Core Features
+#   [ ] Task 7: Write add_contact() — prompt user, create Contact, add to list
+#   [ ] Task 8: Write display_contacts() — formatted table output
+#   [ ] Task 9: Write search_by_name() — case-insensitive partial match
+#   [ ] Task 10: Write search_by_category() — filter and display
+#   [ ] Task 11: Write edit_contact() — find contact, update fields
+#   [ ] Task 12: Write delete_contact() — find, confirm, remove
+#
+# PHASE 4: Menu & Main Loop
+#   [ ] Task 13: Write show_menu() — display numbered options
+#   [ ] Task 14: Write main() — menu loop, dispatch to functions
+#   [ ] Task 15: Add save-on-exit behavior
+#
+# PHASE 5: Polish
+#   [ ] Task 16: Add input validation (empty names, invalid choices)
+#   [ ] Task 17: Test all features end-to-end
+#   [ ] Task 18: Add nice-to-have features if time permits</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// Contact Manager — Task Breakdown
+// =================================
+//
+// PHASE 1: Data Foundation (build and test first)
+//   [ ] Task 1: Create Contact class with name, email, phone, category
+//   [ ] Task 2: Add toJSON() and static fromJSON() methods
+//   [ ] Task 3: Test creating a few Contact objects manually
+//
+// PHASE 2: File Operations
+//   [ ] Task 4: Write saveContacts(contacts, filename) function
+//   [ ] Task 5: Write loadContacts(filename) function
+//   [ ] Task 6: Test save and load — create, save, load, verify
+//
+// PHASE 3: Core Features
+//   [ ] Task 7: Write addContact() — prompt user, create, add to array
+//   [ ] Task 8: Write displayContacts() — formatted table output
+//   [ ] Task 9: Write searchByName() — case-insensitive partial match
+//   [ ] Task 10: Write searchByCategory() — filter and display
+//   [ ] Task 11: Write editContact() — find, update fields
+//   [ ] Task 12: Write deleteContact() — find, confirm, remove
+//
+// PHASE 4: Menu &amp; Main Loop
+//   [ ] Task 13: Write showMenu() — display numbered options
+//   [ ] Task 14: Write main() — menu loop with readline
+//   [ ] Task 15: Add save-on-exit behavior
+//
+// PHASE 5: Polish
+//   [ ] Task 16: Add input validation
+//   [ ] Task 17: Test all features end-to-end
+//   [ ] Task 18: Add nice-to-have features if time permits</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// Contact Manager — Task Breakdown
+// =================================
+//
+// PHASE 1: Data Foundation (build and test first)
+//   [ ] Task 1: Create Contact class with properties
+//   [ ] Task 2: Add JSON serialization attributes
+//   [ ] Task 3: Test creating a few Contact objects manually
+//
+// PHASE 2: File Operations
+//   [ ] Task 4: Write SaveContacts(contacts, filename) method
+//   [ ] Task 5: Write LoadContacts(filename) method
+//   [ ] Task 6: Test save and load round-trip
+//
+// PHASE 3: Core Features
+//   [ ] Task 7: Write AddContact() — prompt, create, add to List
+//   [ ] Task 8: Write DisplayContacts() — formatted table output
+//   [ ] Task 9: Write SearchByName() — case-insensitive Contains
+//   [ ] Task 10: Write SearchByCategory() — filter and display
+//   [ ] Task 11: Write EditContact() — find, update properties
+//   [ ] Task 12: Write DeleteContact() — find, confirm, remove
+//
+// PHASE 4: Menu &amp; Main Loop
+//   [ ] Task 13: Write ShowMenu() — display numbered options
+//   [ ] Task 14: Wire up Main() with menu loop
+//   [ ] Task 15: Add save-on-exit behavior
+//
+// PHASE 5: Polish
+//   [ ] Task 16: Add input validation
+//   [ ] Task 17: Test all features end-to-end
+//   [ ] Task 18: Add nice-to-have features if time permits</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Build Bottom-Up, Plan Top-Down</h4>
+                    <p>Plan from the big picture down (what does the whole app do?). But <strong>build</strong> from the smallest pieces up (get the Contact class working before you build the menu). If your data layer is solid, everything built on top of it will work more smoothly.</p>
+                </div>
+            </section>
+
+            <!-- Pseudocode -->
+            <section id="pseudocode" class="lesson-section">
+                <h2>Writing Pseudocode</h2>
+                <p><strong>Pseudocode</strong> is a plain-English description of your program's logic. It looks like code but uses human language. It helps you think through your logic without getting distracted by syntax.</p>
+
+                <div class="code-tabs" data-title="Pseudocode Examples">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Pseudocode: Main program loop
+# ==============================
+#
+# Load contacts from file (or start with empty list)
+# LOOP:
+#     Show menu (1=Add, 2=View, 3=Search, 4=Edit, 5=Delete, 6=Quit)
+#     Get user's choice
+#     IF choice is 1: call add_contact()
+#     IF choice is 2: call display_contacts()
+#     IF choice is 3: call search_contacts()
+#     IF choice is 4: call edit_contact()
+#     IF choice is 5: call delete_contact()
+#     IF choice is 6: save contacts to file, EXIT loop
+#     ELSE: show "Invalid choice" error
+#
+# Pseudocode: search_contacts()
+# ==============================
+#
+# Ask user: "Search by (1) name or (2) category?"
+# Get search term from user
+# Convert search term to lowercase
+# FOR each contact in contacts:
+#     IF search term is found in contact's name (lowercase):
+#         Add to results list
+# IF results is empty:
+#     Print "No contacts found"
+# ELSE:
+#     Display results in formatted table</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// Pseudocode: Main program loop
+// ==============================
+//
+// Load contacts from file (or start with empty array)
+// LOOP:
+//     Show menu (1=Add, 2=View, 3=Search, 4=Edit, 5=Delete, 6=Quit)
+//     Get user's choice via readline
+//     IF choice is 1: call addContact()
+//     IF choice is 2: call displayContacts()
+//     IF choice is 3: call searchContacts()
+//     IF choice is 4: call editContact()
+//     IF choice is 5: call deleteContact()
+//     IF choice is 6: save contacts to file, close readline, EXIT
+//     ELSE: show "Invalid choice" error
+//
+// Pseudocode: searchContacts()
+// ==============================
+//
+// Ask user: "Search by (1) name or (2) category?"
+// Get search term from user
+// Convert search term to lowercase
+// Filter contacts array:
+//     keep contacts where name.toLowerCase() includes search term
+// IF filtered array is empty:
+//     Print "No contacts found"
+// ELSE:
+//     Display filtered results in formatted table</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// Pseudocode: Main program loop
+// ==============================
+//
+// Load contacts from file (or start with empty List)
+// LOOP:
+//     Show menu (1=Add, 2=View, 3=Search, 4=Edit, 5=Delete, 6=Quit)
+//     Get user's choice via Console.ReadLine()
+//     SWITCH on choice:
+//         case "1": call AddContact()
+//         case "2": call DisplayContacts()
+//         case "3": call SearchContacts()
+//         case "4": call EditContact()
+//         case "5": call DeleteContact()
+//         case "6": save contacts to file, EXIT loop
+//         default: show "Invalid choice" error
+//
+// Pseudocode: SearchContacts()
+// ==============================
+//
+// Ask user: "Search by (1) name or (2) category?"
+// Get search term from user
+// Convert to lowercase
+// Use LINQ Where() to find contacts where
+//     Name.ToLower().Contains(searchTerm)
+// IF no results:
+//     Print "No contacts found"
+// ELSE:
+//     Display results in formatted table</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ Good Pseudocode Habits</h4>
+                    <ul>
+                        <li><strong>Use plain English</strong> — anyone should be able to read it</li>
+                        <li><strong>Use indentation</strong> to show structure (loops, conditionals)</li>
+                        <li><strong>Use keywords</strong> like LOOP, IF, FOR, RETURN to show control flow</li>
+                        <li><strong>Don't worry about syntax</strong> — no semicolons, no types, no imports</li>
+                        <li><strong>Focus on the "what"</strong> not the "how" — say "sort the list" not "implement quicksort"</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Data Model -->
+            <section id="data-model" class="lesson-section">
+                <h2>Planning Your Data Model</h2>
+                <p>Your <strong>data model</strong> defines the shape of your data — what classes you need, what properties they have, and how they relate to each other. This is where your OOP knowledge (Module 6) pays off.</p>
+
+                <div class="code-tabs" data-title="Data Model: Contact Manager">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># --- Data Model ---
+
+class Contact:
+    """Represents a single contact."""
+
+    def __init__(self, name, email="", phone="", category="General"):
+        self.name = name
+        self.email = email
+        self.phone = phone
+        self.category = category
+
+    def to_dict(self):
+        """Convert to dictionary for JSON serialization."""
+        return {
+            "name": self.name,
+            "email": self.email,
+            "phone": self.phone,
+            "category": self.category,
+        }
+
+    @classmethod
+    def from_dict(cls, data):
+        """Create a Contact from a dictionary (loaded from JSON)."""
+        return cls(
+            name=data["name"],
+            email=data.get("email", ""),
+            phone=data.get("phone", ""),
+            category=data.get("category", "General"),
+        )
+
+    def __str__(self):
+        return f"{self.name} ({self.category}) — {self.email}, {self.phone}"
+
+
+# --- JSON Structure (contacts.json) ---
+# [
+#     {"name": "Alice", "email": "alice@example.com", "phone": "555-0101", "category": "Friend"},
+#     {"name": "Bob", "email": "bob@work.com", "phone": "555-0202", "category": "Work"}
+# ]</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// --- Data Model ---
+
+class Contact {
+    constructor(name, email = "", phone = "", category = "General") {
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.category = category;
+    }
+
+    toJSON() {
+        return {
+            name: this.name,
+            email: this.email,
+            phone: this.phone,
+            category: this.category,
+        };
+    }
+
+    static fromJSON(data) {
+        return new Contact(
+            data.name,
+            data.email || "",
+            data.phone || "",
+            data.category || "General"
+        );
+    }
+
+    toString() {
+        return `${this.name} (${this.category}) — ${this.email}, ${this.phone}`;
+    }
+}
+
+// --- JSON Structure (contacts.json) ---
+// [
+//     {"name": "Alice", "email": "alice@example.com", "phone": "555-0101", "category": "Friend"},
+//     {"name": "Bob", "email": "bob@work.com", "phone": "555-0202", "category": "Work"}
+// ]</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">using System.Text.Json.Serialization;
+
+// --- Data Model ---
+
+class Contact
+{
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = "";
+
+    [JsonPropertyName("email")]
+    public string Email { get; set; } = "";
+
+    [JsonPropertyName("phone")]
+    public string Phone { get; set; } = "";
+
+    [JsonPropertyName("category")]
+    public string Category { get; set; } = "General";
+
+    public Contact() { }  // Needed for JSON deserialization
+
+    public Contact(string name, string email = "", string phone = "", string category = "General")
+    {
+        Name = name;
+        Email = email;
+        Phone = phone;
+        Category = category;
+    }
+
+    public override string ToString()
+        =&gt; $"{Name} ({Category}) — {Email}, {Phone}";
+}
+
+// --- JSON Structure (contacts.json) ---
+// [
+//     {"name": "Alice", "email": "alice@example.com", "phone": "555-0101", "category": "Friend"},
+//     {"name": "Bob", "email": "bob@work.com", "phone": "555-0202", "category": "Work"}
+// ]</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Data Model Design Tips</h4>
+                    <ul>
+                        <li><strong>One class per "thing":</strong> Contact, JournalEntry, Player, Question — each is a class</li>
+                        <li><strong>Include serialization methods:</strong> <code>to_dict()</code> / <code>from_dict()</code> so you can save/load JSON</li>
+                        <li><strong>Use default values:</strong> Not every contact has a phone number — make optional fields default to empty strings</li>
+                        <li><strong>Plan your JSON structure:</strong> Sketch out what the saved file will look like — this catches design issues early</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Architecture -->
+            <section id="architecture" class="lesson-section">
+                <h2>Designing the Architecture</h2>
+                <p><strong>Architecture</strong> is how the pieces of your program fit together. For a single-file beginner project, architecture means deciding the order of your code and how functions call each other.</p>
+
+                <div class="mermaid">
+                    flowchart TD
+                        A["main()"] -->|"displays"| B["show_menu()"]
+                        A -->|"calls based on choice"| C["add_contact()"]
+                        A -->|"calls"| D["display_contacts()"]
+                        A -->|"calls"| E["search_contacts()"]
+                        A -->|"calls"| F["edit_contact()"]
+                        A -->|"calls"| G["delete_contact()"]
+                        A -->|"on exit"| H["save_contacts()"]
+                        A -->|"on start"| I["load_contacts()"]
+                        C --> J["Contact class"]
+                        F --> J
+                        H --> K["contacts.json"]
+                        I --> K
+                        style A fill:#3b82f6,color:#fff
+                        style J fill:#6366f1,color:#fff
+                        style K fill:#22c55e,color:#fff
+                </div>
+
+                <h3>Code Organization Pattern</h3>
+                <div class="code-tabs" data-title="File Structure">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># contact_manager.py — File Structure
+# =====================================
+#
+# SECTION 1: Imports
+#   import json, os
+#
+# SECTION 2: Constants
+#   FILENAME = "contacts.json"
+#
+# SECTION 3: Contact class
+#   class Contact:
+#       __init__, to_dict, from_dict, __str__
+#
+# SECTION 4: File operations
+#   def save_contacts(contacts, filename)
+#   def load_contacts(filename)
+#
+# SECTION 5: Feature functions
+#   def add_contact(contacts)
+#   def display_contacts(contacts)
+#   def search_contacts(contacts)
+#   def edit_contact(contacts)
+#   def delete_contact(contacts)
+#
+# SECTION 6: UI helpers
+#   def show_menu()
+#   def get_input(prompt, required=False)
+#
+# SECTION 7: Main function
+#   def main()
+#
+# SECTION 8: Entry point
+#   if __name__ == "__main__":
+#       main()</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// contactManager.js — File Structure
+// =====================================
+//
+// SECTION 1: Imports
+//   const fs = require("fs");
+//   const readline = require("readline");
+//
+// SECTION 2: Constants
+//   const FILENAME = "contacts.json";
+//
+// SECTION 3: Contact class
+//   class Contact { constructor, toJSON, fromJSON, toString }
+//
+// SECTION 4: File operations
+//   function saveContacts(contacts, filename)
+//   function loadContacts(filename)
+//
+// SECTION 5: Readline helper
+//   function prompt(question) — returns Promise
+//
+// SECTION 6: Feature functions
+//   async function addContact(contacts)
+//   function displayContacts(contacts)
+//   async function searchContacts(contacts)
+//   async function editContact(contacts)
+//   async function deleteContact(contacts)
+//
+// SECTION 7: UI
+//   function showMenu()
+//
+// SECTION 8: Main function
+//   async function main()
+//
+// SECTION 9: Entry point
+//   main();</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// Program.cs — File Structure
+// =====================================
+//
+// SECTION 1: Using statements
+//   using System.Text.Json;
+//
+// SECTION 2: Constants
+//   const string Filename = "contacts.json";
+//
+// SECTION 3: Contact class (can be in same file for simplicity)
+//   class Contact { Properties, Constructor, ToString }
+//
+// SECTION 4: File operations
+//   static void SaveContacts(List&lt;Contact&gt; contacts, string filename)
+//   static List&lt;Contact&gt; LoadContacts(string filename)
+//
+// SECTION 5: Feature methods
+//   static void AddContact(List&lt;Contact&gt; contacts)
+//   static void DisplayContacts(List&lt;Contact&gt; contacts)
+//   static void SearchContacts(List&lt;Contact&gt; contacts)
+//   static void EditContact(List&lt;Contact&gt; contacts)
+//   static void DeleteContact(List&lt;Contact&gt; contacts)
+//
+// SECTION 6: UI helpers
+//   static void ShowMenu()
+//   static string GetInput(string prompt, bool required = false)
+//
+// SECTION 7: Main program (top-level statements)
+//   Load → Loop → Save</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ Architecture Principles for Beginners</h4>
+                    <ul>
+                        <li><strong>One file is fine.</strong> Don't split into multiple files until a single file feels unmanageable (300+ lines).</li>
+                        <li><strong>Group related code.</strong> Keep all file operations together, all display functions together.</li>
+                        <li><strong>Functions should do ONE thing.</strong> <code>add_contact()</code> adds a contact. It doesn't also save the file.</li>
+                        <li><strong>Main() is the conductor.</strong> It calls functions but doesn't contain the logic itself.</li>
+                        <li><strong>Data flows through parameters.</strong> Pass the contacts list to functions — don't use global variables.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Project Checklist -->
+            <section id="project-checklist" class="lesson-section">
+                <h2>Creating Your Project Checklist</h2>
+                <p>Before moving to Lesson 26, create your own project plan using this template. Fill it in for whichever project you chose.</p>
+
+                <div class="code-tabs" data-title="Project Plan Template">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># ==========================================
+# PROJECT PLAN: [Your Project Name]
+# Language: Python
+# Date: [Today's date]
+# ==========================================
+#
+# 1. PROJECT DESCRIPTION (1-2 sentences)
+#    [What does this program do?]
+#
+# 2. SKILLS USED (check at least 4)
+#    [ ] Variables &amp; Data Types
+#    [ ] Control Flow (if/else, loops)
+#    [ ] Functions
+#    [ ] Collections (lists, dicts)
+#    [ ] Classes (OOP)
+#    [ ] Error Handling (try/except)
+#    [ ] File I/O &amp; JSON
+#    [ ] API Requests
+#
+# 3. REQUIREMENTS (list 5-8 specific features)
+#    a. [User can ...]
+#    b. [User can ...]
+#    c. [Program saves ...]
+#    d. [Program handles ...]
+#    e. ...
+#
+# 4. DATA MODEL (what classes/data structures?)
+#    Class: [ClassName]
+#       - property1: type
+#       - property2: type
+#    JSON file: [filename.json]
+#       - structure: [...]
+#
+# 5. TASK LIST (ordered, build bottom-up)
+#    [ ] Task 1: ...
+#    [ ] Task 2: ...
+#    [ ] ...
+#
+# 6. PSEUDOCODE (for the main loop + 1 key function)
+#    [Write it out]
+#
+# 7. NICE-TO-HAVE (bonus features if time permits)
+#    - ...
+#    - ...</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// ==========================================
+// PROJECT PLAN: [Your Project Name]
+// Language: JavaScript (Node.js)
+// Date: [Today's date]
+// ==========================================
+//
+// 1. PROJECT DESCRIPTION (1-2 sentences)
+//    [What does this program do?]
+//
+// 2. SKILLS USED (check at least 4)
+//    [ ] Variables &amp; Data Types
+//    [ ] Control Flow (if/else, loops)
+//    [ ] Functions
+//    [ ] Collections (arrays, objects)
+//    [ ] Classes (OOP)
+//    [ ] Error Handling (try/catch)
+//    [ ] File I/O &amp; JSON
+//    [ ] API Requests (fetch)
+//
+// 3. REQUIREMENTS (list 5-8 specific features)
+//    a. [User can ...]
+//    b. [User can ...]
+//    c. [Program saves ...]
+//    d. [Program handles ...]
+//    e. ...
+//
+// 4. DATA MODEL (what classes/data structures?)
+//    Class: [ClassName]
+//       - property1: type
+//       - property2: type
+//    JSON file: [filename.json]
+//       - structure: [...]
+//
+// 5. TASK LIST (ordered, build bottom-up)
+//    [ ] Task 1: ...
+//    [ ] Task 2: ...
+//    [ ] ...
+//
+// 6. PSEUDOCODE (for the main loop + 1 key function)
+//    [Write it out]
+//
+// 7. NICE-TO-HAVE (bonus features if time permits)
+//    - ...
+//    - ...</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// ==========================================
+// PROJECT PLAN: [Your Project Name]
+// Language: C# (.NET)
+// Date: [Today's date]
+// ==========================================
+//
+// 1. PROJECT DESCRIPTION (1-2 sentences)
+//    [What does this program do?]
+//
+// 2. SKILLS USED (check at least 4)
+//    [ ] Variables &amp; Data Types
+//    [ ] Control Flow (if/else, loops, switch)
+//    [ ] Functions / Methods
+//    [ ] Collections (List, Dictionary)
+//    [ ] Classes (OOP)
+//    [ ] Error Handling (try/catch)
+//    [ ] File I/O &amp; JSON
+//    [ ] API Requests (HttpClient)
+//
+// 3. REQUIREMENTS (list 5-8 specific features)
+//    a. [User can ...]
+//    b. [User can ...]
+//    c. [Program saves ...]
+//    d. [Program handles ...]
+//    e. ...
+//
+// 4. DATA MODEL (what classes/data structures?)
+//    Class: [ClassName]
+//       - Property1: type
+//       - Property2: type
+//    JSON file: [filename.json]
+//       - structure: [...]
+//
+// 5. TASK LIST (ordered, build bottom-up)
+//    [ ] Task 1: ...
+//    [ ] Task 2: ...
+//    [ ] ...
+//
+// 6. PSEUDOCODE (for the main loop + 1 key function)
+//    [Write it out]
+//
+// 7. NICE-TO-HAVE (bonus features if time permits)
+//    - ...
+//    - ...</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Exercises -->
+            <section id="exercises" class="lesson-section">
+                <h2>Exercises</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 1: Write Your Project Plan</h3>
+                    <p><strong>Objective:</strong> Using the template above, write a complete project plan for your chosen capstone project (Option A, B, or C — or your own).</p>
+                    <p><strong>Requirements:</strong></p>
+                    <ol>
+                        <li>Fill in all 7 sections of the template</li>
+                        <li>Your requirements should have at least 5 specific, testable features</li>
+                        <li>Your task list should have at least 10 tasks in build order</li>
+                        <li>Write pseudocode for the main loop and at least one feature function</li>
+                    </ol>
+                    <p><strong>Save your plan</strong> as a comment at the top of your project file, or as a separate <code>plan.txt</code> file. You'll use it as your roadmap in Lesson 26.</p>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 2: Build and Test the Data Model</h3>
+                    <p><strong>Objective:</strong> Before Lesson 26, write <em>just</em> the data class for your project and test it.</p>
+                    <p><strong>Steps:</strong></p>
+                    <ol>
+                        <li>Create your class (Contact, JournalEntry, Player, Question, etc.)</li>
+                        <li>Add serialization methods (to_dict/from_dict, toJSON/fromJSON)</li>
+                        <li>Create 2-3 test objects and print them</li>
+                        <li>Convert them to JSON (dictionary/object) and back — verify nothing is lost</li>
+                    </ol>
+                    <p>This is the foundation everything else builds on. Get it right now and Lesson 26 will go much smoother.</p>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 3: Pseudocode Practice</h3>
+                    <p><strong>Objective:</strong> Write pseudocode for <em>every</em> feature function in your project — not just the main loop.</p>
+                    <p>This is optional but highly recommended. Students who write thorough pseudocode finish Lesson 26 significantly faster than those who don't.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Exercise 1 is the most important — every student should leave this lesson with a written project plan. Exercise 2 (building the data model) is an excellent "homework" assignment before Lesson 26 — it gives students a head start and reduces Lesson 26 to assembling pre-tested pieces. If teaching in a classroom setting, consider having students pair up and review each other's plans. A good review question: "If I read just your task list, could I build this project without asking you any questions?" If not, the tasks need more detail. Warn students about scope creep: "Your plan should describe a project you can build in 90 minutes, not 9 hours."</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong>Plan before you code:</strong> 20% planning saves 80% debugging</li>
+                        <li><strong>Write clear requirements:</strong> Specific, testable statements of what the program does</li>
+                        <li><strong>Decompose top-down:</strong> Break the big problem into small, manageable tasks</li>
+                        <li><strong>Build bottom-up:</strong> Start with data classes, then file I/O, then features, then the UI</li>
+                        <li><strong>Pseudocode first:</strong> Think through logic in plain English before writing syntax</li>
+                        <li><strong>Design your data model:</strong> Classes + JSON structure = the foundation of your project</li>
+                        <li><strong>Keep a task checklist:</strong> Check things off as you build — it keeps you focused and motivated</li>
+                    </ul>
+                </div>
+
+                <h3>The Planning Process</h3>
+                <div class="mermaid">
+                    flowchart LR
+                        A["Choose<br/>Project"] --> B["Write<br/>Requirements"]
+                        B --> C["Break Into<br/>Tasks"]
+                        C --> D["Write<br/>Pseudocode"]
+                        D --> E["Design Data<br/>Model"]
+                        E --> F["Plan<br/>Architecture"]
+                        F --> G["Ready<br/>to Build!"]
+                        style A fill:#3b82f6,color:#fff
+                        style B fill:#3b82f6,color:#fff
+                        style C fill:#6366f1,color:#fff
+                        style D fill:#6366f1,color:#fff
+                        style E fill:#22c55e,color:#fff
+                        style F fill:#22c55e,color:#fff
+                        style G fill:#f59e0b,color:#fff
+                </div>
+
+                <h3>🚀 What's Next?</h3>
+                <p>In <strong>Lesson 26: Building Your Project</strong>, you'll take your plan and turn it into a working program. You'll follow your task list phase by phase, testing as you go. Come prepared with your project plan and (ideally) a tested data class. Let's build something real!</p>
+
+                <!-- Quiz -->
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Check</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What's the recommended order for building a project?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Building UI first means you have nothing for the UI to display or interact with. You'll end up rewriting it when you add the data layer.">A) UI first, then data, then features</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Bottom-up building means starting with the data layer (classes, serialization), then file operations (save/load), then features (add, search, edit), and finally the UI (menu, display). Each layer builds on the one below, so by the time you wire up the UI, everything it depends on is already tested and working.">B) Data classes first, then file I/O, then features, then UI</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Building everything simultaneously leads to confusion and untested code. Focus on one layer at a time.">C) Build all features simultaneously</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 2:</strong> What makes a good requirement?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="'The app should be good' isn't testable. How do you know when it's 'good'? Requirements need specific, measurable criteria.">A) "The app should be good and work well"</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Good requirements are specific and testable. 'The user can search contacts by name (case-insensitive partial match)' tells you exactly what to build, how it should behave, and how to test it. You can verify: does searching 'ali' find 'Alice'? Does 'ALI' also find 'Alice'? That's testable.">B) "The user can search contacts by name using case-insensitive partial matching"</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Implementation details ('use a for loop') don't belong in requirements. Requirements describe WHAT the program does, not HOW it does it internally.">C) "Use a for loop to iterate through the contacts array"</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 3:</strong> Why should your data class include to_dict()/from_dict() methods?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Speed is not the primary reason. These methods are about data persistence.">A) They make the program run faster</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="JSON can only store basic types (strings, numbers, arrays, objects) — not class instances. to_dict() converts your object to a dictionary that JSON can serialize. from_dict() reconstructs the object from that dictionary when you load the file. Without these methods, you can't save and load your data between sessions.">B) They let you convert objects to/from JSON for saving and loading data</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Python/JS/C# already have ways to print objects. Serialization methods are specifically for converting to a format that can be saved to files.">C) They're required by the programming language</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_24.html" class="prev-lesson">← Previous: Making API Requests</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_26.html" class="next-lesson">Next: Building Your Project →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

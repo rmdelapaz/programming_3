@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn to review your own code, refactor for clarity, and discover what to learn next in Python, JavaScript, and C#. Covers code review checklists, common refactoring patterns, and curated learning paths for each language.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 9.3: Code Review and Next Steps - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 9</a></li>
+            <li aria-current="page">Lesson 9.3: Code Review and Next Steps</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🔍 Lesson 9.3: Code Review and Next Steps</h1>
+                <p class="lead">You've built a working project. That's a huge accomplishment — seriously. But every program can be improved. In this final lesson, you'll learn to look at your code with fresh eyes, clean it up using professional practices, and discover what to learn next in whichever language you want to pursue further.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li><strong>Review your own code</strong> using a structured checklist</li>
+                        <li><strong>Identify common code smells</strong> and know how to fix them</li>
+                        <li><strong>Refactor code</strong> for readability, maintainability, and robustness</li>
+                        <li><strong>Write meaningful comments and documentation</strong></li>
+                        <li><strong>Understand version control basics</strong> (Git) and why it matters</li>
+                        <li><strong>Choose your next learning path</strong> in Python, JavaScript, or C#</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 45 minutes</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary><h2 style="display: inline; margin: 0;">📑 In This Lesson</h2></summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#self-review" class="toc-link">Self-Review Checklist</a></li>
+                        <li><a href="#code-smells" class="toc-link">Common Code Smells</a></li>
+                        <li><a href="#refactoring" class="toc-link">Refactoring Patterns</a></li>
+                        <li><a href="#comments" class="toc-link">Comments and Documentation</a></li>
+                        <li><a href="#version-control" class="toc-link">Version Control with Git</a></li>
+                        <li><a href="#next-steps" class="toc-link">What to Learn Next</a></li>
+                        <li><a href="#resources" class="toc-link">Recommended Resources</a></li>
+                        <li><a href="#summary" class="toc-link">Course Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Self-Review Checklist -->
+            <section id="self-review" class="lesson-section">
+                <h2>Self-Review Checklist</h2>
+                <p>Before sharing your code with anyone, run through this checklist. Professional developers do this on every pull request — it's a habit worth building now.</p>
+
+                <div class="card card-success">
+                    <h3>✅ The Code Review Checklist</h3>
+                    <h4>Readability</h4>
+                    <ul>
+                        <li>Are variable and function names <strong>descriptive</strong>? (<code>contacts</code> not <code>c</code>, <code>search_by_name</code> not <code>sbn</code>)</li>
+                        <li>Is the code <strong>consistently formatted</strong>? (indentation, spacing, blank lines between sections)</li>
+                        <li>Could someone unfamiliar with the project <strong>understand it in 5 minutes</strong>?</li>
+                    </ul>
+
+                    <h4>Correctness</h4>
+                    <ul>
+                        <li>Does every feature <strong>work as specified</strong> in your requirements?</li>
+                        <li>Are <strong>edge cases</strong> handled? (empty list, invalid input, missing file)</li>
+                        <li>Does the program <strong>exit cleanly</strong> without errors?</li>
+                    </ul>
+
+                    <h4>Robustness</h4>
+                    <ul>
+                        <li>Is all user input <strong>validated</strong>?</li>
+                        <li>Are file operations wrapped in <strong>try/except</strong> (or try/catch)?</li>
+                        <li>Does the program handle <strong>unexpected input</strong> without crashing?</li>
+                    </ul>
+
+                    <h4>Organization</h4>
+                    <ul>
+                        <li>Does each function do <strong>one thing</strong>?</li>
+                        <li>Are related functions <strong>grouped together</strong>?</li>
+                        <li>Is there any <strong>duplicated code</strong> that could be extracted into a function?</li>
+                    </ul>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>In a classroom, the best format for this lesson is a code review workshop. Have students swap their projects with a partner and review each other's code using the checklist. Each reviewer writes 3 things that are done well ("great naming!", "clean error handling") and 3 things that could be improved. This mirrors real-world code review culture. Emphasize that code review is about making the code better, not criticizing the programmer. Frame suggestions as "What if we..." rather than "You did this wrong." If self-paced, have students set their code aside for a day, then come back with fresh eyes.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Code Smells -->
+            <section id="code-smells" class="lesson-section">
+                <h2>Common Code Smells</h2>
+                <p>A <strong>code smell</strong> is a pattern that suggests something could be improved. It's not a bug — the code works — but it makes the code harder to read, maintain, or extend.</p>
+
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Code Smell</th>
+                                <th>What It Looks Like</th>
+                                <th>How to Fix It</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Magic Numbers</strong></td>
+                                <td><code>if len(results) > 10:</code></td>
+                                <td>Use a constant: <code>MAX_DISPLAY = 10</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Duplicated Code</strong></td>
+                                <td>Same 5 lines in 3 different functions</td>
+                                <td>Extract into a helper function</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Long Functions</strong></td>
+                                <td>A function that's 50+ lines</td>
+                                <td>Break into smaller functions</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Unclear Names</strong></td>
+                                <td><code>x</code>, <code>temp</code>, <code>data2</code>, <code>do_stuff()</code></td>
+                                <td>Use descriptive names: <code>filtered_contacts</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Deep Nesting</strong></td>
+                                <td>4+ levels of indentation</td>
+                                <td>Use early returns or extract functions</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Silent Failures</strong></td>
+                                <td>Empty <code>except: pass</code></td>
+                                <td>Log or display the error</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Dead Code</strong></td>
+                                <td>Commented-out code, unused functions</td>
+                                <td>Delete it (Git remembers everything)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Before and After: Fixing Code Smells</h3>
+                <div class="code-tabs" data-title="Refactoring Example: Deep Nesting → Early Return">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># ❌ BEFORE: Deep nesting
+def edit_contact(contacts):
+    if len(contacts) > 0:
+        name = input("Name to edit: ").lower()
+        found = [c for c in contacts if name in c.name.lower()]
+        if len(found) > 0:
+            contact = found[0]
+            new_name = input(f"Name [{contact.name}]: ")
+            if new_name:
+                contact.name = new_name
+                print("Updated!")
+            else:
+                print("No change.")
+        else:
+            print("Not found.")
+    else:
+        print("No contacts.")
+
+# ✅ AFTER: Early returns — flat and readable
+def edit_contact(contacts):
+    if not contacts:
+        print("No contacts."); return
+
+    name = input("Name to edit: ").lower()
+    found = [c for c in contacts if name in c.name.lower()]
+
+    if not found:
+        print("Not found."); return
+
+    contact = found[0]
+    new_name = input(f"Name [{contact.name}]: ")
+    contact.name = new_name or contact.name
+    print("Updated!")</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// ❌ BEFORE: Deep nesting
+async function editContact(contacts) {
+    if (contacts.length &gt; 0) {
+        const name = (await prompt("Name to edit: ")).toLowerCase();
+        const found = contacts.filter(c =&gt; c.name.toLowerCase().includes(name));
+        if (found.length &gt; 0) {
+            const contact = found[0];
+            const newName = await prompt(`Name [${contact.name}]: `);
+            if (newName) {
+                contact.name = newName;
+                console.log("Updated!");
+            } else {
+                console.log("No change.");
+            }
+        } else {
+            console.log("Not found.");
+        }
+    } else {
+        console.log("No contacts.");
+    }
+}
+
+// ✅ AFTER: Early returns — flat and readable
+async function editContact(contacts) {
+    if (contacts.length === 0) { console.log("No contacts."); return; }
+
+    const name = (await prompt("Name to edit: ")).toLowerCase();
+    const found = contacts.filter(c =&gt; c.name.toLowerCase().includes(name));
+
+    if (found.length === 0) { console.log("Not found."); return; }
+
+    const contact = found[0];
+    const newName = await prompt(`Name [${contact.name}]: `);
+    contact.name = newName || contact.name;
+    console.log("Updated!");
+}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// ❌ BEFORE: Deep nesting
+static void EditContact(List&lt;Contact&gt; contacts)
+{
+    if (contacts.Count &gt; 0)
+    {
+        Console.Write("Name to edit: ");
+        string name = Console.ReadLine()!.ToLower();
+        var found = contacts.Where(c =&gt; c.Name.ToLower().Contains(name)).ToList();
+        if (found.Count &gt; 0)
+        {
+            var contact = found[0];
+            Console.Write($"Name [{contact.Name}]: ");
+            string newName = Console.ReadLine()!;
+            if (!string.IsNullOrEmpty(newName))
+            {
+                contact.Name = newName;
+                Console.WriteLine("Updated!");
+            }
+        }
+        else { Console.WriteLine("Not found."); }
+    }
+    else { Console.WriteLine("No contacts."); }
+}
+
+// ✅ AFTER: Early returns — flat and readable
+static void EditContact(List&lt;Contact&gt; contacts)
+{
+    if (contacts.Count == 0) { Console.WriteLine("No contacts."); return; }
+
+    Console.Write("Name to edit: ");
+    string name = Console.ReadLine()!.ToLower();
+    var contact = contacts.FirstOrDefault(c =&gt; c.Name.ToLower().Contains(name));
+
+    if (contact == null) { Console.WriteLine("Not found."); return; }
+
+    Console.Write($"Name [{contact.Name}]: ");
+    string newName = Console.ReadLine()!;
+    if (!string.IsNullOrEmpty(newName)) contact.Name = newName;
+    Console.WriteLine("Updated!");
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 The "Early Return" Pattern</h4>
+                    <p>Instead of wrapping your entire function in an <code>if</code> block, check for invalid conditions at the top and <code>return</code> early. This keeps your "happy path" code at the shallowest indentation level and makes the function much easier to read.</p>
+                </div>
+            </section>
+
+            <!-- Refactoring -->
+            <section id="refactoring" class="lesson-section">
+                <h2>Refactoring Patterns</h2>
+                <p><strong>Refactoring</strong> means changing the structure of code without changing its behavior. The program does the same thing before and after — it's just cleaner.</p>
+
+                <div class="code-tabs" data-title="Extract Repeated Code Into a Function">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># ❌ BEFORE: Same "find contact" logic in edit, delete, and search
+def edit_contact(contacts):
+    name = input("Name: ").lower()
+    found = [c for c in contacts if name in c.name.lower()]
+    if not found:
+        print("Not found."); return
+    contact = found[0]
+    # ... edit logic ...
+
+def delete_contact(contacts):
+    name = input("Name: ").lower()
+    found = [c for c in contacts if name in c.name.lower()]
+    if not found:
+        print("Not found."); return
+    contact = found[0]
+    # ... delete logic ...
+
+# ✅ AFTER: Extract the shared logic into a helper
+def find_contact(contacts, action_name="find"):
+    """Find a contact by name. Returns the contact or None."""
+    name = input(f"Enter name to {action_name}: ").lower()
+    found = [c for c in contacts if name in c.name.lower()]
+    if not found:
+        print(f"No contact found matching '{name}'.")
+        return None
+    return found[0]
+
+def edit_contact(contacts):
+    contact = find_contact(contacts, "edit")
+    if not contact: return
+    # ... edit logic (no find code needed!) ...
+
+def delete_contact(contacts):
+    contact = find_contact(contacts, "delete")
+    if not contact: return
+    # ... delete logic (no find code needed!) ...</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// ✅ Extract the shared "find contact" logic
+async function findContact(contacts, actionName = "find") {
+    const name = (await prompt(`Enter name to ${actionName}: `)).toLowerCase();
+    const found = contacts.filter(c =&gt; c.name.toLowerCase().includes(name));
+
+    if (found.length === 0) {
+        console.log(`No contact found matching '${name}'.`);
+        return null;
+    }
+    return found[0];
+}
+
+async function editContact(contacts) {
+    const contact = await findContact(contacts, "edit");
+    if (!contact) return;
+    // ... edit logic only — no find code needed ...
+}
+
+async function deleteContact(contacts) {
+    const contact = await findContact(contacts, "delete");
+    if (!contact) return;
+    // ... delete logic only — no find code needed ...
+}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// ✅ Extract the shared "find contact" logic
+static Contact? FindContact(List&lt;Contact&gt; contacts, string actionName = "find")
+{
+    Console.Write($"Enter name to {actionName}: ");
+    string name = Console.ReadLine()!.ToLower();
+    var contact = contacts.FirstOrDefault(c =&gt; c.Name.ToLower().Contains(name));
+
+    if (contact == null)
+        Console.WriteLine($"No contact found matching '{name}'.");
+    return contact;
+}
+
+static void EditContact(List&lt;Contact&gt; contacts)
+{
+    var contact = FindContact(contacts, "edit");
+    if (contact == null) return;
+    // ... edit logic only ...
+}
+
+static void DeleteContact(List&lt;Contact&gt; contacts)
+{
+    var contact = FindContact(contacts, "delete");
+    if (contact == null) return;
+    // ... delete logic only ...
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Comments -->
+            <section id="comments" class="lesson-section">
+                <h2>Comments and Documentation</h2>
+                <p>Good code is mostly self-documenting through clear naming. Comments should explain <strong>why</strong>, not <strong>what</strong>.</p>
+
+                <div class="code-tabs" data-title="Good vs Bad Comments">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># ❌ BAD: Comments that restate the code
+x = x + 1  # Increment x by 1
+contacts = []  # Create an empty list
+if len(contacts) == 0:  # Check if list is empty
+
+# ✅ GOOD: Comments that explain WHY
+# Use lowercase for case-insensitive search
+term = search_input.lower()
+
+# Default to "General" because older JSON files may not have this field
+category = data.get("category", "General")
+
+# Reuse one HttpClient instance — creating new ones per request
+# causes socket exhaustion under load
+client = HttpClient()
+
+
+# ✅ GOOD: Docstrings that describe the function's purpose
+def find_contact(contacts, action_name="find"):
+    """Search contacts by name and return the first match, or None.
+
+    Args:
+        contacts: List of Contact objects to search.
+        action_name: Verb to display in the prompt (e.g., "edit", "delete").
+
+    Returns:
+        The first matching Contact, or None if not found.
+    """</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// ❌ BAD: Comments that restate the code
+let x = x + 1; // Increment x
+const contacts = []; // Create empty array
+
+// ✅ GOOD: Comments that explain WHY
+// URLSearchParams handles encoding of special chars like &amp; and #
+const params = new URLSearchParams({ q: searchTerm });
+
+// Fall back to empty array — older saved files may not have this field
+const categories = data.categories ?? [];
+
+/**
+ * Search contacts by name and return the first match.
+ * @param {Contact[]} contacts - Array of contacts to search
+ * @param {string} actionName - Verb for the prompt ("edit", "delete")
+ * @returns {Contact|null} The first match, or null
+ */
+async function findContact(contacts, actionName = "find") {
+    // ...
+}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// ❌ BAD: Comments that restate the code
+int x = x + 1; // Increment x
+var contacts = new List&lt;Contact&gt;(); // Create empty list
+
+// ✅ GOOD: Comments that explain WHY
+// PropertyNameCaseInsensitive handles APIs that use camelCase
+// while our C# properties use PascalCase
+var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
+// Nullable because older JSON files may have null for optional fields
+public string? Bio { get; set; }
+
+/// &lt;summary&gt;
+/// Search contacts by name and return the first match, or null.
+/// &lt;/summary&gt;
+/// &lt;param name="contacts"&gt;List of contacts to search.&lt;/param&gt;
+/// &lt;param name="actionName"&gt;Verb for the prompt (e.g., "edit").&lt;/param&gt;
+/// &lt;returns&gt;The first matching Contact, or null if not found.&lt;/returns&gt;
+static Contact? FindContact(List&lt;Contact&gt; contacts, string actionName = "find")
+{
+    // ...
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ The Comment Golden Rule</h4>
+                    <p><strong>Good code answers "what?" through naming. Good comments answer "why?"</strong></p>
+                    <p>If you find yourself writing a comment that just restates the code, consider renaming the variable or function instead. A function called <code>find_contact_by_partial_name()</code> doesn't need a comment explaining what it does.</p>
+                </div>
+            </section>
+
+            <!-- Version Control -->
+            <section id="version-control" class="lesson-section">
+                <h2>Version Control with Git</h2>
+                <p>If you haven't used Git yet, now is the time to start. Git tracks every change you make to your code, so you can undo mistakes, experiment safely, and share your work.</p>
+
+                <div class="code-tabs" data-title="Git Basics (Same in All Languages)">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Terminal commands — these are the same regardless of language!
+
+# 1. Initialize a Git repository in your project folder
+# git init
+
+# 2. Create a .gitignore file to exclude files you don't want tracked
+# echo "contacts.json" >> .gitignore    # Don't track user data
+# echo "__pycache__/" >> .gitignore     # Python cache
+# echo ".env" >> .gitignore             # API keys
+
+# 3. Stage your files
+# git add .
+
+# 4. Make your first commit
+# git commit -m "Initial commit: Contact Manager v1.0"
+
+# 5. After making changes:
+# git add .
+# git commit -m "Add search by category feature"
+
+# 6. View your history:
+# git log --oneline
+
+# 7. Undo a mistake (before committing):
+# git checkout -- filename.py
+
+# Why Git matters:
+# - You can experiment freely — if it breaks, just revert
+# - Your commit history IS your documentation
+# - It's required for contributing to open source
+# - Every job posting expects Git knowledge</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// Terminal commands — same as Python and C#!
+
+// 1. Initialize Git
+// git init
+
+// 2. Create .gitignore
+// echo "contacts.json" >> .gitignore   // Don't track user data
+// echo "node_modules/" >> .gitignore   // npm packages (BIG folder!)
+// echo ".env" >> .gitignore            // API keys
+
+// 3. Stage and commit
+// git add .
+// git commit -m "Initial commit: Contact Manager v1.0"
+
+// 4. After changes:
+// git add .
+// git commit -m "Add search by category feature"
+
+// 5. View history:
+// git log --oneline
+
+// Important for JavaScript:
+// ALWAYS .gitignore node_modules/
+// It can contain thousands of files — never commit it
+// Others will run 'npm install' to recreate it</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// Terminal commands — same as Python and JavaScript!
+
+// 1. Initialize Git
+// git init
+
+// 2. Create .gitignore (dotnet has a built-in template!)
+// dotnet new gitignore
+// echo "contacts.json" >> .gitignore   // Don't track user data
+
+// 3. Stage and commit
+// git add .
+// git commit -m "Initial commit: Contact Manager v1.0"
+
+// 4. After changes:
+// git add .
+// git commit -m "Add search by category feature"
+
+// 5. View history:
+// git log --oneline
+
+// The dotnet gitignore template automatically excludes:
+// - bin/ and obj/ folders (build output)
+// - .vs/ folder (Visual Studio settings)
+// - *.user files (personal IDE settings)</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Commit Messages That Help Future You</h4>
+                    <ul>
+                        <li>❌ <code>"fixed stuff"</code> — What stuff? How?</li>
+                        <li>❌ <code>"update"</code> — Updated what?</li>
+                        <li>✅ <code>"Add search by category feature"</code> — Clear and specific</li>
+                        <li>✅ <code>"Fix crash when contacts.json is empty"</code> — Describes the bug fixed</li>
+                        <li>✅ <code>"Refactor find logic into helper function"</code> — Describes the improvement</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Next Steps -->
+            <section id="next-steps" class="lesson-section">
+                <h2>What to Learn Next</h2>
+                <p>You've learned the fundamentals that are shared across all three languages. Now it's time to go deeper in whichever language excites you most. Here's a roadmap for each.</p>
+
+                <div class="mermaid">
+                    flowchart TD
+                        A["You Are Here:<br/>Programming Fundamentals"] --> B["🐍 Python Path"]
+                        A --> C["⚡ JavaScript Path"]
+                        A --> D["🔷 C# Path"]
+                        B --> B1["Web: Flask/Django"]
+                        B --> B2["Data: Pandas/NumPy"]
+                        B --> B3["AI/ML: TensorFlow"]
+                        B --> B4["Automation: Scripts"]
+                        C --> C1["Frontend: React/Vue"]
+                        C --> C2["Backend: Node/Express"]
+                        C --> C3["Full-Stack: Next.js"]
+                        C --> C4["Mobile: React Native"]
+                        D --> D1["Web: ASP.NET Core"]
+                        D --> D2["Desktop: WPF/MAUI"]
+                        D --> D3["Games: Unity"]
+                        D --> D4["Cloud: Azure"]
+                        style A fill:#f59e0b,color:#fff
+                        style B fill:#3b82f6,color:#fff
+                        style C fill:#f59e0b,color:#000
+                        style D fill:#6366f1,color:#fff
+                </div>
+
+                <h3>🐍 Python: Next Steps</h3>
+                <div class="card card-info">
+                    <h4>Core Skills to Add</h4>
+                    <ul>
+                        <li><strong>Virtual environments</strong> — <code>python -m venv</code> to isolate project dependencies</li>
+                        <li><strong>List comprehensions &amp; generators</strong> — more Pythonic ways to process data</li>
+                        <li><strong>Decorators</strong> — functions that modify other functions</li>
+                        <li><strong>Type hints</strong> — <code>def greet(name: str) -&gt; str:</code> for better code clarity</li>
+                        <li><strong>Unit testing</strong> — <code>pytest</code> or the built-in <code>unittest</code> module</li>
+                    </ul>
+
+                    <h4>Career Paths</h4>
+                    <ul>
+                        <li><strong>Web Development:</strong> Flask (small apps) → Django (large apps) → REST APIs</li>
+                        <li><strong>Data Science:</strong> Pandas → NumPy → Matplotlib → Jupyter Notebooks</li>
+                        <li><strong>AI / Machine Learning:</strong> scikit-learn → TensorFlow or PyTorch</li>
+                        <li><strong>DevOps / Automation:</strong> Scripts, cron jobs, system administration tools</li>
+                    </ul>
+                </div>
+
+                <h3>⚡ JavaScript: Next Steps</h3>
+                <div class="card card-info">
+                    <h4>Core Skills to Add</h4>
+                    <ul>
+                        <li><strong>Async/await deep dive</strong> — Promises, Promise.all, error handling patterns</li>
+                        <li><strong>ES Modules</strong> — <code>import</code>/<code>export</code> instead of <code>require</code></li>
+                        <li><strong>Destructuring &amp; spread</strong> — <code>const { name, email } = contact;</code></li>
+                        <li><strong>TypeScript</strong> — JavaScript with types, used by most professional teams</li>
+                        <li><strong>npm ecosystem</strong> — package.json, dependencies, scripts</li>
+                    </ul>
+
+                    <h4>Career Paths</h4>
+                    <ul>
+                        <li><strong>Frontend:</strong> HTML/CSS → React or Vue → Next.js or Nuxt</li>
+                        <li><strong>Backend:</strong> Node.js → Express → databases (PostgreSQL, MongoDB)</li>
+                        <li><strong>Full-Stack:</strong> Combine frontend + backend → deploy to Vercel, Netlify, or Railway</li>
+                        <li><strong>Mobile:</strong> React Native (iOS &amp; Android from one codebase)</li>
+                    </ul>
+                </div>
+
+                <h3>🔷 C#: Next Steps</h3>
+                <div class="card card-info">
+                    <h4>Core Skills to Add</h4>
+                    <ul>
+                        <li><strong>LINQ</strong> — powerful collection queries: <code>contacts.Where(c =&gt; c.Age > 18).OrderBy(c =&gt; c.Name)</code></li>
+                        <li><strong>Async/await patterns</strong> — Task-based asynchronous programming</li>
+                        <li><strong>Generics</strong> — <code>List&lt;T&gt;</code>, creating your own generic classes</li>
+                        <li><strong>Interfaces</strong> — contracts that classes must implement</li>
+                        <li><strong>NuGet packages</strong> — C#'s package manager (like pip or npm)</li>
+                    </ul>
+
+                    <h4>Career Paths</h4>
+                    <ul>
+                        <li><strong>Web Development:</strong> ASP.NET Core → Razor Pages → Blazor → REST APIs</li>
+                        <li><strong>Desktop Apps:</strong> WPF (Windows) → .NET MAUI (cross-platform)</li>
+                        <li><strong>Game Development:</strong> Unity (C# is Unity's primary language)</li>
+                        <li><strong>Cloud / Enterprise:</strong> Azure → microservices → enterprise applications</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Resources -->
+            <section id="resources" class="lesson-section">
+                <h2>Recommended Resources</h2>
+
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Resource</th>
+                                <th>Type</th>
+                                <th>Best For</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>freeCodeCamp</strong></td>
+                                <td>Free courses</td>
+                                <td>JavaScript, Python, web development</td>
+                            </tr>
+                            <tr>
+                                <td><strong>The Odin Project</strong></td>
+                                <td>Free curriculum</td>
+                                <td>Full-stack JavaScript / Ruby</td>
+                            </tr>
+                            <tr>
+                                <td><strong>CS50 (Harvard)</strong></td>
+                                <td>Free course</td>
+                                <td>Computer science fundamentals</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Exercism.org</strong></td>
+                                <td>Practice problems</td>
+                                <td>All three languages — mentored exercises</td>
+                            </tr>
+                            <tr>
+                                <td><strong>LeetCode / HackerRank</strong></td>
+                                <td>Coding challenges</td>
+                                <td>Algorithm practice, interview prep</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Microsoft Learn</strong></td>
+                                <td>Free tutorials</td>
+                                <td>C#, .NET, Azure — official and excellent</td>
+                            </tr>
+                            <tr>
+                                <td><strong>MDN Web Docs</strong></td>
+                                <td>Reference</td>
+                                <td>JavaScript — the best reference on the web</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Real Python</strong></td>
+                                <td>Tutorials</td>
+                                <td>Python — in-depth articles on every topic</td>
+                            </tr>
+                            <tr>
+                                <td><strong>GitHub</strong></td>
+                                <td>Portfolio + community</td>
+                                <td>Host your projects, contribute to open source</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ The #1 Way to Improve: Build Things</h4>
+                    <p>Tutorials teach you syntax. <strong>Building projects teaches you programming.</strong> After this course, pick a project that interests you and build it. Get stuck. Google it. Fix it. That cycle — build, break, fix — is how every professional developer learned their craft. Your capstone project is proof that you can do it.</p>
+                </div>
+            </section>
+
+            <!-- Course Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Course Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎓 What You've Accomplished</h3>
+                    <p>Over 27 lessons and 9 modules, you've gone from "Hello, World!" to building a complete, data-persistent application. Here's everything you now know:</p>
+                    <ul>
+                        <li><strong>Module 1:</strong> Set up three development environments and wrote your first programs</li>
+                        <li><strong>Module 2:</strong> Mastered variables, data types, and type conversion</li>
+                        <li><strong>Module 3:</strong> Controlled program flow with conditionals, loops, and logical operators</li>
+                        <li><strong>Module 4:</strong> Organized code into reusable functions with parameters, return values, and scope</li>
+                        <li><strong>Module 5:</strong> Stored and processed data with arrays, dictionaries, and iteration</li>
+                        <li><strong>Module 6:</strong> Modeled real-world concepts with classes, inheritance, and polymorphism</li>
+                        <li><strong>Module 7:</strong> Built robust code with error handling, custom exceptions, and debugging</li>
+                        <li><strong>Module 8:</strong> Connected to the outside world with file I/O, JSON, and API requests</li>
+                        <li><strong>Module 9:</strong> Planned, built, and reviewed a complete capstone project</li>
+                    </ul>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🌟 The Three-Language Advantage</h3>
+                    <p>By learning three languages simultaneously, you gained something most beginners don't have: <strong>language-agnostic thinking</strong>. You know that a <code>for</code> loop is a <code>for</code> loop whether it uses Python's <code>for x in items:</code>, JavaScript's <code>for (let x of items)</code>, or C#'s <code>foreach (var x in items)</code>. The syntax is different, but the concept is identical.</p>
+                    <p>This means picking up a fourth language — Java, Go, Rust, TypeScript, Ruby, Swift — will be dramatically easier. You already know the concepts. You just need to learn the syntax. <strong>That's a superpower.</strong></p>
+                </div>
+
+                <h3>🚀 Your Journey Continues</h3>
+                <p>This course gave you the foundation. What you build on it is up to you. Whether you become a web developer, a data scientist, a game designer, or an automation wizard, the fundamentals you learned here will serve you in every line of code you write.</p>
+
+                <p><strong>Thank you for completing Programming Fundamentals: Three Language Approach.</strong> Now go build something amazing. 🎉</p>
+
+                <!-- Final Quiz -->
+                <div class="card quiz-container">
+                    <h3>🎯 Final Reflection</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What should code comments explain?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Comments that restate the code add clutter without value. The code already tells you WHAT it does.">A) What each line of code does</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Good code is self-documenting through clear naming — it tells you WHAT it does. Comments should explain WHY a decision was made, why a particular approach was chosen, or what non-obvious behavior to expect. 'Default to General because older JSON files lack this field' is useful. 'Set category to General' is not.">B) Why the code was written this way</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Credits belong in file headers or README files, not sprinkled through the code.">C) Who wrote each function</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 2:</strong> What is refactoring?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Adding features changes behavior. Refactoring specifically means the program works the same before and after.">A) Adding new features to a program</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Refactoring is restructuring existing code to improve readability, reduce duplication, or simplify complexity — WITHOUT changing what the program does. The tests should pass before and after refactoring. Examples: extracting a helper function, renaming variables, flattening nested conditionals with early returns.">B) Improving code structure without changing behavior</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Rewriting from scratch is the opposite of refactoring. Refactoring improves code incrementally through small, safe changes.">C) Rewriting the program from scratch</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 3:</strong> What's the biggest advantage of learning three languages at once?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Knowing more languages helps, but the real advantage is understanding the concepts that underlie ALL languages.">A) You can list three languages on your resume</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="When you learn concepts across multiple languages, you understand that a 'for loop' or a 'class' isn't tied to one syntax — it's a universal programming concept. This language-agnostic thinking means you can pick up any new language quickly because you already understand the underlying patterns. Syntax is just vocabulary; concepts are the grammar.">B) You understand programming concepts independent of any single language</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Which language is 'best' depends entirely on what you're building. The three-language approach teaches you that the CONCEPTS matter more than the language.">C) You can pick the best language for every task</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_26.html" class="prev-lesson">← Previous: Building Your Project</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <span class="next-lesson" style="opacity: 0.5;">🎓 Course Complete!</span>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>
