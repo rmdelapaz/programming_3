@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Write, save, and run your first program in Python, JavaScript, and C# — the classic Hello World.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 1.3: Hello World in Three Languages - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 1</a></li>
+            <li aria-current="page">Lesson 1.3: Hello World in Three Languages</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🌍 Lesson 1.3: Hello World in Three Languages</h1>
+                <p class="lead">Write your very first program — the classic "Hello, World!" — in Python, JavaScript, and C#.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Create a new code file in VS Code for each language</li>
+                        <li>Write a "Hello, World!" program in Python, JavaScript, and C#</li>
+                        <li>Run each program from the terminal</li>
+                        <li>Identify the basic syntax differences between the three languages</li>
+                        <li>Add comments to your code</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 45 minutes</p>
+                    <p><strong>Project:</strong> Three working "Hello World" programs you can run</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary><h2 style="display: inline; margin: 0;">📑 In This Lesson</h2></summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#why-hello-world" class="toc-link">Why "Hello, World!"?</a></li>
+                        <li><a href="#project-setup" class="toc-link">Project Setup</a></li>
+                        <li><a href="#hello-python" class="toc-link">Hello World in Python</a></li>
+                        <li><a href="#hello-javascript" class="toc-link">Hello World in JavaScript</a></li>
+                        <li><a href="#hello-csharp" class="toc-link">Hello World in C#</a></li>
+                        <li><a href="#side-by-side" class="toc-link">Side-by-Side Comparison</a></li>
+                        <li><a href="#comments" class="toc-link">Comments in Code</a></li>
+                        <li><a href="#exercises" class="toc-link">Exercises</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Why Hello World -->
+            <section id="why-hello-world" class="lesson-section">
+                <h2>Why "Hello, World!"?</h2>
+                <p>"Hello, World!" is the traditional first program in almost every programming language. It's been the starting point since the 1970s, and there's a good reason: it's the <strong>simplest possible program that produces visible output</strong>.</p>
+                <p>Writing "Hello, World!" tests that your entire setup works: your editor saves the file correctly, your runtime is installed, and your terminal can find and execute the program. If "Hello, World!" works, you're ready to build anything.</p>
+            </section>
+
+            <!-- Project Setup -->
+            <section id="project-setup" class="lesson-section">
+                <h2>Project Setup</h2>
+                <p>Let's create a folder to hold all your course exercises. This keeps your work organized.</p>
+
+                <ol>
+                    <li>Open VS Code</li>
+                    <li>Open the built-in terminal: <kbd>Ctrl</kbd> + <kbd>`</kbd> (backtick)</li>
+                    <li>Create a project folder and navigate into it:</li>
+                </ol>
+
+                <pre><code># Create a folder for the course (pick a location you'll remember)
+mkdir programming-fundamentals
+cd programming-fundamentals
+
+# Create a subfolder for this lesson
+mkdir lesson-03-hello-world
+cd lesson-03-hello-world</code></pre>
+
+                <p>Now open this folder in VS Code: <strong>File → Open Folder</strong> and select <code>lesson-03-hello-world</code>.</p>
+
+                <div class="card card-success">
+                    <h4>✅ Good Habit: One Folder Per Lesson</h4>
+                    <p>Creating a separate folder for each lesson keeps your files organized. You'll thank yourself later when you want to find a specific exercise.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Walk through folder creation live. Some students may not know how <code>mkdir</code> and <code>cd</code> work — briefly explain that <code>mkdir</code> creates a folder and <code>cd</code> changes into it. If you prefer, students can create the folder using their OS file manager instead. The important thing is that they have VS Code open with a known folder.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Hello World in Python -->
+            <section id="hello-python" class="lesson-section">
+                <h2>🐍 Hello World in Python</h2>
+
+                <h3>Step 1: Create the File</h3>
+                <p>In VS Code, create a new file called <code>hello.py</code>. The <code>.py</code> extension tells VS Code (and Python) that this is a Python file.</p>
+
+                <h3>Step 2: Write the Code</h3>
+                <pre><code class="language-python">print("Hello, World!")</code></pre>
+
+                <p>That's it. One line. Python's <code>print()</code> function displays text to the terminal. The text inside the quotes is called a <strong>string</strong>.</p>
+
+                <h3>Step 3: Run It</h3>
+                <p>In the VS Code terminal, type:</p>
+                <pre><code>python hello.py</code></pre>
+
+                <div class="card card-output">
+                    <h4>Output:</h4>
+                    <pre><code>Hello, World!</code></pre>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 What Just Happened?</h4>
+                    <p>You told the Python runtime to read <code>hello.py</code>. Python read the single instruction (<code>print("Hello, World!")</code>) and executed it, which displayed the text in your terminal. That's the basic cycle: <strong>write → save → run → see output</strong>.</p>
+                </div>
+            </section>
+
+            <!-- Hello World in JavaScript -->
+            <section id="hello-javascript" class="lesson-section">
+                <h2>⚡ Hello World in JavaScript</h2>
+
+                <h3>Step 1: Create the File</h3>
+                <p>Create a new file called <code>hello.js</code>. The <code>.js</code> extension marks it as JavaScript.</p>
+
+                <h3>Step 2: Write the Code</h3>
+                <pre><code class="language-javascript">console.log("Hello, World!");</code></pre>
+
+                <p>JavaScript uses <code>console.log()</code> instead of <code>print()</code>. Notice the <strong>semicolon</strong> at the end — JavaScript uses semicolons to mark the end of a statement (Python doesn't need them).</p>
+
+                <h3>Step 3: Run It</h3>
+                <p>In the terminal:</p>
+                <pre><code>node hello.js</code></pre>
+
+                <div class="card card-output">
+                    <h4>Output:</h4>
+                    <pre><code>Hello, World!</code></pre>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ "console.log" — Why That Name?</h4>
+                    <p>JavaScript was designed for web browsers, where output goes to the browser's <strong>console</strong> (a developer tool). The <code>log()</code> part means "write a log entry." The name stuck even when JavaScript moved to the terminal with Node.js.</p>
+                </div>
+            </section>
+
+            <!-- Hello World in C# -->
+            <section id="hello-csharp" class="lesson-section">
+                <h2>🔷 Hello World in C#</h2>
+                <p>C# works a little differently from Python and JavaScript. Instead of just creating a single file, you create a <strong>project</strong> using the <code>dotnet</code> command.</p>
+
+                <h3>Step 1: Create a C# Project</h3>
+                <p>In the terminal, run:</p>
+                <pre><code>dotnet new console -n HelloWorld</code></pre>
+
+                <p>This creates a new folder called <code>HelloWorld</code> with a project file and a starter code file.</p>
+
+                <h3>Step 2: Look at the Code</h3>
+                <p>Open the file <code>HelloWorld/Program.cs</code> in VS Code. You'll see:</p>
+                <pre><code class="language-csharp">// See https://aka.ms/new-console-template for more information
+Console.WriteLine("Hello, World!");</code></pre>
+
+                <p>Modern C# (using "top-level statements") is surprisingly concise! <code>Console.WriteLine()</code> is C#'s version of <code>print()</code>.</p>
+
+                <div class="card card-info">
+                    <h4>💡 Console.WriteLine vs Console.Write</h4>
+                    <p><code>Console.WriteLine()</code> prints text and moves to a new line afterward. <code>Console.Write()</code> prints text but stays on the same line. For now, use <code>WriteLine()</code>.</p>
+                </div>
+
+                <h3>Step 3: Run It</h3>
+                <p>Navigate into the project folder and run:</p>
+                <pre><code>cd HelloWorld
+dotnet run</code></pre>
+
+                <div class="card card-output">
+                    <h4>Output:</h4>
+                    <pre><code>Hello, World!</code></pre>
+                </div>
+
+                <div class="card card-accent">
+                    <h4>📖 Why does C# need a project?</h4>
+                    <p style="color:#fff;">C# is a <strong>compiled</strong> language. Before your code runs, it's transformed into a more efficient format. The project file (<code>.csproj</code>) tells the compiler how to build your program. Python and JavaScript are <strong>interpreted</strong> — they run your source code directly.</p>
+                </div>
+            </section>
+
+            <!-- Side by Side Comparison -->
+            <section id="side-by-side" class="lesson-section">
+                <h2>Side-by-Side Comparison</h2>
+                <p>Now let's see all three together. Click <strong>⊞ All</strong> to compare them side by side:</p>
+
+                <div class="code-tabs" data-title="Hello World">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">print("Hello, World!")</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">console.log("Hello, World!");</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">Console.WriteLine("Hello, World!");</code></pre>
+                    </div>
+                </div>
+
+                <h3>What's the Same?</h3>
+                <ul>
+                    <li>All three use a <strong>function</strong> to display text: <code>print()</code>, <code>console.log()</code>, <code>Console.WriteLine()</code></li>
+                    <li>The text is wrapped in <strong>quotes</strong> (a string)</li>
+                    <li>The text is placed inside <strong>parentheses</strong> (function arguments)</li>
+                </ul>
+
+                <h3>What's Different?</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Print function</td>
+                                <td><code>print()</code></td>
+                                <td><code>console.log()</code></td>
+                                <td><code>Console.WriteLine()</code></td>
+                            </tr>
+                            <tr>
+                                <td>Line ending</td>
+                                <td>Nothing needed</td>
+                                <td>Semicolon <code>;</code></td>
+                                <td>Semicolon <code>;</code></td>
+                            </tr>
+                            <tr>
+                                <td>File extension</td>
+                                <td><code>.py</code></td>
+                                <td><code>.js</code></td>
+                                <td><code>.cs</code></td>
+                            </tr>
+                            <tr>
+                                <td>Run command</td>
+                                <td><code>python hello.py</code></td>
+                                <td><code>node hello.js</code></td>
+                                <td><code>dotnet run</code></td>
+                            </tr>
+                            <tr>
+                                <td>Project required?</td>
+                                <td>No — single file</td>
+                                <td>No — single file</td>
+                                <td>Yes — uses <code>dotnet new</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Comments -->
+            <section id="comments" class="lesson-section">
+                <h2>Comments in Code</h2>
+                <p><strong>Comments</strong> are notes you write in your code that the computer ignores. They're for humans — your future self, your teammates, your instructor. Good comments explain <em>why</em> you did something, not <em>what</em> the code does (the code itself shows what).</p>
+
+                <div class="code-tabs" data-title="Single-Line Comments">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># This is a comment in Python
+# Comments start with the hash symbol (#)
+print("Hello, World!")  # You can also put comments at the end of a line</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// This is a comment in JavaScript
+// Comments start with two forward slashes (//)
+console.log("Hello, World!"); // End-of-line comment</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// This is a comment in C#
+// Same syntax as JavaScript — two forward slashes
+Console.WriteLine("Hello, World!"); // End-of-line comment</code></pre>
+                    </div>
+                </div>
+
+                <p>Notice that JavaScript and C# share the same comment syntax (<code>//</code>), while Python uses <code>#</code>. All three also support <strong>multi-line comments</strong>:</p>
+
+                <div class="code-tabs" data-title="Multi-Line Comments">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">"""
+This is a multi-line comment in Python.
+It uses triple quotes (single or double).
+Technically it's a multi-line string,
+but it's commonly used as a comment.
+"""
+print("Hello, World!")</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">/*
+This is a multi-line comment in JavaScript.
+It starts with /* and ends with */
+Everything between is ignored.
+*/
+console.log("Hello, World!");</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">/*
+This is a multi-line comment in C#.
+Same syntax as JavaScript.
+Starts with /* and ends with */
+*/
+Console.WriteLine("Hello, World!");</code></pre>
+                    </div>
+                </div>
+
+                <blockquote>
+                    <strong>💡 Key Pattern:</strong> JavaScript and C# are more similar to each other than to Python. You'll see this pattern again and again. Both use <code>//</code> for comments, <code>;</code> for line endings, and <code>{}</code> for code blocks (coming in later lessons).
+                </blockquote>
+            </section>
+
+            <!-- Exercises -->
+            <section id="exercises" class="lesson-section">
+                <h2>Exercises</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 1: Modify the Message</h3>
+                    <p><strong>Objective:</strong> Change "Hello, World!" to display your own custom message.</p>
+                    <ol>
+                        <li>Open each of your three files (<code>hello.py</code>, <code>hello.js</code>, <code>HelloWorld/Program.cs</code>)</li>
+                        <li>Change the text inside the quotes to say something else (e.g., your name, a favorite quote)</li>
+                        <li>Save and run each one to see your new output</li>
+                    </ol>
+
+                    <details>
+                        <summary>✅ Example Solution</summary>
+                        <div class="code-tabs" data-title="Custom Message">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">print("My name is Alex and I'm learning to code!")</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">console.log("My name is Alex and I'm learning to code!");</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">Console.WriteLine("My name is Alex and I'm learning to code!");</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 2: Multiple Lines of Output</h3>
+                    <p><strong>Objective:</strong> Print three separate lines of text in each language.</p>
+                    <ol>
+                        <li>Create three new files: <code>multiline.py</code>, <code>multiline.js</code>, and update <code>Program.cs</code></li>
+                        <li>Write three print/log/writeline statements — one for each line</li>
+                        <li>Run each and verify you see three lines of output</li>
+                    </ol>
+
+                    <details>
+                        <summary>💡 Hint</summary>
+                        <p>Just call the print function three times in a row! Each call on its own line.</p>
+                    </details>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Multiple Lines">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">print("Line 1: I'm learning Python!")
+print("Line 2: I'm learning JavaScript!")
+print("Line 3: I'm learning C#!")</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">console.log("Line 1: I'm learning Python!");
+console.log("Line 2: I'm learning JavaScript!");
+console.log("Line 3: I'm learning C#!");</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">Console.WriteLine("Line 1: I'm learning Python!");
+Console.WriteLine("Line 2: I'm learning JavaScript!");
+Console.WriteLine("Line 3: I'm learning C#!");</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 3: Add Comments</h3>
+                    <p><strong>Objective:</strong> Add a comment above each print statement explaining what it does.</p>
+                    <ol>
+                        <li>Take your code from Exercise 2</li>
+                        <li>Add a comment above each line using the correct syntax for each language</li>
+                        <li>Run the program again — the comments should not appear in the output</li>
+                    </ol>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Commented Code">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python"># Display first language
+print("Line 1: I'm learning Python!")
+# Display second language
+print("Line 2: I'm learning JavaScript!")
+# Display third language
+print("Line 3: I'm learning C#!")</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">// Display first language
+console.log("Line 1: I'm learning Python!");
+// Display second language
+console.log("Line 2: I'm learning JavaScript!");
+// Display third language
+console.log("Line 3: I'm learning C#!");</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">// Display first language
+Console.WriteLine("Line 1: I'm learning Python!");
+// Display second language
+Console.WriteLine("Line 2: I'm learning JavaScript!");
+// Display third language
+Console.WriteLine("Line 3: I'm learning C#!");</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Exercise 1 is the priority — make sure every student gets at least this one working. It confirms their environment is functional. Exercise 2 reinforces the write-save-run cycle. Exercise 3 introduces commenting, which you'll want students using from day one. If time is short, assign Exercise 3 as homework. For advanced students who finish early, challenge them to print an ASCII art picture using multiple print statements.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>You wrote and ran your first programs in <strong>three languages</strong> — that's a real accomplishment!</li>
+                        <li>The cycle is always: <strong>write → save → run → see output</strong></li>
+                        <li>Python uses <code>print()</code>, JavaScript uses <code>console.log()</code>, C# uses <code>Console.WriteLine()</code></li>
+                        <li>JavaScript and C# need <strong>semicolons</strong>; Python doesn't</li>
+                        <li>C# requires a <strong>project</strong> (<code>dotnet new console</code>); Python and JavaScript run single files</li>
+                        <li>Comments (<code>#</code> in Python, <code>//</code> in JS/C#) are ignored by the computer — they're notes for humans</li>
+                    </ul>
+                </div>
+
+                <h3>🚀 What's Next?</h3>
+                <p>You can now make the computer say anything you want. In the next module, we'll teach it to <strong>remember things</strong> — with <strong>variables</strong>. You'll learn how all three languages store and name data.</p>
+
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 Module 1 Complete!</h3>
+                    <p style="color: #fff;">You've set up your tools and written your first programs. The foundation is laid — let's build on it!</p>
+                </div>
+
+                <!-- Quiz -->
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Check</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> Which language requires you to create a project before writing code?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Python runs single files directly — no project setup needed.">A) Python</button>
+                            <button class="quiz-option" data-correct="false" data-hint="JavaScript also runs single files with Node.js.">B) JavaScript</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="C# uses 'dotnet new console' to create a project with a .csproj file and Program.cs before you can run code.">C) C#</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 2:</strong> What symbol does Python use for single-line comments?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="// is used in JavaScript and C#, not Python.">A) //</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Python uses the hash symbol (#) for single-line comments. Everything after # on that line is ignored.">B) #</button>
+                            <button class="quiz-option" data-correct="false" data-hint="/* */ is the multi-line comment syntax in JavaScript and C#.">C) /* */</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 3:</strong> Which two languages share the same comment syntax?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Python uses # while JavaScript uses //.">A) Python and JavaScript</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Both JavaScript and C# use // for single-line comments and /* */ for multi-line comments.">B) JavaScript and C#</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Python uses # while C# uses //.">C) Python and C#</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_02.html" class="prev-lesson">← Previous: Setting Up Your Environment</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_04.html" class="next-lesson">Next: Variables and Constants →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

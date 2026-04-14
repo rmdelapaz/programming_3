@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Master if/else conditionals and switch statements in Python, JavaScript, and C# — learn how programs make decisions.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 3.1: Conditionals — if, else, and switch - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 3</a></li>
+            <li aria-current="page">Lesson 3.1: Conditionals — if, else, and switch</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🔀 Lesson 3.1: Conditionals — if, else, and switch</h1>
+                <p class="lead">Programs that can make decisions are programs that can do real work. Time to teach your code to think.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Write <code>if</code>, <code>else if</code>/<code>elif</code>, and <code>else</code> blocks in all three languages</li>
+                        <li>Understand the difference between indentation-based (Python) and brace-based (JS/C#) code blocks</li>
+                        <li>Use comparison operators (<code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>)</li>
+                        <li>Write <code>switch</code>/<code>match</code> statements for multi-way branching</li>
+                        <li>Use the ternary operator for quick inline decisions</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 45 minutes</p>
+                    <p><strong>Project:</strong> A grade calculator that converts numeric scores to letter grades</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary><h2 style="display: inline; margin: 0;">📑 In This Lesson</h2></summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#basic-if" class="toc-link">The Basic if Statement</a></li>
+                        <li><a href="#if-else" class="toc-link">if / else</a></li>
+                        <li><a href="#chained-conditions" class="toc-link">Chained Conditions (elif / else if)</a></li>
+                        <li><a href="#indentation-vs-braces" class="toc-link">Indentation vs. Braces</a></li>
+                        <li><a href="#comparison-operators" class="toc-link">Comparison Operators</a></li>
+                        <li><a href="#switch-match" class="toc-link">Switch / Match Statements</a></li>
+                        <li><a href="#ternary" class="toc-link">The Ternary Operator</a></li>
+                        <li><a href="#exercises" class="toc-link">Exercises</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Basic if -->
+            <section id="basic-if" class="lesson-section">
+                <h2>The Basic if Statement</h2>
+                <p>An <code>if</code> statement runs a block of code <strong>only when a condition is true</strong>. If the condition is false, the block is skipped entirely.</p>
+
+                <div class="mermaid">
+                    graph TD
+                    A["Start"] --> B{"Is temperature<br/>> 30?"}
+                    B -->|Yes| C["Print 'It's hot!'"]
+                    B -->|No| D["Skip"]
+                    C --> E["Continue"]
+                    D --> E
+                    style B fill:#f59e0b,stroke:#d97706,color:#fff,stroke-width:2px
+                    style C fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px
+                </div>
+
+                <div class="code-tabs" data-title="Basic if Statement">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python: colon + indentation (no braces!)
+temperature = 35
+
+if temperature > 30:
+    print("It's hot outside!")
+    print("Stay hydrated!")
+
+print("This always runs — it's outside the if block")</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript: parentheses around condition + curly braces
+let temperature = 35;
+
+if (temperature > 30) {
+    console.log("It's hot outside!");
+    console.log("Stay hydrated!");
+}
+
+console.log("This always runs — it's outside the if block");</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C#: same as JavaScript — parentheses + curly braces
+int temperature = 35;
+
+if (temperature > 30)
+{
+    Console.WriteLine("It's hot outside!");
+    Console.WriteLine("Stay hydrated!");
+}
+
+Console.WriteLine("This always runs — it's outside the if block");</code></pre>
+                    </div>
+                </div>
+
+                <h3>Syntax Differences at a Glance</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Parentheses around condition</td>
+                                <td>Optional (not idiomatic)</td>
+                                <td>Required</td>
+                                <td>Required</td>
+                            </tr>
+                            <tr>
+                                <td>Code block defined by</td>
+                                <td>Colon + indentation</td>
+                                <td>Curly braces <code>{}</code></td>
+                                <td>Curly braces <code>{}</code></td>
+                            </tr>
+                            <tr>
+                                <td>Semicolons</td>
+                                <td>None</td>
+                                <td>After each statement</td>
+                                <td>After each statement</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- if / else -->
+            <section id="if-else" class="lesson-section">
+                <h2>if / else</h2>
+                <p>Add an <code>else</code> block to handle the case when the condition is <strong>false</strong>:</p>
+
+                <div class="code-tabs" data-title="if / else">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">age = 16
+
+if age >= 18:
+    print("You can vote!")
+else:
+    print(f"You can vote in {18 - age} year(s).")</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">let age = 16;
+
+if (age >= 18) {
+    console.log("You can vote!");
+} else {
+    console.log(`You can vote in ${18 - age} year(s).`);
+}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">int age = 16;
+
+if (age >= 18)
+{
+    Console.WriteLine("You can vote!");
+}
+else
+{
+    Console.WriteLine($"You can vote in {18 - age} year(s).");
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Chained Conditions -->
+            <section id="chained-conditions" class="lesson-section">
+                <h2>Chained Conditions (elif / else if)</h2>
+                <p>When you need to check <strong>multiple conditions</strong>, chain them together. The first true condition wins — the rest are skipped.</p>
+
+                <div class="mermaid">
+                    graph TD
+                    A["Score = 85"] --> B{"score >= 90?"}
+                    B -->|No| C{"score >= 80?"}
+                    B -->|Yes| D["Grade: A"]
+                    C -->|No| E{"score >= 70?"}
+                    C -->|Yes| F["Grade: B ✓"]
+                    E -->|No| G["Grade: F"]
+                    E -->|Yes| H["Grade: C"]
+                    style F fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px
+                </div>
+
+                <div class="code-tabs" data-title="Chained Conditions">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">score = 85
+
+if score >= 90:
+    grade = "A"
+elif score >= 80:
+    grade = "B"
+elif score >= 70:
+    grade = "C"
+elif score >= 60:
+    grade = "D"
+else:
+    grade = "F"
+
+print(f"Score: {score} → Grade: {grade}")  # Score: 85 → Grade: B</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">let score = 85;
+let grade;
+
+if (score >= 90) {
+    grade = "A";
+} else if (score >= 80) {
+    grade = "B";
+} else if (score >= 70) {
+    grade = "C";
+} else if (score >= 60) {
+    grade = "D";
+} else {
+    grade = "F";
+}
+
+console.log(`Score: ${score} → Grade: ${grade}`);</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">int score = 85;
+string grade;
+
+if (score >= 90)
+{
+    grade = "A";
+}
+else if (score >= 80)
+{
+    grade = "B";
+}
+else if (score >= 70)
+{
+    grade = "C";
+}
+else if (score >= 60)
+{
+    grade = "D";
+}
+else
+{
+    grade = "F";
+}
+
+Console.WriteLine($"Score: {score} → Grade: {grade}");</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Python's <code>elif</code> vs. <code>else if</code></h4>
+                    <p>Python uses the unique keyword <code>elif</code> (one word). JavaScript and C# use <code>else if</code> (two words). Writing <code>else if</code> in Python is a syntax error. Writing <code>elif</code> in JS or C# is also an error. Watch out when switching between languages!</p>
+                </div>
+            </section>
+
+            <!-- Indentation vs Braces -->
+            <section id="indentation-vs-braces" class="lesson-section">
+                <h2>Indentation vs. Braces</h2>
+                <p>This is one of the <strong>biggest visible differences</strong> between Python and the other two languages. It affects how you write <em>every</em> block of code.</p>
+
+                <div class="code-tabs" data-title="Code Blocks">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python: indentation IS the code block
+# The colon (:) starts the block
+# Everything indented one level deeper belongs to the block
+
+if True:
+    print("Inside the if")     # ← indented: part of if
+    print("Still inside")      # ← indented: part of if
+print("Outside the if")        # ← not indented: NOT part of if
+
+# WRONG — inconsistent indentation:
+# if True:
+#     print("line 1")
+#   print("line 2")    # IndentationError!
+
+# Use 4 spaces per level (Python convention)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript: braces define the block
+// Indentation is for readability only (not enforced)
+
+if (true) {
+    console.log("Inside the if");   // inside braces
+    console.log("Still inside");    // inside braces
+}
+console.log("Outside the if");      // after closing brace
+
+// This works but is UGLY (don't do this):
+if (true) {
+console.log("no indentation");
+console.log("hard to read");
+}
+
+// Use 2 or 4 spaces per level (team preference)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C#: braces define the block (same as JavaScript)
+// C# convention: opening brace on its own line
+
+if (true)
+{
+    Console.WriteLine("Inside the if");
+    Console.WriteLine("Still inside");
+}
+Console.WriteLine("Outside the if");
+
+// Alternate style (opening brace on same line):
+// if (true) {
+//     Console.WriteLine("Also valid");
+// }
+// Both styles work — be consistent within a project</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Why Python Uses Indentation</h4>
+                    <p>Python's creator believed that code should look the way it works. Since good programmers indent their code anyway, why not make the indentation <em>mean</em> something? This forces everyone to write readable code — there are no "ugly but valid" Python programs. The trade-off: a misplaced space can change your program's behavior.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>This is a crucial section for true beginners. Show a side-by-side comparison where Python code has a subtle indentation bug (one line under-indented) that changes behavior. Then show the JS/C# equivalent where braces make the block boundary explicit. Have students configure their editors to show whitespace characters and set tab = 4 spaces. Most beginners' first Python bugs are indentation-related.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Comparison Operators -->
+            <section id="comparison-operators" class="lesson-section">
+                <h2>Comparison Operators</h2>
+                <p>Comparison operators produce <strong>boolean</strong> values — they're how you build conditions.</p>
+
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Operator</th>
+                                <th>Meaning</th>
+                                <th>Example</th>
+                                <th>Result</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>==</code></td>
+                                <td>Equal to</td>
+                                <td><code>5 == 5</code></td>
+                                <td><code>True</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>!=</code></td>
+                                <td>Not equal to</td>
+                                <td><code>5 != 3</code></td>
+                                <td><code>True</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>&gt;</code></td>
+                                <td>Greater than</td>
+                                <td><code>5 > 3</code></td>
+                                <td><code>True</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>&lt;</code></td>
+                                <td>Less than</td>
+                                <td><code>3 < 5</code></td>
+                                <td><code>True</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>&gt;=</code></td>
+                                <td>Greater than or equal</td>
+                                <td><code>5 >= 5</code></td>
+                                <td><code>True</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>&lt;=</code></td>
+                                <td>Less than or equal</td>
+                                <td><code>3 <= 5</code></td>
+                                <td><code>True</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="code-tabs" data-title="Equality Gotchas">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python: == compares values, 'is' compares identity
+print(5 == 5.0)        # True (same value)
+print(5 is 5.0)        # False (different types/objects)
+print("hello" == "hello")  # True
+
+# Python also lets you chain comparisons!
+age = 25
+print(18 <= age <= 65)  # True — is age between 18 and 65?
+# This is unique to Python and very readable</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript: === (strict) vs == (loose) — ALWAYS use ===
+console.log(5 === 5);      // true
+console.log(5 === "5");    // false (different types)
+console.log(5 == "5");     // true! (loose: converts, then compares)
+console.log(0 == false);   // true! (loose equality strikes again)
+console.log(0 === false);  // false (strict: different types)
+
+// Rule: ALWAYS use === and !== in JavaScript
+// The only exception: checking for null/undefined
+console.log(null == undefined);   // true
+console.log(null === undefined);  // false</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C#: == works correctly (no loose equality issue)
+Console.WriteLine(5 == 5);          // True
+// Console.WriteLine(5 == "5");     // Compile error! Can't compare
+Console.WriteLine("hello" == "hello");  // True
+
+// String comparison is case-sensitive by default
+Console.WriteLine("Hello" == "hello");  // False
+
+// Case-insensitive comparison:
+Console.WriteLine(string.Equals("Hello", "hello",
+    StringComparison.OrdinalIgnoreCase));  // True</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Switch / Match -->
+            <section id="switch-match" class="lesson-section">
+                <h2>Switch / Match Statements</h2>
+                <p>When you need to check one value against <strong>many specific options</strong>, a switch (or match) statement is cleaner than a long chain of <code>if/elif/else</code>.</p>
+
+                <div class="code-tabs" data-title="Switch / Match">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python 3.10+: match/case (structural pattern matching)
+day = "Monday"
+
+match day:
+    case "Monday":
+        print("Start of the work week")
+    case "Friday":
+        print("Almost weekend!")
+    case "Saturday" | "Sunday":
+        print("Weekend!")
+    case _:
+        print("Midweek day")
+
+# The _ is the wildcard — matches anything (like 'default')
+# The | means "or" — matches either pattern
+
+# Before Python 3.10, use if/elif chains instead</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript: classic switch/case
+let day = "Monday";
+
+switch (day) {
+    case "Monday":
+        console.log("Start of the work week");
+        break;
+    case "Friday":
+        console.log("Almost weekend!");
+        break;
+    case "Saturday":
+    case "Sunday":
+        console.log("Weekend!");
+        break;
+    default:
+        console.log("Midweek day");
+}
+
+// WARNING: forgetting 'break' causes "fall-through"
+// — execution continues into the next case!</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C#: switch with no fall-through (safer than JavaScript)
+string day = "Monday";
+
+switch (day)
+{
+    case "Monday":
+        Console.WriteLine("Start of the work week");
+        break;
+    case "Friday":
+        Console.WriteLine("Almost weekend!");
+        break;
+    case "Saturday":
+    case "Sunday":
+        Console.WriteLine("Weekend!");
+        break;
+    default:
+        Console.WriteLine("Midweek day");
+        break;
+}
+
+// C# switch expressions (modern, concise):
+string message = day switch
+{
+    "Monday" => "Start of the work week",
+    "Friday" => "Almost weekend!",
+    "Saturday" or "Sunday" => "Weekend!",
+    _ => "Midweek day"
+};
+Console.WriteLine(message);</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ JavaScript's Fall-Through Trap</h4>
+                    <p>In JavaScript, if you forget the <code>break</code> statement, execution "falls through" to the next case. This is a common bug source. C# prevents this — it requires <code>break</code> (or <code>return</code>) after each case. Python's <code>match/case</code> doesn't have this problem at all.</p>
+                </div>
+            </section>
+
+            <!-- Ternary Operator -->
+            <section id="ternary" class="lesson-section">
+                <h2>The Ternary Operator</h2>
+                <p>For simple if/else decisions that just pick between two values, all three languages have a compact one-line syntax:</p>
+
+                <div class="code-tabs" data-title="Ternary Operator">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python: value_if_true if condition else value_if_false
+age = 20
+status = "adult" if age >= 18 else "minor"
+print(status)  # adult
+
+# Works in f-strings too:
+print(f"You are {'old enough' if age >= 21 else 'too young'} to drink.")
+
+# Don't nest ternaries — they get unreadable fast
+# bad = "A" if x > 90 else "B" if x > 80 else "C"  # confusing!</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript: condition ? value_if_true : value_if_false
+let age = 20;
+let status = age >= 18 ? "adult" : "minor";
+console.log(status);  // adult
+
+// Works in template literals too:
+console.log(`You are ${age >= 21 ? "old enough" : "too young"} to drink.`);
+
+// Don't nest ternaries:
+// let bad = x > 90 ? "A" : x > 80 ? "B" : "C";  // hard to read</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C#: same as JavaScript — condition ? true : false
+int age = 20;
+string status = age >= 18 ? "adult" : "minor";
+Console.WriteLine(status);  // adult
+
+// Works in interpolation:
+Console.WriteLine($"You are {(age >= 21 ? "old enough" : "too young")} to drink.");
+
+// Note: C# requires parentheses around ternary in interpolation</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ When to Use the Ternary</h4>
+                    <p>Use the ternary for <strong>simple, short</strong> either/or assignments. If the logic is complex or either branch is more than a short expression, use a regular <code>if/else</code>. Code readability always wins over brevity.</p>
+                </div>
+            </section>
+
+            <!-- Exercises -->
+            <section id="exercises" class="lesson-section">
+                <h2>Exercises</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 1: Grade Calculator</h3>
+                    <p><strong>Objective:</strong> Write a program that converts a numeric score (0–100) to a letter grade with +/- modifiers.</p>
+                    <ul>
+                        <li>90–100: A, 80–89: B, 70–79: C, 60–69: D, below 60: F</li>
+                        <li>Bonus: Add + and - modifiers (e.g., 87–89 = B+, 80–82 = B-)</li>
+                    </ul>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Grade Calculator">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">score = 87
+
+if score >= 90:
+    letter = "A"
+elif score >= 80:
+    letter = "B"
+elif score >= 70:
+    letter = "C"
+elif score >= 60:
+    letter = "D"
+else:
+    letter = "F"
+
+# Add +/- modifier
+if letter != "F":
+    last_digit = score % 10
+    if last_digit >= 7 or score >= 97:
+        modifier = "+"
+    elif last_digit <= 2 and score < 97:
+        modifier = "-"
+    else:
+        modifier = ""
+else:
+    modifier = ""
+
+print(f"Score: {score} → Grade: {letter}{modifier}")
+# Score: 87 → Grade: B+</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">let score = 87;
+let letter;
+
+if (score >= 90) {
+    letter = "A";
+} else if (score >= 80) {
+    letter = "B";
+} else if (score >= 70) {
+    letter = "C";
+} else if (score >= 60) {
+    letter = "D";
+} else {
+    letter = "F";
+}
+
+// Add +/- modifier
+let modifier = "";
+if (letter !== "F") {
+    let lastDigit = score % 10;
+    if (lastDigit >= 7 || score >= 97) {
+        modifier = "+";
+    } else if (lastDigit <= 2 && score < 97) {
+        modifier = "-";
+    }
+}
+
+console.log(`Score: ${score} → Grade: ${letter}${modifier}`);</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">int score = 87;
+string letter;
+
+if (score >= 90)
+    letter = "A";
+else if (score >= 80)
+    letter = "B";
+else if (score >= 70)
+    letter = "C";
+else if (score >= 60)
+    letter = "D";
+else
+    letter = "F";
+
+string modifier = "";
+if (letter != "F")
+{
+    int lastDigit = score % 10;
+    if (lastDigit >= 7 || score >= 97)
+        modifier = "+";
+    else if (lastDigit <= 2 && score < 97)
+        modifier = "-";
+}
+
+Console.WriteLine($"Score: {score} → Grade: {letter}{modifier}");</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 2: Day Planner</h3>
+                    <p><strong>Objective:</strong> Use a switch/match statement to print a suggested activity based on the day of the week.</p>
+                    <ol>
+                        <li>Store a day of the week in a variable</li>
+                        <li>Use switch/match to print a different activity for each day</li>
+                        <li>Group Saturday and Sunday together as "Relax and recharge!"</li>
+                    </ol>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Day Planner">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">day = "Wednesday"
+
+match day:
+    case "Monday":
+        activity = "Team standup and planning"
+    case "Tuesday":
+        activity = "Deep focus work"
+    case "Wednesday":
+        activity = "Mid-week review"
+    case "Thursday":
+        activity = "Collaboration and pair programming"
+    case "Friday":
+        activity = "Code review and learning"
+    case "Saturday" | "Sunday":
+        activity = "Relax and recharge!"
+    case _:
+        activity = "Unknown day"
+
+print(f"{day}: {activity}")</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">let day = "Wednesday";
+let activity;
+
+switch (day) {
+    case "Monday":
+        activity = "Team standup and planning";
+        break;
+    case "Tuesday":
+        activity = "Deep focus work";
+        break;
+    case "Wednesday":
+        activity = "Mid-week review";
+        break;
+    case "Thursday":
+        activity = "Collaboration and pair programming";
+        break;
+    case "Friday":
+        activity = "Code review and learning";
+        break;
+    case "Saturday":
+    case "Sunday":
+        activity = "Relax and recharge!";
+        break;
+    default:
+        activity = "Unknown day";
+}
+
+console.log(`${day}: ${activity}`);</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">string day = "Wednesday";
+
+string activity = day switch
+{
+    "Monday" => "Team standup and planning",
+    "Tuesday" => "Deep focus work",
+    "Wednesday" => "Mid-week review",
+    "Thursday" => "Collaboration and pair programming",
+    "Friday" => "Code review and learning",
+    "Saturday" or "Sunday" => "Relax and recharge!",
+    _ => "Unknown day"
+};
+
+Console.WriteLine($"{day}: {activity}");</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 3: Ticket Pricing</h3>
+                    <p><strong>Objective:</strong> Calculate ticket price based on age and membership status.</p>
+                    <ul>
+                        <li>Children (under 12): $5</li>
+                        <li>Seniors (65+): $7</li>
+                        <li>Adults: $12</li>
+                        <li>Members get 20% off any price</li>
+                    </ul>
+                    <p>Use variables for age and is_member, then print the final price.</p>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Ticket Pricing">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">age = 30
+is_member = True
+
+if age < 12:
+    price = 5.00
+elif age >= 65:
+    price = 7.00
+else:
+    price = 12.00
+
+if is_member:
+    price *= 0.80   # 20% discount
+
+label = "Member" if is_member else "Non-member"
+print(f"Age: {age} ({label})")
+print(f"Ticket price: ${price:.2f}")</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">let age = 30;
+let isMember = true;
+let price;
+
+if (age < 12) {
+    price = 5.00;
+} else if (age >= 65) {
+    price = 7.00;
+} else {
+    price = 12.00;
+}
+
+if (isMember) {
+    price *= 0.80;
+}
+
+let label = isMember ? "Member" : "Non-member";
+console.log(`Age: ${age} (${label})`);
+console.log(`Ticket price: $${price.toFixed(2)}`);</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">int age = 30;
+bool isMember = true;
+decimal price;
+
+if (age < 12)
+    price = 5.00m;
+else if (age >= 65)
+    price = 7.00m;
+else
+    price = 12.00m;
+
+if (isMember)
+    price *= 0.80m;
+
+string label = isMember ? "Member" : "Non-member";
+Console.WriteLine($"Age: {age} ({label})");
+Console.WriteLine($"Ticket price: {price:C}");</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>The grade calculator (Exercise 1) is the must-do — it ties together if/elif/else chains with modular logic. Exercise 2 is great for contrasting switch syntax. Exercise 3 introduces the idea of <strong>compound conditions</strong> (two separate if blocks working together) which previews the next lesson on logical operators. If time is short, do Exercise 1 as a class and assign 2 and 3 as homework.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><code>if</code> statements run code only when a condition is true</li>
+                        <li><code>else</code> handles the false case; <code>elif</code>/<code>else if</code> chains multiple conditions</li>
+                        <li>Python uses <strong>indentation</strong> for code blocks; JavaScript and C# use <strong>curly braces</strong></li>
+                        <li>Python says <code>elif</code>, JS/C# say <code>else if</code> — don't mix them up</li>
+                        <li><strong>switch/match</strong> is cleaner than long if/elif chains when checking one value against many options</li>
+                        <li>JavaScript <code>switch</code> requires <code>break</code> to prevent fall-through; Python <code>match</code> and C# <code>switch</code> don't have this trap</li>
+                        <li>The <strong>ternary operator</strong> is great for simple inline choices but bad for complex logic</li>
+                    </ul>
+                </div>
+
+                <h3>🚀 What's Next?</h3>
+                <p>You can now make decisions — but what about repeating actions? In the next lesson, we'll learn <strong>loops: for and while</strong> — the tools that let your code do boring repetitive work so you don't have to.</p>
+
+                <!-- Quiz -->
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Check</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What keyword does Python use for chaining conditions?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="'else if' is two words — that's JavaScript and C# syntax.">A) else if</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Python uses 'elif' (one word) as its chained condition keyword. It's short for 'else if' but written as a single keyword.">B) elif</button>
+                            <button class="quiz-option" data-correct="false" data-hint="'elseif' without a space is used in PHP, not Python.">C) elseif</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 2:</strong> What happens if you forget <code>break</code> in a JavaScript <code>switch</code> case?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="JavaScript doesn't give you an error — it just does something unexpected.">A) Syntax error</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Without break, JavaScript 'falls through' and executes the code in the next case (and the next, and the next...) until it hits a break or the end of the switch.">B) Fall-through — the next case runs too</button>
+                            <button class="quiz-option" data-correct="false" data-hint="It does match, but then keeps going into subsequent cases.">C) The case doesn't match</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_06.html" class="prev-lesson">← Previous: Type Conversion and Coercion</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_08.html" class="next-lesson">Next: Loops — for and while →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

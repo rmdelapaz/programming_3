@@ -1,0 +1,1652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Go deeper with OOP: return values from methods, string representations, public vs private, properties with getters/setters, and static methods in Python, JavaScript, and C#.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 6.2: Properties, Methods, and Constructors - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 6</a></li>
+            <li aria-current="page">Lesson 6.2: Properties, Methods, and Constructors</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🔧 Lesson 6.2: Properties, Methods, and Constructors</h1>
+                <p class="lead">In the previous lesson you built your first classes with attributes and basic methods. Now it's time to level up: methods that <strong>return values</strong>, controlling <strong>who can access your data</strong>, <strong>string representations</strong> so your objects print nicely, and <strong>static methods</strong> that belong to the class itself rather than any single object.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Write methods that <strong>return values</strong> instead of just printing</li>
+                        <li>Define <strong>string representations</strong> so objects display nicely</li>
+                        <li>Control access with <strong>public / private</strong> visibility</li>
+                        <li>Use <strong>properties</strong> (getters and setters) to protect data</li>
+                        <li>Create <strong>static methods</strong> that belong to the class, not instances</li>
+                        <li>Build methods that support <strong>chaining</strong></li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 60 minutes</p>
+                    <p><strong>Project:</strong> Build a <code>Product</code> class for a shopping cart system</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary><h2 style="display: inline; margin: 0;">📑 In This Lesson</h2></summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#returning-values" class="toc-link">Methods That Return Values</a></li>
+                        <li><a href="#string-repr" class="toc-link">String Representations</a></li>
+                        <li><a href="#public-private" class="toc-link">Public vs. Private</a></li>
+                        <li><a href="#getters-setters" class="toc-link">Properties: Getters and Setters</a></li>
+                        <li><a href="#static-methods" class="toc-link">Static Methods</a></li>
+                        <li><a href="#method-chaining" class="toc-link">Method Chaining</a></li>
+                        <li><a href="#putting-it-together" class="toc-link">Putting It All Together</a></li>
+                        <li><a href="#exercises" class="toc-link">Exercises</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Returning Values -->
+            <section id="returning-values" class="lesson-section">
+                <h2>Methods That Return Values</h2>
+                <p>In Lesson 16, most of our methods used <code>print</code> to show results. That's fine for demos, but real-world methods usually <strong>return</strong> values so other code can use them.</p>
+
+                <div class="code-tabs" data-title="Returning vs. Printing">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">class Rectangle:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+
+    # ❌ Printing — other code can't use this result
+    def show_area(self):
+        print(self.width * self.height)
+
+    # ✅ Returning — the caller decides what to do with it
+    def area(self):
+        return self.width * self.height
+
+    def perimeter(self):
+        return 2 * (self.width + self.height)
+
+    def is_square(self):
+        return self.width == self.height
+
+r = Rectangle(5, 3)
+
+# Now we can USE the result
+a = r.area()                  # 15
+p = r.perimeter()             # 16
+print(f"Area: {a}, Perimeter: {p}")
+
+# Use in expressions
+total = r.area() + Rectangle(4, 4).area()
+print(f"Combined area: {total}")  # 31
+
+# Use in conditions
+if r.is_square():
+    print("It's a square!")
+else:
+    print("It's a rectangle!")  # ← this one</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">class Rectangle {
+    constructor(width, height) {
+        this.width = width;
+        this.height = height;
+    }
+
+    // ❌ Printing — other code can't use this result
+    showArea() {
+        console.log(this.width * this.height);
+    }
+
+    // ✅ Returning — the caller decides what to do with it
+    area() {
+        return this.width * this.height;
+    }
+
+    perimeter() {
+        return 2 * (this.width + this.height);
+    }
+
+    isSquare() {
+        return this.width === this.height;
+    }
+}
+
+let r = new Rectangle(5, 3);
+
+// Now we can USE the result
+let a = r.area();                  // 15
+let p = r.perimeter();             // 16
+console.log(`Area: ${a}, Perimeter: ${p}`);
+
+// Use in expressions
+let total = r.area() + new Rectangle(4, 4).area();
+console.log(`Combined area: ${total}`);  // 31
+
+// Use in conditions
+if (r.isSquare()) {
+    console.log("It's a square!");
+} else {
+    console.log("It's a rectangle!");  // ← this one
+}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">class Rectangle
+{
+    public double Width;
+    public double Height;
+
+    public Rectangle(double width, double height)
+    {
+        Width = width;
+        Height = height;
+    }
+
+    // Methods with RETURN TYPES (not void)
+    public double Area()
+    {
+        return Width * Height;
+    }
+
+    public double Perimeter()
+    {
+        return 2 * (Width + Height);
+    }
+
+    public bool IsSquare()
+    {
+        return Width == Height;
+    }
+}
+
+Rectangle r = new Rectangle(5, 3);
+
+// Now we can USE the result
+double a = r.Area();                  // 15
+double p = r.Perimeter();             // 16
+Console.WriteLine($"Area: {a}, Perimeter: {p}");
+
+// Use in expressions
+double total = r.Area() + new Rectangle(4, 4).Area();
+Console.WriteLine($"Combined area: {total}");  // 31
+
+// Use in conditions
+if (r.IsSquare())
+    Console.WriteLine("It's a square!");
+else
+    Console.WriteLine("It's a rectangle!");  // ← this one</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ C# Requires Return Types</h4>
+                    <p>In C#, every method must declare its return type: <code>void</code> (returns nothing), <code>int</code>, <code>double</code>, <code>bool</code>, <code>string</code>, etc. Python and JavaScript don't require this — they can return anything or nothing. This is part of C#'s <strong>static typing</strong> philosophy: the compiler checks your types before the program even runs.</p>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Rule of Thumb</h4>
+                    <p><strong>Return</strong> when other code needs the result. <strong>Print</strong> only for debugging or user-facing output methods. A method named <code>area()</code> should return the number; a method named <code>display()</code> can print. Most methods should return.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>This is a critical mindset shift for beginners. Many students (especially from Lesson 16) default to putting <code>print()</code> in every method. Show a concrete scenario: "What if you need to add two rectangles' areas together? If <code>area()</code> prints instead of returning, you can't do <code>r1.area() + r2.area()</code> — you get <code>None + None</code>." The lightbulb moment usually happens when they see <code>return</code> values being used in <code>if</code> statements and arithmetic.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- String Representations -->
+            <section id="string-repr" class="lesson-section">
+                <h2>String Representations</h2>
+                <p>When you <code>print</code> an object, you get something ugly like <code>&lt;__main__.Player object at 0x7f...&gt;</code>. Every language lets you define <strong>how your object should display as a string</strong>.</p>
+
+                <div class="code-tabs" data-title="Custom String Representation">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">class Player:
+    def __init__(self, name, health=100):
+        self.name = name
+        self.health = health
+        self.inventory = []
+
+    # __str__ — for print() and str()
+    def __str__(self):
+        return f"{self.name} (HP: {self.health})"
+
+    # __repr__ — for debugging (shows in lists, console)
+    def __repr__(self):
+        return f"Player('{self.name}', {self.health})"
+
+hero = Player("Alice", 85)
+
+# __str__ is used by print()
+print(hero)        # Alice (HP: 85)
+
+# __repr__ is used in lists and debugger
+party = [Player("Alice", 85), Player("Bob", 100)]
+print(party)       # [Player('Alice', 85), Player('Bob', 100)]
+
+# str() and repr() call these directly
+print(str(hero))   # Alice (HP: 85)
+print(repr(hero))  # Player('Alice', 85)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">class Player {
+    constructor(name, health = 100) {
+        this.name = name;
+        this.health = health;
+        this.inventory = [];
+    }
+
+    // toString() — used by template literals and String()
+    toString() {
+        return `${this.name} (HP: ${this.health})`;
+    }
+}
+
+let hero = new Player("Alice", 85);
+
+// toString() is called automatically in string contexts
+console.log(`Hero: ${hero}`);     // Hero: Alice (HP: 85)
+console.log(String(hero));        // Alice (HP: 85)
+
+// ⚠️ console.log(hero) still shows the raw object
+console.log(hero);
+// Player { name: 'Alice', health: 85, inventory: [] }
+
+// But concatenation calls toString()
+console.log("Status: " + hero);  // Status: Alice (HP: 85)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">class Player
+{
+    public string Name;
+    public int Health;
+    public List&lt;string&gt; Inventory = new();
+
+    public Player(string name, int health = 100)
+    {
+        Name = name;
+        Health = health;
+    }
+
+    // ToString() — override the built-in method
+    public override string ToString()
+    {
+        return $"{Name} (HP: {Health})";
+    }
+}
+
+Player hero = new Player("Alice", 85);
+
+// ToString() is called automatically
+Console.WriteLine(hero);             // Alice (HP: 85)
+Console.WriteLine($"Hero: {hero}");  // Hero: Alice (HP: 85)
+
+// Works in collections too
+var party = new List&lt;Player&gt;
+{
+    new Player("Alice", 85), new Player("Bob", 100)
+};
+Console.WriteLine(string.Join(", ", party));
+// Alice (HP: 85), Bob (HP: 100)</code></pre>
+                    </div>
+                </div>
+
+                <h3>String Representation Quick Reference</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Purpose</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>User-friendly display</td>
+                                <td><code>__str__</code></td>
+                                <td><code>toString()</code></td>
+                                <td><code>override ToString()</code></td>
+                            </tr>
+                            <tr>
+                                <td>Debug representation</td>
+                                <td><code>__repr__</code></td>
+                                <td><em>No built-in equivalent</em></td>
+                                <td><em>No built-in equivalent</em></td>
+                            </tr>
+                            <tr>
+                                <td>Keyword</td>
+                                <td><em>None (special name)</em></td>
+                                <td><em>None (special name)</em></td>
+                                <td><code>override</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Python's Two Methods</h4>
+                    <p>Python is unique in having <strong>both</strong> <code>__str__</code> and <code>__repr__</code>. The rule: <code>__str__</code> is for humans ("Alice with 85 HP"), <code>__repr__</code> is for developers (ideally something you could paste back into code to recreate the object). When in doubt, define <code>__repr__</code> first — Python falls back to it if <code>__str__</code> isn't defined.</p>
+                </div>
+            </section>
+
+            <!-- Public vs Private -->
+            <section id="public-private" class="lesson-section">
+                <h2>Public vs. Private</h2>
+                <p>Should outside code be able to directly change <code>player.health = -999</code>? Probably not. <strong>Access control</strong> lets you decide which attributes and methods are accessible from outside the class.</p>
+
+                <div class="code-tabs" data-title="Controlling Access">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">class BankAccount:
+    def __init__(self, owner, balance=0):
+        self.owner = owner          # Public — anyone can read
+        self._balance = balance     # "Private" by convention (single _)
+        self.__pin = "1234"         # Name-mangled (double __)
+
+    def deposit(self, amount):
+        if amount > 0:
+            self._balance += amount
+
+    def get_balance(self):
+        return self._balance
+
+acct = BankAccount("Alice", 1000)
+
+# Public — works fine
+print(acct.owner)         # Alice
+
+# "Private" — works but signals "don't touch this"
+print(acct._balance)      # 1000 (Python trusts you)
+
+# Name-mangled — harder to access (but not impossible)
+# print(acct.__pin)       # AttributeError!
+print(acct._BankAccount__pin)  # "1234" (Python's "mangling")
+
+# The Pythonic way: use the method
+print(acct.get_balance())  # 1000</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">class BankAccount {
+    #balance;    // Private field (# prefix)
+    #pin;
+
+    constructor(owner, balance = 0) {
+        this.owner = owner;        // Public
+        this.#balance = balance;   // Private
+        this.#pin = "1234";        // Private
+    }
+
+    deposit(amount) {
+        if (amount &gt; 0) this.#balance += amount;
+    }
+
+    getBalance() {
+        return this.#balance;
+    }
+}
+
+let acct = new BankAccount("Alice", 1000);
+
+// Public — works fine
+console.log(acct.owner);        // Alice
+
+// Private — actually enforced!
+// console.log(acct.#balance);  // SyntaxError!
+
+// Must use the public method
+console.log(acct.getBalance()); // 1000</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">class BankAccount
+{
+    public string Owner;           // Public — anyone can access
+    private decimal _balance;      // Private — only this class
+    private string _pin;           // Private
+
+    public BankAccount(string owner, decimal balance = 0)
+    {
+        Owner = owner;
+        _balance = balance;
+        _pin = "1234";
+    }
+
+    public void Deposit(decimal amount)
+    {
+        if (amount &gt; 0) _balance += amount;
+    }
+
+    public decimal GetBalance()
+    {
+        return _balance;
+    }
+}
+
+BankAccount acct = new BankAccount("Alice", 1000);
+
+// Public — works fine
+Console.WriteLine(acct.Owner);        // Alice
+
+// Private — compiler error!
+// Console.WriteLine(acct._balance);  // Error: inaccessible
+
+// Must use the public method
+Console.WriteLine(acct.GetBalance()); // 1000</code></pre>
+                    </div>
+                </div>
+
+                <h3>Access Control Comparison</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Public</td>
+                                <td>Default (no prefix)</td>
+                                <td>Default (no prefix)</td>
+                                <td><code>public</code> keyword</td>
+                            </tr>
+                            <tr>
+                                <td>Private</td>
+                                <td><code>_name</code> (convention)<br><code>__name</code> (mangled)</td>
+                                <td><code>#name</code> (enforced)</td>
+                                <td><code>private</code> keyword</td>
+                            </tr>
+                            <tr>
+                                <td>Enforcement</td>
+                                <td>Honor system 🤝</td>
+                                <td>Hard enforced 🔒</td>
+                                <td>Hard enforced 🔒</td>
+                            </tr>
+                            <tr>
+                                <td>Philosophy</td>
+                                <td>"We're all consenting adults"</td>
+                                <td>Strict privacy</td>
+                                <td>Strict privacy</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Why Make Things Private?</h4>
+                    <p>Private attributes let you <strong>control how data changes</strong>. Instead of anyone writing <code>acct.balance = -1000000</code>, they must use <code>acct.deposit()</code> or <code>acct.withdraw()</code> — methods that can validate the input. This is called <strong>encapsulation</strong>: hiding the internal details and exposing a controlled interface.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Python's approach often surprises students coming from other languages. Emphasize that the single underscore <code>_balance</code> is the community standard — it signals "internal, don't touch" but Python won't stop you. The double underscore <code>__name</code> does name-mangling to make accidental access harder, but it's still accessible if you try. JavaScript's <code>#</code> fields are relatively new (ES2022) and truly private. C# has the most traditional access control with explicit keywords.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Getters and Setters -->
+            <section id="getters-setters" class="lesson-section">
+                <h2>Properties: Getters and Setters</h2>
+                <p>Sometimes you want attribute-like <strong>syntax</strong> (<code>player.health</code>) but with <strong>method-like control</strong> (validation, computed values). That's what <em>properties</em> do — they look like attributes but run code behind the scenes.</p>
+
+                <div class="code-tabs" data-title="Properties with Getters and Setters">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">class Player:
+    def __init__(self, name, health=100):
+        self.name = name
+        self._health = health     # Internal storage
+
+    @property
+    def health(self):
+        """Getter — runs when you READ player.health"""
+        return self._health
+
+    @health.setter
+    def health(self, value):
+        """Setter — runs when you WRITE player.health = X"""
+        if value &lt; 0:
+            self._health = 0
+        elif value &gt; 100:
+            self._health = 100
+        else:
+            self._health = value
+
+    @property
+    def is_alive(self):
+        """Read-only property — no setter defined"""
+        return self._health &gt; 0
+
+hero = Player("Alice")
+
+# Looks like an attribute, but runs the getter/setter
+hero.health = 150       # Setter clamps to 100
+print(hero.health)      # 100
+
+hero.health = -50       # Setter clamps to 0
+print(hero.health)      # 0
+
+print(hero.is_alive)    # False (read-only property)
+# hero.is_alive = True  # AttributeError — no setter!</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">class Player {
+    #health;
+
+    constructor(name, health = 100) {
+        this.name = name;
+        this.#health = health;
+    }
+
+    // Getter — runs when you READ player.health
+    get health() {
+        return this.#health;
+    }
+
+    // Setter — runs when you WRITE player.health = X
+    set health(value) {
+        if (value &lt; 0) this.#health = 0;
+        else if (value &gt; 100) this.#health = 100;
+        else this.#health = value;
+    }
+
+    // Read-only property — getter only
+    get isAlive() {
+        return this.#health &gt; 0;
+    }
+}
+
+let hero = new Player("Alice");
+
+// Looks like a property, but runs the getter/setter
+hero.health = 150;       // Setter clamps to 100
+console.log(hero.health); // 100
+
+hero.health = -50;       // Setter clamps to 0
+console.log(hero.health); // 0
+
+console.log(hero.isAlive); // false (read-only)
+// hero.isAlive = true;   // Silently ignored (no setter)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">class Player
+{
+    public string Name;
+    private int _health;
+
+    public Player(string name, int health = 100)
+    {
+        Name = name;
+        Health = health;  // Uses the property setter!
+    }
+
+    // Property with getter and setter
+    public int Health
+    {
+        get { return _health; }
+        set
+        {
+            if (value &lt; 0) _health = 0;
+            else if (value &gt; 100) _health = 100;
+            else _health = value;
+        }
+    }
+
+    // Read-only property (getter only)
+    public bool IsAlive =&gt; _health &gt; 0;
+}
+
+Player hero = new Player("Alice");
+
+// Looks like a field, but runs the getter/setter
+hero.Health = 150;              // Setter clamps to 100
+Console.WriteLine(hero.Health); // 100
+
+hero.Health = -50;              // Setter clamps to 0
+Console.WriteLine(hero.Health); // 0
+
+Console.WriteLine(hero.IsAlive); // False (read-only)
+// hero.IsAlive = true;          // Compile error!</code></pre>
+                    </div>
+                </div>
+
+                <div class="mermaid">
+                    graph LR
+                        A["hero.health = 150"] -->|"Setter runs"| B["Validate: 150 > 100?<br/>Clamp to 100"]
+                        B --> C["_health = 100"]
+                        D["print(hero.health)"] -->|"Getter runs"| E["Return _health"]
+                        E --> F["Output: 100"]
+                        style A fill:#ef4444,stroke:#dc2626,color:#fff
+                        style D fill:#22c55e,stroke:#16a34a,color:#fff
+                        style C fill:#3b82f6,stroke:#2563eb,color:#fff
+                        style F fill:#3b82f6,stroke:#2563eb,color:#fff
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ Best of Both Worlds</h4>
+                    <p>Properties give you the <strong>simple syntax</strong> of direct attribute access (<code>hero.health = 50</code>) with the <strong>safety</strong> of method validation. The caller doesn't need to know or care that a getter/setter is running behind the scenes.</p>
+                </div>
+            </section>
+
+            <!-- Static Methods -->
+            <section id="static-methods" class="lesson-section">
+                <h2>Static Methods</h2>
+                <p>Regular methods operate on a <strong>specific object</strong> (<code>hero.take_damage()</code>). <strong>Static methods</strong> belong to the <em>class itself</em> — they don't need an instance. They're useful for utility functions, factory methods, and operations that relate to the class but not to any particular object.</p>
+
+                <div class="code-tabs" data-title="Static Methods">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">class Temperature:
+    def __init__(self, celsius):
+        self.celsius = celsius
+
+    @property
+    def fahrenheit(self):
+        return self.celsius * 9/5 + 32
+
+    def __str__(self):
+        return f"{self.celsius}°C ({self.fahrenheit:.1f}°F)"
+
+    # Static method — no self, no instance needed
+    @staticmethod
+    def from_fahrenheit(f):
+        """Factory method: create a Temperature from °F"""
+        return Temperature((f - 32) * 5/9)
+
+    @staticmethod
+    def boiling_point():
+        return Temperature(100)
+
+    @staticmethod
+    def freezing_point():
+        return Temperature(0)
+
+# Call static methods on the CLASS, not an instance
+water_boils = Temperature.boiling_point()
+print(water_boils)  # 100°C (212.0°F)
+
+body_temp = Temperature.from_fahrenheit(98.6)
+print(body_temp)    # 37.0°C (98.6°F)
+
+# Regular usage still works
+today = Temperature(28)
+print(today)        # 28°C (82.4°F)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">class Temperature {
+    constructor(celsius) {
+        this.celsius = celsius;
+    }
+
+    get fahrenheit() {
+        return this.celsius * 9/5 + 32;
+    }
+
+    toString() {
+        return `${this.celsius}°C (${this.fahrenheit.toFixed(1)}°F)`;
+    }
+
+    // Static methods — called on the class
+    static fromFahrenheit(f) {
+        return new Temperature((f - 32) * 5/9);
+    }
+
+    static boilingPoint() {
+        return new Temperature(100);
+    }
+
+    static freezingPoint() {
+        return new Temperature(0);
+    }
+}
+
+// Call static methods on the CLASS
+let waterBoils = Temperature.boilingPoint();
+console.log(`${waterBoils}`);  // 100°C (212.0°F)
+
+let bodyTemp = Temperature.fromFahrenheit(98.6);
+console.log(`${bodyTemp}`);    // 37.0°C (98.6°F)
+
+// Regular usage
+let today = new Temperature(28);
+console.log(`${today}`);       // 28°C (82.4°F)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">class Temperature
+{
+    public double Celsius;
+
+    public Temperature(double celsius)
+    {
+        Celsius = celsius;
+    }
+
+    public double Fahrenheit =&gt; Celsius * 9.0 / 5 + 32;
+
+    public override string ToString()
+    {
+        return $"{Celsius}°C ({Fahrenheit:F1}°F)";
+    }
+
+    // Static methods — called on the class
+    public static Temperature FromFahrenheit(double f)
+    {
+        return new Temperature((f - 32) * 5.0 / 9);
+    }
+
+    public static Temperature BoilingPoint()
+    {
+        return new Temperature(100);
+    }
+
+    public static Temperature FreezingPoint()
+    {
+        return new Temperature(0);
+    }
+}
+
+// Call static methods on the CLASS
+Temperature waterBoils = Temperature.BoilingPoint();
+Console.WriteLine(waterBoils);  // 100°C (212.0°F)
+
+Temperature bodyTemp = Temperature.FromFahrenheit(98.6);
+Console.WriteLine(bodyTemp);    // 37.0°C (98.6°F)
+
+Temperature today = new Temperature(28);
+Console.WriteLine(today);       // 28°C (82.4°F)</code></pre>
+                    </div>
+                </div>
+
+                <h3>When to Use Static Methods</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Use Case</th>
+                                <th>Example</th>
+                                <th>Why Static?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Factory methods</td>
+                                <td><code>Temperature.from_fahrenheit(98.6)</code></td>
+                                <td>Alternative way to create instances</td>
+                            </tr>
+                            <tr>
+                                <td>Well-known constants</td>
+                                <td><code>Temperature.boiling_point()</code></td>
+                                <td>Predefined values that don't vary per instance</td>
+                            </tr>
+                            <tr>
+                                <td>Utility functions</td>
+                                <td><code>MathHelper.clamp(value, min, max)</code></td>
+                                <td>Pure calculation, no instance state needed</td>
+                            </tr>
+                            <tr>
+                                <td>Validation</td>
+                                <td><code>Email.is_valid("test@example.com")</code></td>
+                                <td>Check data before creating an instance</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>The key distinction: regular methods need an object (<code>hero.heal()</code>), static methods need the class (<code>Temperature.from_fahrenheit()</code>). A good way to decide: "Does this method need to access <code>self</code>/<code>this</code>?" If no → consider making it static. The factory pattern (<code>from_fahrenheit</code>) is especially useful — students will encounter it in real codebases. Python also has <code>@classmethod</code> which receives <code>cls</code> instead of <code>self</code>, but for beginners, <code>@staticmethod</code> is sufficient.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Method Chaining -->
+            <section id="method-chaining" class="lesson-section">
+                <h2>Method Chaining</h2>
+                <p>If a method returns <code>self</code> / <code>this</code>, you can call another method on the result — creating a fluent chain of operations.</p>
+
+                <div class="code-tabs" data-title="Fluent Method Chaining">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">class QueryBuilder:
+    def __init__(self, table):
+        self.table = table
+        self._conditions = []
+        self._order = None
+        self._limit = None
+
+    def where(self, condition):
+        self._conditions.append(condition)
+        return self  # ← Return self for chaining!
+
+    def order_by(self, field):
+        self._order = field
+        return self
+
+    def limit(self, n):
+        self._limit = n
+        return self
+
+    def build(self):
+        query = f"SELECT * FROM {self.table}"
+        if self._conditions:
+            query += " WHERE " + " AND ".join(self._conditions)
+        if self._order:
+            query += f" ORDER BY {self._order}"
+        if self._limit:
+            query += f" LIMIT {self._limit}"
+        return query
+
+# Without chaining — verbose
+q = QueryBuilder("users")
+q.where("age > 18")
+q.where("active = true")
+q.order_by("name")
+q.limit(10)
+print(q.build())
+
+# With chaining — clean and readable!
+query = (QueryBuilder("users")
+    .where("age > 18")
+    .where("active = true")
+    .order_by("name")
+    .limit(10)
+    .build())
+
+print(query)
+# SELECT * FROM users WHERE age > 18 AND active = true ORDER BY name LIMIT 10</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">class QueryBuilder {
+    constructor(table) {
+        this.table = table;
+        this._conditions = [];
+        this._order = null;
+        this._limit = null;
+    }
+
+    where(condition) {
+        this._conditions.push(condition);
+        return this;  // ← Return this for chaining!
+    }
+
+    orderBy(field) {
+        this._order = field;
+        return this;
+    }
+
+    limit(n) {
+        this._limit = n;
+        return this;
+    }
+
+    build() {
+        let query = `SELECT * FROM ${this.table}`;
+        if (this._conditions.length)
+            query += ` WHERE ${this._conditions.join(" AND ")}`;
+        if (this._order) query += ` ORDER BY ${this._order}`;
+        if (this._limit) query += ` LIMIT ${this._limit}`;
+        return query;
+    }
+}
+
+// Chained — clean and readable!
+let query = new QueryBuilder("users")
+    .where("age &gt; 18")
+    .where("active = true")
+    .orderBy("name")
+    .limit(10)
+    .build();
+
+console.log(query);
+// SELECT * FROM users WHERE age > 18 AND active = true ORDER BY name LIMIT 10</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">class QueryBuilder
+{
+    private string _table;
+    private List&lt;string&gt; _conditions = new();
+    private string? _order;
+    private int? _limit;
+
+    public QueryBuilder(string table) { _table = table; }
+
+    public QueryBuilder Where(string condition)
+    {
+        _conditions.Add(condition);
+        return this;  // ← Return this for chaining!
+    }
+
+    public QueryBuilder OrderBy(string field)
+    {
+        _order = field;
+        return this;
+    }
+
+    public QueryBuilder Limit(int n)
+    {
+        _limit = n;
+        return this;
+    }
+
+    public string Build()
+    {
+        string query = $"SELECT * FROM {_table}";
+        if (_conditions.Count &gt; 0)
+            query += $" WHERE {string.Join(" AND ", _conditions)}";
+        if (_order != null) query += $" ORDER BY {_order}";
+        if (_limit != null) query += $" LIMIT {_limit}";
+        return query;
+    }
+}
+
+// Chained!
+string query = new QueryBuilder("users")
+    .Where("age &gt; 18")
+    .Where("active = true")
+    .OrderBy("name")
+    .Limit(10)
+    .Build();
+
+Console.WriteLine(query);</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 The Secret: <code>return self</code> / <code>return this</code></h4>
+                    <p>Method chaining works because each method <strong>returns the object itself</strong>. So <code>.where("age > 18")</code> returns the same <code>QueryBuilder</code>, and you can immediately call <code>.order_by("name")</code> on it. You've already seen this pattern — jQuery, LINQ, and many libraries use it.</p>
+                </div>
+            </section>
+
+            <!-- Putting It All Together -->
+            <section id="putting-it-together" class="lesson-section">
+                <h2>Putting It All Together</h2>
+                <p>Let's build a complete <code>Product</code> class that uses everything from this lesson: return values, string representations, private data, properties, and a static factory method.</p>
+
+                <div class="code-tabs" data-title="Complete Product Class">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">class Product:
+    _tax_rate = 0.08  # Class-level constant
+
+    def __init__(self, name, price, quantity=0):
+        self.name = name
+        self._price = 0      # Will be set via property
+        self.price = price    # Use property setter for validation
+        self._quantity = 0
+        self.quantity = quantity
+
+    @property
+    def price(self):
+        return self._price
+
+    @price.setter
+    def price(self, value):
+        if value &lt; 0:
+            raise ValueError("Price cannot be negative")
+        self._price = round(value, 2)
+
+    @property
+    def quantity(self):
+        return self._quantity
+
+    @quantity.setter
+    def quantity(self, value):
+        if value &lt; 0:
+            raise ValueError("Quantity cannot be negative")
+        self._quantity = value
+
+    @property
+    def subtotal(self):
+        return round(self._price * self._quantity, 2)
+
+    @property
+    def total_with_tax(self):
+        return round(self.subtotal * (1 + Product._tax_rate), 2)
+
+    @property
+    def in_stock(self):
+        return self._quantity &gt; 0
+
+    def __str__(self):
+        stock = "In Stock" if self.in_stock else "Out of Stock"
+        return f"{self.name}: ${self.price:.2f} ({stock})"
+
+    def __repr__(self):
+        return f"Product('{self.name}', {self.price}, {self.quantity})"
+
+    @staticmethod
+    def from_dict(data):
+        return Product(data["name"], data["price"], data.get("quantity", 0))
+
+# Usage
+laptop = Product("Laptop", 999.99, 5)
+print(laptop)                # Laptop: $999.99 (In Stock)
+print(f"Subtotal: ${laptop.subtotal}")       # $4999.95
+print(f"With tax: ${laptop.total_with_tax}") # $5399.95
+
+# From dictionary (static factory)
+data = {"name": "Mouse", "price": 29.99, "quantity": 50}
+mouse = Product.from_dict(data)
+print(mouse)  # Mouse: $29.99 (In Stock)
+
+# Property validation
+# laptop.price = -100  # ValueError: Price cannot be negative</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">class Product {
+    static #taxRate = 0.08;
+    #price;
+    #quantity;
+
+    constructor(name, price, quantity = 0) {
+        this.name = name;
+        this.#price = 0;
+        this.price = price;     // Use setter
+        this.#quantity = 0;
+        this.quantity = quantity;
+    }
+
+    get price() { return this.#price; }
+    set price(value) {
+        if (value &lt; 0) throw new Error("Price cannot be negative");
+        this.#price = Math.round(value * 100) / 100;
+    }
+
+    get quantity() { return this.#quantity; }
+    set quantity(value) {
+        if (value &lt; 0) throw new Error("Quantity cannot be negative");
+        this.#quantity = value;
+    }
+
+    get subtotal() {
+        return Math.round(this.#price * this.#quantity * 100) / 100;
+    }
+
+    get totalWithTax() {
+        return Math.round(this.subtotal * (1 + Product.#taxRate) * 100) / 100;
+    }
+
+    get inStock() { return this.#quantity &gt; 0; }
+
+    toString() {
+        let stock = this.inStock ? "In Stock" : "Out of Stock";
+        return `${this.name}: $${this.price.toFixed(2)} (${stock})`;
+    }
+
+    static fromObject(data) {
+        return new Product(data.name, data.price, data.quantity ?? 0);
+    }
+}
+
+let laptop = new Product("Laptop", 999.99, 5);
+console.log(`${laptop}`);
+console.log(`Subtotal: $${laptop.subtotal}`);
+console.log(`With tax: $${laptop.totalWithTax}`);
+
+let mouse = Product.fromObject({ name: "Mouse", price: 29.99, quantity: 50 });
+console.log(`${mouse}`);</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">class Product
+{
+    private static readonly double TaxRate = 0.08;
+
+    public string Name;
+    private double _price;
+    private int _quantity;
+
+    public Product(string name, double price, int quantity = 0)
+    {
+        Name = name;
+        Price = price;        // Use property setter
+        Quantity = quantity;
+    }
+
+    public double Price
+    {
+        get =&gt; _price;
+        set
+        {
+            if (value &lt; 0) throw new ArgumentException("Price cannot be negative");
+            _price = Math.Round(value, 2);
+        }
+    }
+
+    public int Quantity
+    {
+        get =&gt; _quantity;
+        set
+        {
+            if (value &lt; 0) throw new ArgumentException("Quantity cannot be negative");
+            _quantity = value;
+        }
+    }
+
+    public double Subtotal =&gt; Math.Round(_price * _quantity, 2);
+    public double TotalWithTax =&gt; Math.Round(Subtotal * (1 + TaxRate), 2);
+    public bool InStock =&gt; _quantity &gt; 0;
+
+    public override string ToString()
+    {
+        string stock = InStock ? "In Stock" : "Out of Stock";
+        return $"{Name}: ${Price:F2} ({stock})";
+    }
+
+    public static Product FromDictionary(Dictionary&lt;string, object&gt; data)
+    {
+        string name = (string)data["name"];
+        double price = Convert.ToDouble(data["price"]);
+        int qty = data.ContainsKey("quantity") ? Convert.ToInt32(data["quantity"]) : 0;
+        return new Product(name, price, qty);
+    }
+}
+
+Product laptop = new Product("Laptop", 999.99, 5);
+Console.WriteLine(laptop);
+Console.WriteLine($"Subtotal: ${laptop.Subtotal}");
+Console.WriteLine($"With tax: ${laptop.TotalWithTax}");</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Exercises -->
+            <section id="exercises" class="lesson-section">
+                <h2>Exercises</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 1: Task Manager</h3>
+                    <p><strong>Objective:</strong> Create a <code>Task</code> class with:</p>
+                    <ul>
+                        <li>Constructor: <code>title</code> (string), optional <code>priority</code> (1–5, default 3)</li>
+                        <li>Private <code>completed</code> status (boolean, starts <code>false</code>)</li>
+                        <li>Property for <code>priority</code> that validates 1–5 range</li>
+                        <li><code>complete()</code> method that marks the task done</li>
+                        <li><code>__str__</code> / <code>toString</code> that shows: <code>[✓] Buy groceries (Priority: 2)</code> or <code>[ ] Buy groceries (Priority: 2)</code></li>
+                        <li>Static method <code>from_string("Buy groceries|2")</code> that parses a pipe-separated string</li>
+                    </ul>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Task Manager">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">class Task:
+    def __init__(self, title, priority=3):
+        self.title = title
+        self._priority = 3
+        self.priority = priority  # Use setter
+        self._completed = False
+
+    @property
+    def priority(self):
+        return self._priority
+
+    @priority.setter
+    def priority(self, value):
+        if not 1 &lt;= value &lt;= 5:
+            raise ValueError("Priority must be 1-5")
+        self._priority = value
+
+    @property
+    def completed(self):
+        return self._completed
+
+    def complete(self):
+        self._completed = True
+
+    def __str__(self):
+        check = "✓" if self._completed else " "
+        return f"[{check}] {self.title} (Priority: {self._priority})"
+
+    def __repr__(self):
+        return f"Task('{self.title}', {self._priority})"
+
+    @staticmethod
+    def from_string(s):
+        parts = s.split("|")
+        title = parts[0].strip()
+        priority = int(parts[1].strip()) if len(parts) &gt; 1 else 3
+        return Task(title, priority)
+
+# Test
+tasks = [
+    Task("Buy groceries", 2),
+    Task("Write report", 5),
+    Task.from_string("Call dentist|4"),
+    Task.from_string("Read book")
+]
+
+tasks[0].complete()
+
+for task in tasks:
+    print(task)
+# [✓] Buy groceries (Priority: 2)
+# [ ] Write report (Priority: 5)
+# [ ] Call dentist (Priority: 4)
+# [ ] Read book (Priority: 3)</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">class Task {
+    #priority;
+    #completed = false;
+
+    constructor(title, priority = 3) {
+        this.title = title;
+        this.#priority = 3;
+        this.priority = priority;
+    }
+
+    get priority() { return this.#priority; }
+    set priority(value) {
+        if (value &lt; 1 || value &gt; 5) throw new Error("Priority must be 1-5");
+        this.#priority = value;
+    }
+
+    get completed() { return this.#completed; }
+
+    complete() { this.#completed = true; }
+
+    toString() {
+        let check = this.#completed ? "✓" : " ";
+        return `[${check}] ${this.title} (Priority: ${this.#priority})`;
+    }
+
+    static fromString(s) {
+        let parts = s.split("|");
+        let title = parts[0].trim();
+        let priority = parts.length &gt; 1 ? parseInt(parts[1].trim()) : 3;
+        return new Task(title, priority);
+    }
+}
+
+let tasks = [
+    new Task("Buy groceries", 2),
+    new Task("Write report", 5),
+    Task.fromString("Call dentist|4"),
+    Task.fromString("Read book")
+];
+
+tasks[0].complete();
+tasks.forEach(t =&gt; console.log(`${t}`));</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">class Task
+{
+    public string Title;
+    private int _priority;
+    private bool _completed = false;
+
+    public Task(string title, int priority = 3)
+    {
+        Title = title;
+        Priority = priority;
+    }
+
+    public int Priority
+    {
+        get =&gt; _priority;
+        set
+        {
+            if (value &lt; 1 || value &gt; 5)
+                throw new ArgumentException("Priority must be 1-5");
+            _priority = value;
+        }
+    }
+
+    public bool Completed =&gt; _completed;
+    public void Complete() =&gt; _completed = true;
+
+    public override string ToString()
+    {
+        string check = _completed ? "✓" : " ";
+        return $"[{check}] {Title} (Priority: {_priority})";
+    }
+
+    public static Task FromString(string s)
+    {
+        var parts = s.Split("|");
+        string title = parts[0].Trim();
+        int priority = parts.Length &gt; 1 ? int.Parse(parts[1].Trim()) : 3;
+        return new Task(title, priority);
+    }
+}
+
+var tasks = new List&lt;Task&gt;
+{
+    new Task("Buy groceries", 2),
+    new Task("Write report", 5),
+    Task.FromString("Call dentist|4"),
+    Task.FromString("Read book")
+};
+
+tasks[0].Complete();
+tasks.ForEach(t =&gt; Console.WriteLine(t));</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 2: Shopping Cart</h3>
+                    <p><strong>Objective:</strong> Build a <code>ShoppingCart</code> class that holds <code>Product</code> objects:</p>
+                    <ul>
+                        <li>Constructor takes an <code>owner</code> name</li>
+                        <li><code>add(product)</code> — adds a Product to the cart, returns <code>self</code>/<code>this</code> for chaining</li>
+                        <li><code>remove(product_name)</code> — removes a product by name</li>
+                        <li><code>total</code> (property) — returns the sum of all product subtotals</li>
+                        <li><code>item_count</code> (property) — number of items</li>
+                        <li><code>__str__</code> / <code>toString</code> — shows cart summary</li>
+                    </ul>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Shopping Cart">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">class Product:
+    def __init__(self, name, price, quantity=1):
+        self.name = name
+        self.price = price
+        self.quantity = quantity
+
+    @property
+    def subtotal(self):
+        return round(self.price * self.quantity, 2)
+
+    def __str__(self):
+        return f"{self.name} x{self.quantity} = ${self.subtotal:.2f}"
+
+class ShoppingCart:
+    def __init__(self, owner):
+        self.owner = owner
+        self._items = []
+
+    def add(self, product):
+        self._items.append(product)
+        return self  # Chaining!
+
+    def remove(self, product_name):
+        self._items = [p for p in self._items if p.name != product_name]
+        return self
+
+    @property
+    def total(self):
+        return round(sum(p.subtotal for p in self._items), 2)
+
+    @property
+    def item_count(self):
+        return len(self._items)
+
+    def __str__(self):
+        lines = [f"🛒 {self.owner}'s Cart ({self.item_count} items):"]
+        for item in self._items:
+            lines.append(f"  • {item}")
+        lines.append(f"  Total: ${self.total:.2f}")
+        return "\n".join(lines)
+
+# Test with chaining
+cart = (ShoppingCart("Alice")
+    .add(Product("Laptop", 999.99))
+    .add(Product("Mouse", 29.99, 2))
+    .add(Product("USB Cable", 9.99, 3)))
+
+print(cart)
+# 🛒 Alice's Cart (3 items):
+#   • Laptop x1 = $999.99
+#   • Mouse x2 = $59.98
+#   • USB Cable x3 = $29.97
+#   Total: $1089.94
+
+cart.remove("Mouse")
+print(f"\nAfter removing Mouse: ${cart.total:.2f}")  # $1029.96</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">class Product {
+    constructor(name, price, quantity = 1) {
+        this.name = name;
+        this.price = price;
+        this.quantity = quantity;
+    }
+
+    get subtotal() {
+        return Math.round(this.price * this.quantity * 100) / 100;
+    }
+
+    toString() {
+        return `${this.name} x${this.quantity} = $${this.subtotal.toFixed(2)}`;
+    }
+}
+
+class ShoppingCart {
+    #items = [];
+
+    constructor(owner) {
+        this.owner = owner;
+    }
+
+    add(product) {
+        this.#items.push(product);
+        return this;
+    }
+
+    remove(productName) {
+        this.#items = this.#items.filter(p =&gt; p.name !== productName);
+        return this;
+    }
+
+    get total() {
+        return Math.round(
+            this.#items.reduce((sum, p) =&gt; sum + p.subtotal, 0) * 100
+        ) / 100;
+    }
+
+    get itemCount() { return this.#items.length; }
+
+    toString() {
+        let lines = [`🛒 ${this.owner}'s Cart (${this.itemCount} items):`];
+        this.#items.forEach(item =&gt; lines.push(`  • ${item}`));
+        lines.push(`  Total: $${this.total.toFixed(2)}`);
+        return lines.join("\n");
+    }
+}
+
+// Test with chaining
+let cart = new ShoppingCart("Alice")
+    .add(new Product("Laptop", 999.99))
+    .add(new Product("Mouse", 29.99, 2))
+    .add(new Product("USB Cable", 9.99, 3));
+
+console.log(`${cart}`);
+
+cart.remove("Mouse");
+console.log(`\nAfter removing Mouse: $${cart.total.toFixed(2)}`);</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">class Product
+{
+    public string Name;
+    public double Price;
+    public int Quantity;
+
+    public Product(string name, double price, int quantity = 1)
+    { Name = name; Price = price; Quantity = quantity; }
+
+    public double Subtotal =&gt; Math.Round(Price * Quantity, 2);
+    public override string ToString() =&gt;
+        $"{Name} x{Quantity} = ${Subtotal:F2}";
+}
+
+class ShoppingCart
+{
+    public string Owner;
+    private List&lt;Product&gt; _items = new();
+
+    public ShoppingCart(string owner) { Owner = owner; }
+
+    public ShoppingCart Add(Product product)
+    { _items.Add(product); return this; }
+
+    public ShoppingCart Remove(string productName)
+    { _items.RemoveAll(p =&gt; p.Name == productName); return this; }
+
+    public double Total =&gt; Math.Round(_items.Sum(p =&gt; p.Subtotal), 2);
+    public int ItemCount =&gt; _items.Count;
+
+    public override string ToString()
+    {
+        var lines = new List&lt;string&gt;
+            { $"🛒 {Owner}'s Cart ({ItemCount} items):" };
+        _items.ForEach(item =&gt; lines.Add($"  • {item}"));
+        lines.Add($"  Total: ${Total:F2}");
+        return string.Join("\n", lines);
+    }
+}
+
+var cart = new ShoppingCart("Alice")
+    .Add(new Product("Laptop", 999.99))
+    .Add(new Product("Mouse", 29.99, 2))
+    .Add(new Product("USB Cable", 9.99, 3));
+
+Console.WriteLine(cart);
+cart.Remove("Mouse");
+Console.WriteLine($"\nAfter removing Mouse: ${cart.Total:F2}");</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Exercise 1 (Task) covers properties, validation, string representation, and static factory methods in one focused class. Exercise 2 (ShoppingCart) is the capstone — it uses composition (a cart containing products), method chaining, computed properties, and ties back to collections. Challenge fast students: add a <code>discount(percent)</code> method to ShoppingCart, or make the cart prevent duplicate products by updating quantity instead of adding a new entry.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong>Return values:</strong> Methods should usually <code>return</code> results, not <code>print</code> them — let the caller decide what to do</li>
+                        <li><strong>String representation:</strong> Python <code>__str__</code>/<code>__repr__</code>, JS <code>toString()</code>, C# <code>override ToString()</code></li>
+                        <li><strong>Public vs. Private:</strong> Python uses convention (<code>_name</code>), JS uses <code>#name</code>, C# uses <code>private</code> keyword</li>
+                        <li><strong>Properties</strong> give attribute syntax with method control: Python <code>@property</code>, JS <code>get/set</code>, C# property syntax</li>
+                        <li><strong>Static methods</strong> belong to the class, not instances: Python <code>@staticmethod</code>, JS/C# <code>static</code></li>
+                        <li><strong>Method chaining</strong> works by returning <code>self</code>/<code>this</code> from methods</li>
+                        <li><strong>Encapsulation</strong> = hiding data + exposing a controlled interface</li>
+                    </ul>
+                </div>
+
+                <h3>🚀 What's Next?</h3>
+                <p>You've built complete, well-structured classes with controlled access and useful methods. In the next lesson, we tackle the most powerful OOP concept: <strong>inheritance and polymorphism</strong> — creating new classes that build on existing ones, sharing behavior while adding specialization.</p>
+
+                <!-- Quiz -->
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Check</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> In Python, what decorator creates a property with a getter?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="@staticmethod creates a method that belongs to the class, not a property.">A) @staticmethod</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="The @property decorator turns a method into a getter. You access it like an attribute (player.health) but it runs the method behind the scenes.">B) @property</button>
+                            <button class="quiz-option" data-correct="false" data-hint="@getter isn't a real Python decorator. The correct one is @property.">C) @getter</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 2:</strong> How do you declare a private field in JavaScript?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="The underscore prefix is a Python convention — JavaScript doesn't use it for privacy.">A) _fieldName</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="JavaScript uses the # prefix for truly private fields (e.g., #balance). These are enforced by the language — code outside the class cannot access them.">B) #fieldName</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The 'private' keyword is used in C# and TypeScript, not standard JavaScript.">C) private fieldName</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 3:</strong> What must a method return to support chaining?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Returning true/false is useful for conditions, but it doesn't enable chaining — the next method call needs the object.">A) true</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Returning a new object creates a new instance — chaining requires the SAME object.">B) A new object</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Returning self (Python) or this (JS/C#) gives back the same object, allowing the next method call to operate on it: cart.add(item1).add(item2).add(item3).">C) self / this</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_16.html" class="prev-lesson">← Previous: Classes and Objects</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_18.html" class="next-lesson">Next: Inheritance and Polymorphism →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

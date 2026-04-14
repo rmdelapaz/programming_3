@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Understand variable scope, the scope chain, hoisting, and closures in Python, JavaScript, and C#.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 4.3: Scope and Closures - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 4</a></li>
+            <li aria-current="page">Lesson 4.3: Scope and Closures</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🔭 Lesson 4.3: Scope and Closures</h1>
+                <p class="lead">Every variable has a "lifespan" — it exists somewhere, and it's invisible everywhere else. Understanding <strong>scope</strong> is key to avoiding mysterious bugs, and understanding <strong>closures</strong> unlocks a powerful pattern for creating private state and reusable logic.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Explain the difference between <strong>local scope</strong> and <strong>global scope</strong></li>
+                        <li>Understand <strong>block scope</strong> and why <code>let</code>/<code>const</code> behave differently from <code>var</code> in JavaScript</li>
+                        <li>Use Python's <code>global</code> and <code>nonlocal</code> keywords correctly</li>
+                        <li>Trace how the <strong>scope chain</strong> resolves variable lookups</li>
+                        <li>Define what a <strong>closure</strong> is and build practical examples</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 60 minutes</p>
+                    <p><strong>Project:</strong> Build a counter factory and a private configuration manager using closures</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary><h2 style="display: inline; margin: 0;">📑 In This Lesson</h2></summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#local-global" class="toc-link">Local vs. Global Scope</a></li>
+                        <li><a href="#block-scope" class="toc-link">Block Scope</a></li>
+                        <li><a href="#modifying-outer" class="toc-link">Modifying Outer Variables</a></li>
+                        <li><a href="#scope-chain" class="toc-link">The Scope Chain</a></li>
+                        <li><a href="#hoisting" class="toc-link">Hoisting (JavaScript)</a></li>
+                        <li><a href="#closures" class="toc-link">Closures</a></li>
+                        <li><a href="#practical-closures" class="toc-link">Practical Closure Patterns</a></li>
+                        <li><a href="#exercises" class="toc-link">Exercises</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Local vs Global Scope -->
+            <section id="local-global" class="lesson-section">
+                <h2>Local vs. Global Scope</h2>
+                <p>Variables defined <strong>inside</strong> a function are <em>local</em> — they only exist while that function runs. Variables defined <strong>outside</strong> all functions are <em>global</em> — they're accessible everywhere in the file.</p>
+
+                <div class="code-tabs" data-title="Local vs. Global Scope">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Global variable — accessible everywhere
+greeting = "Hello"
+
+def say_hello(name):
+    # Local variable — only exists inside this function
+    message = f"{greeting}, {name}!"
+    print(message)
+
+say_hello("Alice")  # Hello, Alice!
+
+print(greeting)     # "Hello"  — global, still accessible
+# print(message)    # ❌ NameError — message is local to say_hello
+
+# Each call creates fresh local variables
+def count_up():
+    counter = 0       # brand new each time
+    counter += 1
+    print(counter)
+
+count_up()  # 1
+count_up()  # 1 (not 2 — counter is re-created each call)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// Global variable
+let greeting = "Hello";
+
+function sayHello(name) {
+    // Local variable
+    let message = `${greeting}, ${name}!`;
+    console.log(message);
+}
+
+sayHello("Alice");  // Hello, Alice!
+
+console.log(greeting);   // "Hello" — global
+// console.log(message); // ❌ ReferenceError — message is local
+
+// Each call creates fresh local variables
+function countUp() {
+    let counter = 0;
+    counter += 1;
+    console.log(counter);
+}
+
+countUp();  // 1
+countUp();  // 1 (counter is re-created each call)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// In C#, "global" typically means class-level (static fields)
+class Program
+{
+    // Class-level field — accessible to all methods in this class
+    static string greeting = "Hello";
+
+    static void SayHello(string name)
+    {
+        // Local variable — only exists in this method
+        string message = $"{greeting}, {name}!";
+        Console.WriteLine(message);
+    }
+
+    static void Main()
+    {
+        SayHello("Alice");  // Hello, Alice!
+
+        Console.WriteLine(greeting);   // "Hello"
+        // Console.WriteLine(message); // ❌ Compile error — not in scope
+    }
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Think of Scope Like Rooms in a House</h4>
+                    <p>A <strong>global</strong> variable is like an item in the hallway — everyone can see it. A <strong>local</strong> variable is like something inside a room with the door closed — only the person in that room can use it. When the function ends, the "room" is cleaned out.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Start by demonstrating the error when you try to access a local variable outside its function. That "NameError" or "ReferenceError" is the most tangible proof of scope. The "rooms in a house" analogy works well. Note that C# doesn't have true global variables — its equivalent is <code>static</code> class fields. For beginners, just say "class-level variables work like globals for now" and defer the full explanation to Module 6 (OOP).</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Block Scope -->
+            <section id="block-scope" class="lesson-section">
+                <h2>Block Scope</h2>
+                <p>A <strong>block</strong> is any code between curly braces <code>{ }</code> — inside an <code>if</code>, <code>for</code>, <code>while</code>, etc. In some languages, variables created inside a block are trapped there. In others, they leak out.</p>
+
+                <div class="code-tabs" data-title="Block Scope Differences">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python does NOT have block scope!
+# Variables inside if/for/while are still part of the enclosing function
+
+if True:
+    block_var = "I'm visible outside the if!"
+
+print(block_var)  # Works! "I'm visible outside the if!"
+
+for i in range(3):
+    loop_var = i
+
+print(loop_var)  # Works! 2 (the last value)
+
+# Python only creates new scope for:
+#   - Functions (def)
+#   - Classes (class)
+#   - Comprehensions (list/dict/set comprehensions, generator expressions)
+
+# This means if/for/while DON'T create new scope — be aware!
+x = 10
+if True:
+    x = 99    # This modifies the outer x, not a new local x!
+print(x)      # 99</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// let and const ARE block-scoped
+if (true) {
+    let blockLet = "I'm trapped in this block";
+    const blockConst = "Me too";
+}
+// console.log(blockLet);   // ❌ ReferenceError
+// console.log(blockConst); // ❌ ReferenceError
+
+// var is NOT block-scoped — it leaks out!
+if (true) {
+    var leaked = "I escaped the block!";
+}
+console.log(leaked);  // "I escaped the block!" — var ignores blocks
+
+// This is a major reason to prefer let/const over var
+for (let i = 0; i &lt; 3; i++) {
+    // i is scoped to this loop
+}
+// console.log(i); // ❌ ReferenceError — i is gone
+
+for (var j = 0; j &lt; 3; j++) {
+    // j leaks out
+}
+console.log(j); // 3 — j is still alive!</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C# has strict block scope — variables stay in their block
+if (true)
+{
+    string blockVar = "I'm trapped here";
+    Console.WriteLine(blockVar);  // Works inside the block
+}
+// Console.WriteLine(blockVar);  // ❌ Compile error — not in scope
+
+for (int i = 0; i &lt; 3; i++)
+{
+    // i is scoped to this loop
+}
+// Console.WriteLine(i);  // ❌ Compile error
+
+// Each block is its own scope:
+{
+    int x = 10;
+    Console.WriteLine(x);  // 10
+}
+{
+    int x = 20;  // Different x — no conflict
+    Console.WriteLine(x);  // 20
+}</code></pre>
+                    </div>
+                </div>
+
+                <h3>Block Scope Quick Reference</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>if/for/while create scope?</td>
+                                <td><strong>No</strong></td>
+                                <td><code>let</code>/<code>const</code>: <strong>Yes</strong><br><code>var</code>: <strong>No</strong></td>
+                                <td><strong>Yes</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Functions create scope?</td>
+                                <td><strong>Yes</strong></td>
+                                <td><strong>Yes</strong> (all declaration types)</td>
+                                <td><strong>Yes</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Common gotcha</td>
+                                <td>Loop vars leak out</td>
+                                <td><code>var</code> ignores blocks</td>
+                                <td>None — it's strict</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Python's Missing Block Scope</h4>
+                    <p>Python's lack of block scope catches many developers off guard, especially those coming from JavaScript or C#. A variable assigned inside an <code>if</code> or <code>for</code> is accessible <em>after</em> the block ends. This is by design, but it means you should be intentional about where you assign variables — accidental overwrites are easy.</p>
+                </div>
+            </section>
+
+            <!-- Modifying Outer Variables -->
+            <section id="modifying-outer" class="lesson-section">
+                <h2>Modifying Outer Variables</h2>
+                <p>Functions can <strong>read</strong> variables from outer scopes. But <strong>writing</strong> to them is trickier — each language handles it differently.</p>
+
+                <div class="code-tabs" data-title="Modifying Outer Variables">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">count = 0
+
+def increment():
+    # ❌ This creates a NEW local variable, not modifying the global
+    # count = count + 1  # UnboundLocalError!
+    pass
+
+# To modify a global, you must declare it explicitly:
+def increment_global():
+    global count
+    count += 1
+
+increment_global()
+print(count)  # 1
+
+# For nested functions, use 'nonlocal':
+def outer():
+    score = 0
+
+    def add_points(points):
+        nonlocal score     # Refers to outer()'s score
+        score += points
+
+    add_points(10)
+    add_points(5)
+    print(f"Score: {score}")  # Score: 15
+
+outer()</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">let count = 0;
+
+function increment() {
+    // JavaScript lets you modify outer variables directly
+    count += 1;
+}
+
+increment();
+console.log(count);  // 1
+
+// Nested functions can also modify enclosing variables
+function outer() {
+    let score = 0;
+
+    function addPoints(points) {
+        score += points;  // Directly modifies outer's score
+    }
+
+    addPoints(10);
+    addPoints(5);
+    console.log(`Score: ${score}`);  // Score: 15
+}
+
+outer();
+
+// ⚠️ If you accidentally use let inside, you create a NEW variable:
+let name = "Alice";
+function changeName() {
+    let name = "Bob";          // New local — doesn't touch outer
+    console.log(name);          // "Bob"
+}
+changeName();
+console.log(name);              // "Alice" — unchanged</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C# uses class fields for shared state between methods
+class Program
+{
+    static int count = 0;
+
+    static void Increment()
+    {
+        count += 1;  // Modifies the class field directly
+    }
+
+    static void Main()
+    {
+        Increment();
+        Console.WriteLine(count);  // 1
+    }
+}
+
+// C# also supports closures with local functions and lambdas:
+static void ScoringExample()
+{
+    int score = 0;
+
+    // Local function captures 'score'
+    void AddPoints(int points)
+    {
+        score += points;
+    }
+
+    AddPoints(10);
+    AddPoints(5);
+    Console.WriteLine($"Score: {score}");  // Score: 15
+}
+
+// With lambdas:
+static void LambdaCapture()
+{
+    int score = 0;
+    Action&lt;int&gt; addPoints = (points) =&gt; score += points;
+
+    addPoints(10);
+    addPoints(5);
+    Console.WriteLine($"Score: {score}");  // Score: 15
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Summary of Rules</h4>
+                    <p><strong>Python:</strong> Reading outer variables is automatic, but <em>writing</em> requires <code>global</code> (for module-level) or <code>nonlocal</code> (for enclosing function).</p>
+                    <p><strong>JavaScript:</strong> Reading and writing outer variables both work automatically — just don't accidentally shadow with <code>let</code>.</p>
+                    <p><strong>C#:</strong> Class fields are shared across methods. Local functions and lambdas can capture and modify enclosing variables.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>The Python <code>global</code>/<code>nonlocal</code> distinction is the trickiest part here. Show the <code>UnboundLocalError</code> first without the <code>global</code> keyword and let students see the error before providing the fix. Emphasize that while these keywords exist, <strong>overusing global variables is a bad habit</strong> — the real solution is usually to pass values as arguments and return results. This section sets up closures, which are the "right" way to manage shared state.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Scope Chain -->
+            <section id="scope-chain" class="lesson-section">
+                <h2>The Scope Chain</h2>
+                <p>When your code references a variable, the language looks for it in a specific order — from the innermost scope outward. This lookup path is called the <strong>scope chain</strong>.</p>
+
+                <div class="mermaid">
+graph TD
+    A["Variable Lookup: where is 'x'?"] --> B["1. Local Scope<br>(current function)"]
+    B -->|Not found| C["2. Enclosing Scope<br>(outer function, if nested)"]
+    C -->|Not found| D["3. Global / Module Scope<br>(top level of file)"]
+    D -->|Not found| E["4. Built-in Scope<br>(language built-ins)"]
+    E -->|Not found| F["❌ Error!<br>NameError / ReferenceError"]
+                </div>
+
+                <div class="code-tabs" data-title="Scope Chain in Action">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python's lookup: LEGB (Local → Enclosing → Global → Built-in)
+
+x = "global"
+
+def outer():
+    x = "enclosing"
+
+    def inner():
+        x = "local"
+        print(x)   # "local" — found in local scope first
+
+    inner()
+    print(x)       # "enclosing" — inner's x was its own
+
+outer()
+print(x)           # "global" — untouched by outer/inner
+
+# Remove local x from inner to see the chain in action:
+def outer2():
+    x = "enclosing"
+
+    def inner2():
+        # No local x — Python looks up the chain
+        print(x)   # "enclosing" — found in enclosing scope
+
+    inner2()
+
+outer2()</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript follows the same inside-out chain
+
+let x = "global";
+
+function outer() {
+    let x = "enclosing";
+
+    function inner() {
+        let x = "local";
+        console.log(x);   // "local"
+    }
+
+    inner();
+    console.log(x);       // "enclosing"
+}
+
+outer();
+console.log(x);           // "global"
+
+// Remove local x from inner:
+function outer2() {
+    let x = "enclosing";
+
+    function inner2() {
+        console.log(x);   // "enclosing" — walks up the chain
+    }
+
+    inner2();
+}
+
+outer2();</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C# scope chain: inner block → outer block → method → class
+
+class Program
+{
+    static string x = "class-level";
+
+    static void Outer()
+    {
+        string x = "method-level";
+
+        void Inner()
+        {
+            // string x = "local"; // If uncommented, this would be used
+            Console.WriteLine(x);  // "method-level" — captured from Outer
+        }
+
+        Inner();
+        Console.WriteLine(x);     // "method-level"
+    }
+
+    static void Main()
+    {
+        Outer();
+        Console.WriteLine(x);     // "class-level"
+    }
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Shadowing</h4>
+                    <p>When an inner scope creates a variable with the <strong>same name</strong> as an outer one, the inner variable "shadows" the outer. The outer variable still exists — it's just hidden. This is a common source of subtle bugs. Tip: use distinct variable names across scopes to avoid confusion.</p>
+                </div>
+            </section>
+
+            <!-- Hoisting -->
+            <section id="hoisting" class="lesson-section">
+                <h2>Hoisting (JavaScript)</h2>
+                <p>JavaScript has a quirk called <strong>hoisting</strong>: declarations are "moved" to the top of their scope before code runs. This only applies to JavaScript — Python and C# don't do this.</p>
+
+                <div class="code-tabs" data-title="Hoisting Behavior">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python: no hoisting — code runs top to bottom
+# Using a variable before it's defined is always an error
+
+# print(name)  # ❌ NameError: name 'name' is not defined
+name = "Alice"
+print(name)    # ✅ "Alice"
+
+# Functions must be defined before they're called
+# say_hello()  # ❌ NameError
+def say_hello():
+    print("Hello!")
+
+say_hello()    # ✅ "Hello!"
+
+# Python is straightforward: define it first, then use it</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// var is hoisted (declaration, not value)
+console.log(name);    // undefined (not an error!)
+var name = "Alice";
+console.log(name);    // "Alice"
+
+// What JavaScript actually does:
+// var name;            ← declaration hoisted to top
+// console.log(name);   ← undefined (exists but no value yet)
+// name = "Alice";      ← assignment stays in place
+
+// let and const are hoisted but NOT accessible before declaration
+// console.log(age);    // ❌ ReferenceError: Cannot access before init
+let age = 25;
+
+// Function declarations ARE fully hoisted (name + body)
+sayHello();            // ✅ Works! "Hello!"
+function sayHello() {
+    console.log("Hello!");
+}
+
+// Function expressions are NOT fully hoisted
+// greet();             // ❌ TypeError: greet is not a function
+var greet = function() {
+    console.log("Hi!");
+};
+greet();               // ✅ Now it works</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C#: no hoisting — variables must be declared before use
+// Console.WriteLine(name);  // ❌ Compile error
+string name = "Alice";
+Console.WriteLine(name);      // ✅ "Alice"
+
+// However, method ORDER in a class doesn't matter:
+class Program
+{
+    static void Main()
+    {
+        SayHello();  // ✅ Works even though SayHello is defined below
+    }
+
+    static void SayHello()
+    {
+        Console.WriteLine("Hello!");
+    }
+}
+// C# compiles the whole class at once, so method order is flexible.
+// But local variables inside a method must be declared before use.</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ One More Reason to Avoid <code>var</code> in JavaScript</h4>
+                    <p>Hoisting with <code>var</code> can cause confusing bugs — a variable exists but is <code>undefined</code> before its assignment line. With <code>let</code> and <code>const</code>, you get a clear error if you try to use a variable too early. This is called the <strong>Temporal Dead Zone (TDZ)</strong> and it's a feature, not a bug — it catches mistakes.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Hoisting is JavaScript-specific, so spend most of the time on the JS tab. The key takeaway isn't memorizing hoisting rules — it's "always use <code>let</code>/<code>const</code> and declare variables before you use them." If students ask "why does <code>var</code> exist then?" — explain it's a legacy feature from JavaScript's early days before block scope existed. Modern JS code should use <code>let</code>/<code>const</code> exclusively.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Closures -->
+            <section id="closures" class="lesson-section">
+                <h2>Closures</h2>
+                <p>A <strong>closure</strong> is a function that "remembers" the variables from the scope where it was created, even after that scope has finished executing. It's one of the most powerful concepts in programming.</p>
+
+                <div class="code-tabs" data-title="What Is a Closure?">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># A closure: inner function "remembers" outer function's variables
+
+def make_greeter(greeting):
+    # This variable belongs to make_greeter's scope
+    def greet(name):
+        # But greet() can still access it after make_greeter returns!
+        return f"{greeting}, {name}!"
+    return greet  # Return the inner function itself
+
+# Create specialized greeters
+hello = make_greeter("Hello")
+howdy = make_greeter("Howdy")
+
+# The inner function remembers its greeting
+print(hello("Alice"))   # Hello, Alice!
+print(howdy("Bob"))     # Howdy, Bob!
+print(hello("Charlie")) # Hello, Charlie!
+
+# make_greeter has already returned, but the greeting
+# variable lives on inside each closure!</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// A closure: inner function "remembers" outer function's variables
+
+function makeGreeter(greeting) {
+    // This variable belongs to makeGreeter's scope
+    return function(name) {
+        // But the returned function still has access!
+        return `${greeting}, ${name}!`;
+    };
+}
+
+// Create specialized greeters
+const hello = makeGreeter("Hello");
+const howdy = makeGreeter("Howdy");
+
+// Each function remembers its own greeting
+console.log(hello("Alice"));   // Hello, Alice!
+console.log(howdy("Bob"));     // Howdy, Bob!
+console.log(hello("Charlie")); // Hello, Charlie!
+
+// Arrow function version (same concept):
+const makeGreeter2 = (greeting) =&gt; (name) =&gt; `${greeting}, ${name}!`;</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C# closures use lambdas or local functions
+
+static Func&lt;string, string&gt; MakeGreeter(string greeting)
+{
+    // The lambda captures 'greeting' from this scope
+    return (name) =&gt; $"{greeting}, {name}!";
+}
+
+// Create specialized greeters
+var hello = MakeGreeter("Hello");
+var howdy = MakeGreeter("Howdy");
+
+Console.WriteLine(hello("Alice"));   // Hello, Alice!
+Console.WriteLine(howdy("Bob"));     // Howdy, Bob!
+Console.WriteLine(hello("Charlie")); // Hello, Charlie!
+
+// Local function version:
+static Func&lt;string, string&gt; MakeGreeter2(string greeting)
+{
+    string Greet(string name)
+    {
+        return $"{greeting}, {name}!";
+    }
+    return Greet;
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ The Key Insight</h4>
+                    <p>A closure is a function <strong>bundled together with its surrounding state</strong>. When <code>makeGreeter("Hello")</code> returns, the <code>greeting</code> variable would normally be gone. But because the returned function references it, the variable is kept alive. Each call to <code>makeGreeter</code> creates a <em>separate</em> closure with its own copy of <code>greeting</code>.</p>
+                </div>
+            </section>
+
+            <!-- Practical Closures -->
+            <section id="practical-closures" class="lesson-section">
+                <h2>Practical Closure Patterns</h2>
+                <p>Closures aren't just an academic concept — they solve real problems. Here are three patterns you'll use constantly.</p>
+
+                <h3>Pattern 1: Counter Factory</h3>
+                <p>Create independent counters that each maintain their own count:</p>
+
+                <div class="code-tabs" data-title="Counter Factory">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">def make_counter(start=0):
+    count = start
+
+    def counter():
+        nonlocal count
+        count += 1
+        return count
+
+    def get():
+        return count
+
+    def reset():
+        nonlocal count
+        count = start
+
+    # Return multiple operations as a dict
+    return {"next": counter, "get": get, "reset": reset}
+
+# Two independent counters
+tickets = make_counter()
+orders = make_counter(1000)
+
+print(tickets["next"]())  # 1
+print(tickets["next"]())  # 2
+print(orders["next"]())   # 1001
+print(orders["next"]())   # 1002
+print(tickets["get"]())   # 2 — tickets is independent of orders</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">function makeCounter(start = 0) {
+    let count = start;
+
+    return {
+        next()  { return ++count; },
+        get()   { return count; },
+        reset() { count = start; }
+    };
+}
+
+// Two independent counters
+const tickets = makeCounter();
+const orders = makeCounter(1000);
+
+console.log(tickets.next());  // 1
+console.log(tickets.next());  // 2
+console.log(orders.next());   // 1001
+console.log(orders.next());   // 1002
+console.log(tickets.get());   // 2 — independent of orders</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// Return a tuple of functions (or use a small class)
+static (Func&lt;int&gt; Next, Func&lt;int&gt; Get, Action Reset) MakeCounter(int start = 0)
+{
+    int count = start;
+
+    return (
+        Next:  () =&gt; ++count,
+        Get:   () =&gt; count,
+        Reset: () =&gt; { count = start; }
+    );
+}
+
+var tickets = MakeCounter();
+var orders = MakeCounter(1000);
+
+Console.WriteLine(tickets.Next());  // 1
+Console.WriteLine(tickets.Next());  // 2
+Console.WriteLine(orders.Next());   // 1001
+Console.WriteLine(orders.Next());   // 1002
+Console.WriteLine(tickets.Get());   // 2</code></pre>
+                    </div>
+                </div>
+
+                <h3>Pattern 2: Private State (Data Hiding)</h3>
+                <p>Closures can create variables that <em>nothing</em> outside the closure can access directly — a form of privacy without classes:</p>
+
+                <div class="code-tabs" data-title="Private State with Closures">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">def create_wallet(owner, initial_balance=0):
+    balance = initial_balance  # Private — no direct access from outside
+
+    def deposit(amount):
+        nonlocal balance
+        if amount &lt;= 0:
+            return "Amount must be positive"
+        balance += amount
+        return f"Deposited ${amount:.2f}. Balance: ${balance:.2f}"
+
+    def withdraw(amount):
+        nonlocal balance
+        if amount &lt;= 0:
+            return "Amount must be positive"
+        if amount &gt; balance:
+            return f"Insufficient funds (balance: ${balance:.2f})"
+        balance -= amount
+        return f"Withdrew ${amount:.2f}. Balance: ${balance:.2f}"
+
+    def check_balance():
+        return f"{owner}'s balance: ${balance:.2f}"
+
+    return {"deposit": deposit, "withdraw": withdraw, "balance": check_balance}
+
+wallet = create_wallet("Alice", 100)
+print(wallet["deposit"](50))       # Deposited $50.00. Balance: $150.00
+print(wallet["withdraw"](30))      # Withdrew $30.00. Balance: $120.00
+print(wallet["balance"]())         # Alice's balance: $120.00
+# print(balance)                   # ❌ NameError — balance is private!</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">function createWallet(owner, initialBalance = 0) {
+    let balance = initialBalance;  // Private!
+
+    return {
+        deposit(amount) {
+            if (amount &lt;= 0) return "Amount must be positive";
+            balance += amount;
+            return `Deposited $${amount.toFixed(2)}. Balance: $${balance.toFixed(2)}`;
+        },
+        withdraw(amount) {
+            if (amount &lt;= 0) return "Amount must be positive";
+            if (amount &gt; balance) return `Insufficient funds (balance: $${balance.toFixed(2)})`;
+            balance -= amount;
+            return `Withdrew $${amount.toFixed(2)}. Balance: $${balance.toFixed(2)}`;
+        },
+        checkBalance() {
+            return `${owner}'s balance: $${balance.toFixed(2)}`;
+        }
+    };
+}
+
+const wallet = createWallet("Alice", 100);
+console.log(wallet.deposit(50));       // Deposited $50.00. Balance: $150.00
+console.log(wallet.withdraw(30));      // Withdrew $30.00. Balance: $120.00
+console.log(wallet.checkBalance());    // Alice's balance: $120.00
+// console.log(balance);               // ❌ ReferenceError — private!</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C# typically uses classes for private state (see Module 6),
+// but closures can do it too:
+
+static (Func&lt;decimal, string&gt; Deposit,
+        Func&lt;decimal, string&gt; Withdraw,
+        Func&lt;string&gt; CheckBalance)
+    CreateWallet(string owner, decimal initialBalance = 0)
+{
+    decimal balance = initialBalance;
+
+    return (
+        Deposit: (amount) =&gt; {
+            if (amount &lt;= 0) return "Amount must be positive";
+            balance += amount;
+            return $"Deposited {amount:C}. Balance: {balance:C}";
+        },
+        Withdraw: (amount) =&gt; {
+            if (amount &lt;= 0) return "Amount must be positive";
+            if (amount &gt; balance) return $"Insufficient funds (balance: {balance:C})";
+            balance -= amount;
+            return $"Withdrew {amount:C}. Balance: {balance:C}";
+        },
+        CheckBalance: () =&gt; $"{owner}'s balance: {balance:C}"
+    );
+}
+
+var wallet = CreateWallet("Alice", 100);
+Console.WriteLine(wallet.Deposit(50));
+Console.WriteLine(wallet.Withdraw(30));
+Console.WriteLine(wallet.CheckBalance());</code></pre>
+                    </div>
+                </div>
+
+                <h3>Pattern 3: Function Factories</h3>
+                <p>Create customized functions on the fly:</p>
+
+                <div class="code-tabs" data-title="Function Factory">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Multiplier factory
+def make_multiplier(factor):
+    def multiply(x):
+        return x * factor
+    return multiply
+
+double = make_multiplier(2)
+triple = make_multiplier(3)
+to_cents = make_multiplier(100)
+
+print(double(5))     # 10
+print(triple(5))     # 15
+print(to_cents(9.99))  # 999.0
+
+# Tax calculator factory
+def make_tax_calculator(rate):
+    def calculate(price):
+        tax = price * (rate / 100)
+        return round(price + tax, 2)
+    return calculate
+
+nevada_tax = make_tax_calculator(8.375)
+oregon_tax = make_tax_calculator(0)
+
+print(nevada_tax(100))   # 108.38
+print(oregon_tax(100))   # 100.0</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// Multiplier factory
+const makeMultiplier = (factor) =&gt; (x) =&gt; x * factor;
+
+const double = makeMultiplier(2);
+const triple = makeMultiplier(3);
+const toCents = makeMultiplier(100);
+
+console.log(double(5));      // 10
+console.log(triple(5));      // 15
+console.log(toCents(9.99));  // 999
+
+// Tax calculator factory
+function makeTaxCalculator(rate) {
+    return (price) =&gt; {
+        let tax = price * (rate / 100);
+        return Math.round((price + tax) * 100) / 100;
+    };
+}
+
+const nevadaTax = makeTaxCalculator(8.375);
+const oregonTax = makeTaxCalculator(0);
+
+console.log(nevadaTax(100));   // 108.38
+console.log(oregonTax(100));   // 100</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// Multiplier factory
+static Func&lt;double, double&gt; MakeMultiplier(double factor)
+{
+    return (x) =&gt; x * factor;
+}
+
+var doubleIt = MakeMultiplier(2);
+var tripleIt = MakeMultiplier(3);
+var toCents  = MakeMultiplier(100);
+
+Console.WriteLine(doubleIt(5));      // 10
+Console.WriteLine(tripleIt(5));      // 15
+Console.WriteLine(toCents(9.99));    // 999
+
+// Tax calculator factory
+static Func&lt;decimal, decimal&gt; MakeTaxCalculator(decimal rate)
+{
+    return (price) =&gt; Math.Round(price * (1 + rate / 100), 2);
+}
+
+var nevadaTax = MakeTaxCalculator(8.375m);
+var oregonTax = MakeTaxCalculator(0m);
+
+Console.WriteLine(nevadaTax(100));  // 108.38
+Console.WriteLine(oregonTax(100));  // 100.00</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Closures vs. Classes</h4>
+                    <p>If a closure with private state sounds a lot like a <strong>class</strong> with private fields… you're right! In fact, closures and classes are two ways to solve the same problem: bundling data with behavior. We'll explore classes in Module 6. For now, closures give you a lightweight way to do this without the full class machinery.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>The wallet example is the highlight of this lesson. Walk through it step by step: (1) <code>createWallet</code> runs and creates <code>balance</code>, (2) it returns functions that reference <code>balance</code>, (3) <code>createWallet</code> finishes but <code>balance</code> survives inside the closure, (4) each method can read and modify <code>balance</code> but outside code cannot. This "aha moment" — that a finished function's variables can live on — is the core of understanding closures. The tax calculator factory is a great real-world tie-in for Nevada students!</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Exercises -->
+            <section id="exercises" class="lesson-section">
+                <h2>Exercises</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 1: Scope Detective</h3>
+                    <p><strong>Objective:</strong> Without running the code, predict the output. Then run it to check.</p>
+                    <div class="code-tabs" data-title="Predict the Output">
+                        <div class="tab-panel" data-lang="python" data-label="Python">
+                            <pre><code class="language-python">x = "global"
+
+def func_a():
+    x = "a"
+    def func_b():
+        print(x)
+    func_b()
+
+def func_c():
+    print(x)
+
+func_a()     # What prints?
+func_c()     # What prints?
+print(x)     # What prints?</code></pre>
+                        </div>
+                        <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                            <pre><code class="language-javascript">let x = "global";
+
+function funcA() {
+    let x = "a";
+    function funcB() {
+        console.log(x);
+    }
+    funcB();
+}
+
+function funcC() {
+    console.log(x);
+}
+
+funcA();        // What prints?
+funcC();        // What prints?
+console.log(x); // What prints?</code></pre>
+                        </div>
+                        <div class="tab-panel" data-lang="csharp" data-label="C#">
+                            <pre><code class="language-csharp">string x = "global";
+
+void FuncA()
+{
+    string x = "a";
+    void FuncB()
+    {
+        Console.WriteLine(x);
+    }
+    FuncB();
+}
+
+void FuncC()
+{
+    Console.WriteLine(x);  // captures outer x
+}
+
+FuncA();              // What prints?
+FuncC();              // What prints?
+Console.WriteLine(x); // What prints?</code></pre>
+                        </div>
+                    </div>
+
+                    <details>
+                        <summary>✅ Answer</summary>
+                        <p><code>func_a()</code> prints <strong>"a"</strong> — <code>func_b</code> finds <code>x</code> in its enclosing scope (<code>func_a</code>).</p>
+                        <p><code>func_c()</code> prints <strong>"global"</strong> — it has no local <code>x</code>, so it uses the global one.</p>
+                        <p>The final <code>print(x)</code> prints <strong>"global"</strong> — <code>func_a</code>'s <code>x = "a"</code> was local and didn't affect the global.</p>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 2: Build a Counter</h3>
+                    <p><strong>Objective:</strong> Create a <code>make_counter</code> function that returns an object/dict with three operations:</p>
+                    <ul>
+                        <li><code>increment()</code> — adds 1 and returns the new count</li>
+                        <li><code>decrement()</code> — subtracts 1 and returns the new count</li>
+                        <li><code>value()</code> — returns the current count without changing it</li>
+                    </ul>
+                    <p>The count should start at 0. Create two independent counters and verify they don't interfere with each other.</p>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Counter Solution">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">def make_counter():
+    count = 0
+
+    def increment():
+        nonlocal count
+        count += 1
+        return count
+
+    def decrement():
+        nonlocal count
+        count -= 1
+        return count
+
+    def value():
+        return count
+
+    return {"increment": increment, "decrement": decrement, "value": value}
+
+a = make_counter()
+b = make_counter()
+
+print(a["increment"]())  # 1
+print(a["increment"]())  # 2
+print(b["increment"]())  # 1 (independent!)
+print(a["decrement"]())  # 1
+print(a["value"]())      # 1
+print(b["value"]())      # 1</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">function makeCounter() {
+    let count = 0;
+
+    return {
+        increment() { return ++count; },
+        decrement() { return --count; },
+        value()     { return count; }
+    };
+}
+
+const a = makeCounter();
+const b = makeCounter();
+
+console.log(a.increment());  // 1
+console.log(a.increment());  // 2
+console.log(b.increment());  // 1
+console.log(a.decrement());  // 1
+console.log(a.value());      // 1
+console.log(b.value());      // 1</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">static (Func&lt;int&gt; Increment, Func&lt;int&gt; Decrement, Func&lt;int&gt; Value)
+    MakeCounter()
+{
+    int count = 0;
+    return (
+        Increment: () =&gt; ++count,
+        Decrement: () =&gt; --count,
+        Value:     () =&gt; count
+    );
+}
+
+var a = MakeCounter();
+var b = MakeCounter();
+
+Console.WriteLine(a.Increment());  // 1
+Console.WriteLine(a.Increment());  // 2
+Console.WriteLine(b.Increment());  // 1
+Console.WriteLine(a.Decrement());  // 1
+Console.WriteLine(a.Value());      // 1
+Console.WriteLine(b.Value());      // 1</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 3: Configuration Manager</h3>
+                    <p><strong>Objective:</strong> Create a <code>createConfig</code> function that stores key-value settings privately. Return operations to:</p>
+                    <ul>
+                        <li><code>set(key, value)</code> — store a setting</li>
+                        <li><code>get(key)</code> — retrieve a setting (return <code>None</code>/<code>null</code> if not found)</li>
+                        <li><code>get_all()</code> — return a <strong>copy</strong> of all settings (so the internal data can't be modified from outside)</li>
+                    </ul>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Config Manager Solution">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">def create_config():
+    settings = {}
+
+    def set_val(key, value):
+        settings[key] = value
+
+    def get_val(key):
+        return settings.get(key, None)
+
+    def get_all():
+        return dict(settings)  # Return a copy!
+
+    return {"set": set_val, "get": get_val, "get_all": get_all}
+
+config = create_config()
+config["set"]("theme", "dark")
+config["set"]("language", "en")
+config["set"]("font_size", 16)
+
+print(config["get"]("theme"))       # "dark"
+print(config["get"]("missing"))     # None
+print(config["get_all"]())          # {'theme': 'dark', 'language': 'en', ...}
+
+# The copy means outside changes don't affect internal state:
+snapshot = config["get_all"]()
+snapshot["theme"] = "hacked"
+print(config["get"]("theme"))       # Still "dark"!</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">function createConfig() {
+    const settings = {};
+
+    return {
+        set(key, value) { settings[key] = value; },
+        get(key)        { return settings[key] ?? null; },
+        getAll()        { return { ...settings }; }  // Spread = copy!
+    };
+}
+
+const config = createConfig();
+config.set("theme", "dark");
+config.set("language", "en");
+config.set("fontSize", 16);
+
+console.log(config.get("theme"));       // "dark"
+console.log(config.get("missing"));     // null
+console.log(config.getAll());           // {theme: 'dark', ...}
+
+// The copy protects internal state:
+const snapshot = config.getAll();
+snapshot.theme = "hacked";
+console.log(config.get("theme"));       // Still "dark"!</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">static (Action&lt;string, string&gt; Set,
+        Func&lt;string, string?&gt; Get,
+        Func&lt;Dictionary&lt;string, string&gt;&gt; GetAll)
+    CreateConfig()
+{
+    var settings = new Dictionary&lt;string, string&gt;();
+
+    return (
+        Set:    (key, value) =&gt; settings[key] = value,
+        Get:    (key) =&gt; settings.TryGetValue(key, out var val) ? val : null,
+        GetAll: () =&gt; new Dictionary&lt;string, string&gt;(settings) // Copy!
+    );
+}
+
+var config = CreateConfig();
+config.Set("theme", "dark");
+config.Set("language", "en");
+config.Set("fontSize", "16");
+
+Console.WriteLine(config.Get("theme"));       // "dark"
+Console.WriteLine(config.Get("missing"));     // (null)
+
+var snapshot = config.GetAll();
+snapshot["theme"] = "hacked";
+Console.WriteLine(config.Get("theme"));       // Still "dark"!</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Exercise 1 is a great whiteboard/group activity — have students trace the scope chain on paper before running the code. Exercise 2 reinforces the counter factory pattern from the lesson. Exercise 3 is the capstone — the "return a copy" requirement teaches an important data-integrity concept. Challenge fast students: add a <code>delete</code> operation, or make the config emit a "change event" (a callback) whenever a setting is modified.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong>Local scope:</strong> variables inside a function are invisible outside it</li>
+                        <li><strong>Global scope:</strong> variables at the top level are accessible everywhere (but avoid overusing them)</li>
+                        <li><strong>Block scope:</strong> C# and JS (<code>let</code>/<code>const</code>) have it; Python does not — Python only scopes to functions and classes</li>
+                        <li><strong>Modifying outer variables:</strong> Python needs <code>global</code>/<code>nonlocal</code>; JS does it directly; C# captures variables in closures and lambdas</li>
+                        <li><strong>Scope chain:</strong> variables are looked up from innermost scope outward (LEGB in Python)</li>
+                        <li><strong>Hoisting:</strong> JavaScript-specific — <code>var</code> declarations are moved to the top; use <code>let</code>/<code>const</code> to avoid surprises</li>
+                        <li><strong>Closures:</strong> a function that remembers variables from its creation scope — used for counters, private state, and function factories</li>
+                    </ul>
+                </div>
+
+                <h3>🚀 What's Next?</h3>
+                <p>That wraps up Module 4: Functions! You now know how to define, call, parameterize, and scope your functions — and you've seen how closures give functions a "memory." In Module 5, we shift from single values to <strong>collections</strong>: arrays, lists, dictionaries, and objects — the data structures that make real programs possible.</p>
+
+                <!-- Quiz -->
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Check</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What is a closure?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="That's what a 'return' statement does — a closure is about remembering scope.">A) A function that stops execution early</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="A closure is a function that retains access to variables from the scope where it was created, even after that scope has finished executing. This is how functions can 'remember' state.">B) A function that remembers variables from its surrounding scope</button>
+                            <button class="quiz-option" data-correct="false" data-hint="That would be a private/protected method. A closure is broader than that.">C) A function that can only be called once</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 2:</strong> In Python, which keyword lets a nested function modify a variable from its enclosing function?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="'global' refers to module-level variables, not enclosing function variables.">A) global</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="The 'nonlocal' keyword tells Python: 'this variable belongs to an enclosing function, not this one.' Without it, assigning to the variable would create a new local instead.">B) nonlocal</button>
+                            <button class="quiz-option" data-correct="false" data-hint="'outer' is not a Python keyword. The keyword you need is specific to nested function scope.">C) outer</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 3:</strong> Why should you prefer <code>let</code>/<code>const</code> over <code>var</code> in JavaScript?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Performance differences between let/const and var are negligible.">A) They run faster</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="let and const have block scope (variables stay inside their { } block) and don't hoist their values, preventing subtle bugs where variables exist before they're defined or leak out of loops and if-blocks.">B) They have block scope and avoid hoisting surprises</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Actually, const prevents reassignment. let allows it, just like var. The key difference is scope behavior.">C) They prevent variables from being reassigned</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_11.html" class="prev-lesson">← Previous: Parameters, Arguments, and Return Values</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_13.html" class="next-lesson">Next: Arrays and Lists →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+{
+  "course": {
+    "title": "Programming Fundamentals: Three Language Approach",
+    "subtitle": "Learn Python, JavaScript & C# Side by Side",
+    "description": "A beginner-friendly course that teaches core programming concepts through three languages simultaneously — Python, JavaScript, and C#. By comparing syntax and patterns across languages, students build deeper understanding of programming fundamentals rather than just memorizing one language's way of doing things.",
+    "author": {
+      "name": "Ray De La Paz",
+      "email": "contact via website",
+      "website": "https://rays-home.netlify.app/",
+      "bio": "Technical trainer, full-stack developer, and course developer with 30+ years of experience."
+    },
+    "version": "1.0.0",
+    "lastUpdated": "2026-04-13",
+    "language": "en",
+    "difficulty": "beginner",
+    "estimatedHours": 40,
+    "tags": ["python", "javascript", "csharp", "programming", "beginner", "fundamentals"]
+  },
+
+  "branding": {
+    "primaryColor": "#3b82f6",
+    "secondaryColor": "#f8fafc",
+    "accentColor": "#6366f1",
+    "fontFamily": "Segoe UI, system-ui, -apple-system, sans-serif",
+    "logo": "images/logo.png",
+    "favicon": "favicon.png"
+  },
+
+  "navigation": {
+    "showBreadcrumbs": true,
+    "showProgressBar": true,
+    "showLessonNav": true,
+    "showSearch": true,
+    "showThemeToggle": true,
+    "keyboardShortcuts": true,
+    "externalLinks": [
+      { "label": "Ray's House of Fun", "url": "https://rays-home.netlify.app/" },
+      { "label": "Contact", "url": "https://rays-home.netlify.app/contact" }
+    ]
+  },
+
+  "modules": [
+    {
+      "id": "module-1",
+      "title": "Getting Started",
+      "description": "Introduction, environment setup, and your first programs",
+      "lessons": [
+        { "id": "lesson-1-1", "title": "Welcome & Course Overview", "filename": "lesson_01.html", "duration": "30 minutes", "difficulty": "beginner" },
+        { "id": "lesson-1-2", "title": "Setting Up Your Environment", "filename": "lesson_02.html", "duration": "45 minutes", "difficulty": "beginner" },
+        { "id": "lesson-1-3", "title": "Hello World in Three Languages", "filename": "lesson_03.html", "duration": "45 minutes", "difficulty": "beginner" }
+      ]
+    },
+    {
+      "id": "module-2",
+      "title": "Variables, Types & Data",
+      "description": "Working with data across Python, JavaScript, and C#",
+      "lessons": [
+        { "id": "lesson-2-1", "title": "Variables and Constants", "filename": "lesson_04.html", "duration": "45 minutes", "difficulty": "beginner" },
+        { "id": "lesson-2-2", "title": "Data Types: Numbers, Strings, Booleans", "filename": "lesson_05.html", "duration": "45 minutes", "difficulty": "beginner" },
+        { "id": "lesson-2-3", "title": "Type Conversion and Coercion", "filename": "lesson_06.html", "duration": "45 minutes", "difficulty": "beginner" }
+      ]
+    },
+    {
+      "id": "module-3",
+      "title": "Control Flow",
+      "description": "Making decisions and repeating actions in code",
+      "lessons": [
+        { "id": "lesson-3-1", "title": "Conditionals: if, else, and switch", "filename": "lesson_07.html", "duration": "45 minutes", "difficulty": "beginner" },
+        { "id": "lesson-3-2", "title": "Loops: for and while", "filename": "lesson_08.html", "duration": "45 minutes", "difficulty": "beginner" },
+        { "id": "lesson-3-3", "title": "Logical Operators and Truthiness", "filename": "lesson_09.html", "duration": "45 minutes", "difficulty": "beginner" }
+      ]
+    },
+    {
+      "id": "module-4",
+      "title": "Functions",
+      "description": "Organizing code into reusable blocks",
+      "lessons": [
+        { "id": "lesson-4-1", "title": "Defining and Calling Functions", "filename": "lesson_10.html", "duration": "45 minutes", "difficulty": "beginner" },
+        { "id": "lesson-4-2", "title": "Parameters, Arguments, and Return Values", "filename": "lesson_11.html", "duration": "45 minutes", "difficulty": "intermediate" },
+        { "id": "lesson-4-3", "title": "Scope and Closures", "filename": "lesson_12.html", "duration": "60 minutes", "difficulty": "intermediate" }
+      ]
+    },
+    {
+      "id": "module-5",
+      "title": "Collections",
+      "description": "Storing and working with groups of data",
+      "lessons": [
+        { "id": "lesson-5-1", "title": "Arrays and Lists", "filename": "lesson_13.html", "duration": "45 minutes", "difficulty": "beginner" },
+        { "id": "lesson-5-2", "title": "Dictionaries, Objects, and Maps", "filename": "lesson_14.html", "duration": "45 minutes", "difficulty": "intermediate" },
+        { "id": "lesson-5-3", "title": "Iterating Over Collections", "filename": "lesson_15.html", "duration": "45 minutes", "difficulty": "intermediate" }
+      ]
+    },
+    {
+      "id": "module-6",
+      "title": "Object-Oriented Programming",
+      "description": "Modeling real-world concepts with classes and objects",
+      "lessons": [
+        { "id": "lesson-6-1", "title": "Classes and Objects", "filename": "lesson_16.html", "duration": "60 minutes", "difficulty": "intermediate" },
+        { "id": "lesson-6-2", "title": "Properties, Methods, and Constructors", "filename": "lesson_17.html", "duration": "60 minutes", "difficulty": "intermediate" },
+        { "id": "lesson-6-3", "title": "Inheritance and Polymorphism", "filename": "lesson_18.html", "duration": "60 minutes", "difficulty": "intermediate" }
+      ]
+    },
+    {
+      "id": "module-7",
+      "title": "Error Handling",
+      "description": "Writing robust code that handles the unexpected",
+      "lessons": [
+        { "id": "lesson-7-1", "title": "Try, Catch, and Finally", "filename": "lesson_19.html", "duration": "45 minutes", "difficulty": "intermediate" },
+        { "id": "lesson-7-2", "title": "Custom Errors and Exceptions", "filename": "lesson_20.html", "duration": "45 minutes", "difficulty": "intermediate" },
+        { "id": "lesson-7-3", "title": "Debugging Strategies", "filename": "lesson_21.html", "duration": "45 minutes", "difficulty": "intermediate" }
+      ]
+    },
+    {
+      "id": "module-8",
+      "title": "Working with Files & APIs",
+      "description": "Connecting your programs to the outside world",
+      "lessons": [
+        { "id": "lesson-8-1", "title": "Reading and Writing Files", "filename": "lesson_22.html", "duration": "60 minutes", "difficulty": "intermediate" },
+        { "id": "lesson-8-2", "title": "Working with JSON", "filename": "lesson_23.html", "duration": "45 minutes", "difficulty": "intermediate" },
+        { "id": "lesson-8-3", "title": "Making API Requests", "filename": "lesson_24.html", "duration": "60 minutes", "difficulty": "intermediate" }
+      ]
+    },
+    {
+      "id": "module-9",
+      "title": "Capstone Projects",
+      "description": "Bringing it all together with real projects",
+      "lessons": [
+        { "id": "lesson-9-1", "title": "Project Planning and Design", "filename": "lesson_25.html", "duration": "60 minutes", "difficulty": "intermediate" },
+        { "id": "lesson-9-2", "title": "Building Your Project", "filename": "lesson_26.html", "duration": "90 minutes", "difficulty": "advanced" },
+        { "id": "lesson-9-3", "title": "Code Review and Next Steps", "filename": "lesson_27.html", "duration": "45 minutes", "difficulty": "advanced" }
+      ]
+    }
+  ],
+
+  "features": {
+    "codeHighlighting": true,
+    "copyCodeButton": true,
+    "codeTabs": true,
+    "progressTracking": true,
+    "offlineSupport": false,
+    "responsiveDesign": true,
+    "accessibility": true,
+    "printFriendly": true,
+    "searchEnabled": true,
+    "darkMode": true,
+    "mermaidDiagrams": true,
+    "svgDarkModeSupport": true,
+    "instructorNotes": true
+  }
+}

@@ -1,0 +1,1678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn to work with JSON in Python, JavaScript, and C#. Covers parsing, creating, reading/writing JSON files, nested structures, and common pitfalls across all three languages.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 8.2: Working with JSON - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 8</a></li>
+            <li aria-current="page">Lesson 8.2: Working with JSON</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>📋 Lesson 8.2: Working with JSON</h1>
+                <p class="lead">In the last lesson, you learned to read and write text files. But text files are just raw strings — they don't understand <em>structure</em>. If you want to save a user profile with a name, age, and list of hobbies, a plain text file forces you to invent your own format and write your own parser. <strong>JSON</strong> (JavaScript Object Notation) solves this problem. It's a universal format for structured data that every programming language can read and write — and it's the backbone of almost every web API on the internet.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li><strong>Explain what JSON is</strong> and why it's the standard for data exchange</li>
+                        <li><strong>Read JSON syntax</strong> — objects, arrays, strings, numbers, booleans, and null</li>
+                        <li><strong>Parse JSON</strong> — convert a JSON string into a native data structure</li>
+                        <li><strong>Create JSON</strong> — convert a native data structure into a JSON string</li>
+                        <li><strong>Read and write JSON files</strong> to persist structured data</li>
+                        <li><strong>Navigate nested JSON</strong> — access deeply nested values</li>
+                        <li><strong>Choose between JSON and CSV</strong> for different use cases</li>
+                        <li><strong>Avoid common JSON pitfalls</strong> — trailing commas, single quotes, and more</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 45 minutes</p>
+                    <p><strong>Project:</strong> Build a contact book that saves to a JSON file</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary><h2 style="display: inline; margin: 0;">📑 In This Lesson</h2></summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#what-is-json" class="toc-link">What Is JSON?</a></li>
+                        <li><a href="#json-syntax" class="toc-link">JSON Syntax Rules</a></li>
+                        <li><a href="#parsing-json" class="toc-link">Parsing JSON (String → Data)</a></li>
+                        <li><a href="#creating-json" class="toc-link">Creating JSON (Data → String)</a></li>
+                        <li><a href="#json-files" class="toc-link">Reading and Writing JSON Files</a></li>
+                        <li><a href="#nested-json" class="toc-link">Nested JSON and Complex Structures</a></li>
+                        <li><a href="#json-vs-csv" class="toc-link">JSON vs. CSV</a></li>
+                        <li><a href="#common-pitfalls" class="toc-link">Common JSON Pitfalls</a></li>
+                        <li><a href="#exercises" class="toc-link">Exercises</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- What Is JSON? -->
+            <section id="what-is-json" class="lesson-section">
+                <h2>What Is JSON?</h2>
+                <p>JSON stands for <strong>JavaScript Object Notation</strong>. Despite the name, it's not just for JavaScript — it's a <em>language-independent</em> text format that every modern programming language supports. JSON is used for:</p>
+
+                <div class="mermaid">
+                    flowchart LR
+                        A["<b>APIs</b><br/>Web services send<br/>and receive JSON"] --> B["<b>Config Files</b><br/>Settings stored<br/>as JSON"]
+                        B --> C["<b>Data Storage</b><br/>Structured data<br/>saved to disk"]
+                        C --> D["<b>Data Exchange</b><br/>Programs share<br/>data via JSON"]
+                        style A fill:#3b82f6,color:#fff
+                        style B fill:#6366f1,color:#fff
+                        style C fill:#22c55e,color:#fff
+                        style D fill:#f59e0b,color:#fff
+                </div>
+
+                <p>Here's what JSON looks like — if you've ever seen a JavaScript object or a Python dictionary, this will feel familiar:</p>
+
+                <pre><code>{
+    "name": "Alice Chen",
+    "age": 28,
+    "isStudent": false,
+    "courses": ["Python 101", "Data Science", "Web Dev"],
+    "address": {
+        "city": "Portland",
+        "state": "OR"
+    },
+    "gpa": null
+}</code></pre>
+
+                <p>That single block of text describes a person with a name, age, enrollment status, a list of courses, a nested address, and a missing GPA. Any programming language can read this and turn it into native data structures (dictionaries, objects, lists, arrays) — and any language can <em>produce</em> it too. That's what makes JSON the universal language of data exchange.</p>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Students who've been working through this course have already seen JSON-like structures in Python dictionaries (lesson 14) and JavaScript objects. Point that out: "You already know how to read this!" The key new concept is that JSON is a <em>text format</em> — it's a string that looks like code but isn't. The act of converting between a JSON string and a live data structure (parsing/serializing) is the core skill of this lesson. Show a real-world JSON response from a public API in the browser (try <code>https://api.github.com/users/github</code>) to demonstrate that this isn't just academic — it's how the modern web works.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- JSON Syntax Rules -->
+            <section id="json-syntax" class="lesson-section">
+                <h2>JSON Syntax Rules</h2>
+                <p>JSON is strict about its format — stricter than Python or JavaScript. Here are the rules:</p>
+
+                <h3>JSON Data Types</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>JSON Type</th>
+                                <th>Example</th>
+                                <th>🐍 Python Equivalent</th>
+                                <th>⚡ JS Equivalent</th>
+                                <th>🔷 C# Equivalent</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>String</strong></td>
+                                <td><code>"hello"</code></td>
+                                <td><code>str</code></td>
+                                <td><code>string</code></td>
+                                <td><code>string</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Number</strong></td>
+                                <td><code>42</code>, <code>3.14</code></td>
+                                <td><code>int</code> / <code>float</code></td>
+                                <td><code>number</code></td>
+                                <td><code>int</code> / <code>double</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Boolean</strong></td>
+                                <td><code>true</code>, <code>false</code></td>
+                                <td><code>True</code>, <code>False</code></td>
+                                <td><code>true</code>, <code>false</code></td>
+                                <td><code>true</code>, <code>false</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Null</strong></td>
+                                <td><code>null</code></td>
+                                <td><code>None</code></td>
+                                <td><code>null</code></td>
+                                <td><code>null</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Object</strong></td>
+                                <td><code>{"key": "value"}</code></td>
+                                <td><code>dict</code></td>
+                                <td><code>object</code></td>
+                                <td><code>Dictionary</code> / class</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Array</strong></td>
+                                <td><code>[1, 2, 3]</code></td>
+                                <td><code>list</code></td>
+                                <td><code>Array</code></td>
+                                <td><code>List</code> / array</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Syntax Rules That Trip People Up</h3>
+                <div class="code-tabs" data-title="Valid vs. Invalid JSON">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># These are PYTHON dictionaries — NOT valid JSON!
+# Python is more relaxed than JSON.
+
+python_dict = {
+    'name': 'Alice',        # ❌ JSON requires DOUBLE quotes, not single
+    "age": 28,              # ✅ Double quotes are fine
+    "active": True,         # ❌ JSON uses lowercase: true, not True
+    "score": None,          # ❌ JSON uses null, not None
+    "tags": ["a", "b",],    # ❌ JSON does NOT allow trailing commas
+}
+
+# The VALID JSON equivalent would be:
+valid_json_string = '''
+{
+    "name": "Alice",
+    "age": 28,
+    "active": true,
+    "score": null,
+    "tags": ["a", "b"]
+}
+'''
+# Notice:
+# - ALL strings use DOUBLE quotes (keys AND values)
+# - Booleans are lowercase: true/false
+# - null instead of None
+# - NO trailing comma after the last item
+# - NO comments allowed in JSON!</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// These are JAVASCRIPT objects — NOT valid JSON!
+// JavaScript is more relaxed than JSON.
+
+let jsObject = {
+    name: "Alice",          // ❌ JSON requires quotes around keys
+    'age': 28,              // ❌ JSON requires DOUBLE quotes, not single
+    "active": true,         // ✅ This one is actually valid JSON
+    "score": undefined,     // ❌ JSON has no undefined — use null
+    "tags": ["a", "b",],   // ❌ JSON does NOT allow trailing commas
+};
+
+// The VALID JSON equivalent would be:
+let validJsonString = `
+{
+    "name": "Alice",
+    "age": 28,
+    "active": true,
+    "score": null,
+    "tags": ["a", "b"]
+}
+`;
+// Notice:
+// - ALL keys must be in DOUBLE quotes
+// - ALL strings use DOUBLE quotes
+// - No undefined — use null
+// - NO trailing comma after the last item
+// - NO comments allowed in JSON!
+// - NO single quotes anywhere</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C# doesn't have JSON-like literal syntax for objects,
+// but here are the JSON rules to remember:
+
+// ✅ VALID JSON:
+string validJson = @"
+{
+    ""name"": ""Alice"",
+    ""age"": 28,
+    ""active"": true,
+    ""score"": null,
+    ""tags"": [""a"", ""b""]
+}
+";
+
+// ❌ INVALID JSON — common mistakes:
+// { name: "Alice" }           — keys must be quoted
+// { "name": 'Alice' }         — must use double quotes, not single
+// { "active": True }          — must be lowercase true/false
+// { "tags": ["a", "b", ] }   — no trailing comma
+// { "name": "Alice", /* comment */ }  — no comments!
+
+// C# note: In a verbatim string (@"..."), you escape
+// double quotes by doubling them: "" instead of \"</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ The 5 Strict Rules of JSON</h4>
+                    <ol>
+                        <li><strong>Double quotes only</strong> — for both keys and string values (no single quotes)</li>
+                        <li><strong>No trailing commas</strong> — the last item in an object or array must NOT have a comma after it</li>
+                        <li><strong>No comments</strong> — JSON has no comment syntax at all</li>
+                        <li><strong>Lowercase booleans</strong> — <code>true</code> and <code>false</code>, not <code>True</code>/<code>False</code></li>
+                        <li><strong>null, not None/undefined</strong> — the JSON keyword is <code>null</code></li>
+                    </ol>
+                </div>
+            </section>
+
+            <!-- Parsing JSON -->
+            <section id="parsing-json" class="lesson-section">
+                <h2>Parsing JSON (String → Data)</h2>
+                <p><strong>Parsing</strong> (also called <em>deserializing</em>) converts a JSON string into a native data structure you can work with in your language — dictionaries in Python, objects in JavaScript, or typed objects in C#.</p>
+
+                <div class="mermaid">
+                    flowchart LR
+                        A["JSON String<br/><code>'{\"name\": \"Alice\"}'</code>"] -->|"Parse /<br/>Deserialize"| B["Native Object<br/><code>{name: 'Alice'}</code>"]
+                        style A fill:#f59e0b,color:#fff
+                        style B fill:#22c55e,color:#fff
+                </div>
+
+                <div class="code-tabs" data-title="Parsing JSON Strings">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">import json
+
+# --- Parse a JSON string into a Python dictionary ---
+json_string = '{"name": "Alice", "age": 28, "courses": ["Python", "SQL"]}'
+
+data = json.loads(json_string)   # loads = "load string"
+print(type(data))     # &lt;class 'dict'&gt;
+print(data["name"])   # Alice
+print(data["age"])    # 28
+print(data["courses"])  # ['Python', 'SQL']
+print(data["courses"][0])  # Python
+
+# --- JSON types → Python types ---
+json_example = '''
+{
+    "text": "hello",
+    "number": 42,
+    "decimal": 3.14,
+    "flag": true,
+    "nothing": null,
+    "items": [1, 2, 3],
+    "nested": {"a": 1}
+}
+'''
+result = json.loads(json_example)
+print(type(result["text"]))     # str
+print(type(result["number"]))   # int
+print(type(result["decimal"]))  # float
+print(type(result["flag"]))     # bool (True)
+print(type(result["nothing"]))  # NoneType (None)
+print(type(result["items"]))    # list
+print(type(result["nested"]))   # dict
+
+# --- Handling invalid JSON ---
+try:
+    bad = json.loads('{"name": "Alice",}')   # Trailing comma!
+except json.JSONDecodeError as e:
+    print(f"Invalid JSON: {e}")
+    # Invalid JSON: Expecting property name enclosed in double quotes: line 1 column 18</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// --- Parse a JSON string into a JavaScript object ---
+let jsonString = '{"name": "Alice", "age": 28, "courses": ["Python", "SQL"]}';
+
+let data = JSON.parse(jsonString);
+console.log(typeof data);       // "object"
+console.log(data.name);         // Alice
+console.log(data.age);          // 28
+console.log(data.courses);      // ['Python', 'SQL']
+console.log(data.courses[0]);   // Python
+
+// --- JSON types → JavaScript types ---
+let jsonExample = `
+{
+    "text": "hello",
+    "number": 42,
+    "decimal": 3.14,
+    "flag": true,
+    "nothing": null,
+    "items": [1, 2, 3],
+    "nested": {"a": 1}
+}
+`;
+let result = JSON.parse(jsonExample);
+console.log(typeof result.text);      // "string"
+console.log(typeof result.number);    // "number"
+console.log(typeof result.decimal);   // "number" (JS has only one number type)
+console.log(typeof result.flag);      // "boolean"
+console.log(result.nothing);          // null
+console.log(Array.isArray(result.items));  // true
+console.log(typeof result.nested);    // "object"
+
+// --- Handling invalid JSON ---
+try {
+    let bad = JSON.parse('{"name": "Alice",}');  // Trailing comma!
+} catch (err) {
+    console.log(`Invalid JSON: ${err.message}`);
+    // Invalid JSON: Expected double-quoted property name in JSON at position 17
+}
+
+// Fun fact: JSON was inspired by JavaScript object syntax,
+// which is why JSON.parse and JSON.stringify are built-in!</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">using System.Text.Json;
+
+// --- Method 1: Parse to JsonDocument (dynamic, no class needed) ---
+string jsonString = @"{""name"": ""Alice"", ""age"": 28, ""courses"": [""Python"", ""SQL""]}";
+
+JsonDocument doc = JsonDocument.Parse(jsonString);
+JsonElement root = doc.RootElement;
+
+Console.WriteLine(root.GetProperty("name").GetString());   // Alice
+Console.WriteLine(root.GetProperty("age").GetInt32());      // 28
+Console.WriteLine(root.GetProperty("courses")[0].GetString()); // Python
+
+// --- Method 2: Deserialize to a typed class (recommended!) ---
+class Student
+{
+    public string Name { get; set; } = "";
+    public int Age { get; set; }
+    public List&lt;string&gt; Courses { get; set; } = new();
+}
+
+var options = new JsonSerializerOptions
+{
+    PropertyNameCaseInsensitive = true    // "name" matches Name
+};
+
+Student? student = JsonSerializer.Deserialize&lt;Student&gt;(jsonString, options);
+Console.WriteLine(student?.Name);         // Alice
+Console.WriteLine(student?.Age);          // 28
+Console.WriteLine(student?.Courses[0]);   // Python
+
+// --- Method 3: Deserialize to Dictionary (flexible) ---
+var dict = JsonSerializer.Deserialize&lt;Dictionary&lt;string, JsonElement&gt;&gt;(jsonString);
+Console.WriteLine(dict?["name"].GetString());  // Alice
+
+// --- Handling invalid JSON ---
+try
+{
+    JsonDocument.Parse(@"{""name"": ""Alice"",}");  // Trailing comma!
+}
+catch (JsonException ex)
+{
+    Console.WriteLine($"Invalid JSON: {ex.Message}");
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 "Parse" vs. "Load" — Same Thing, Different Names</h4>
+                    <ul>
+                        <li>Python: <code>json.loads(string)</code> — "load string"</li>
+                        <li>JavaScript: <code>JSON.parse(string)</code></li>
+                        <li>C#: <code>JsonSerializer.Deserialize&lt;T&gt;(string)</code> or <code>JsonDocument.Parse(string)</code></li>
+                    </ul>
+                    <p>They all do the same thing: take a JSON string and turn it into native data structures. The word "deserialize" is the formal term — it means converting serialized (text) data back into live objects.</p>
+                </div>
+            </section>
+
+            <!-- Creating JSON -->
+            <section id="creating-json" class="lesson-section">
+                <h2>Creating JSON (Data → String)</h2>
+                <p><strong>Serializing</strong> (or <em>stringifying</em>) is the reverse: take a native data structure and convert it into a JSON string, ready to save to a file or send over a network.</p>
+
+                <div class="mermaid">
+                    flowchart LR
+                        A["Native Object<br/><code>{name: 'Alice'}</code>"] -->|"Stringify /<br/>Serialize"| B["JSON String<br/><code>'{\"name\": \"Alice\"}'</code>"]
+                        style A fill:#22c55e,color:#fff
+                        style B fill:#f59e0b,color:#fff
+                </div>
+
+                <div class="code-tabs" data-title="Creating JSON Strings">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">import json
+
+# --- Convert Python dict → JSON string ---
+student = {
+    "name": "Alice",
+    "age": 28,
+    "courses": ["Python", "SQL"],
+    "active": True,       # Python True → JSON true (automatic!)
+    "gpa": None,          # Python None → JSON null (automatic!)
+}
+
+json_string = json.dumps(student)   # dumps = "dump string"
+print(json_string)
+# {"name": "Alice", "age": 28, "courses": ["Python", "SQL"], "active": true, "gpa": null}
+
+# --- Pretty-printed JSON (human readable) ---
+pretty = json.dumps(student, indent=4)
+print(pretty)
+# {
+#     "name": "Alice",
+#     "age": 28,
+#     "courses": [
+#         "Python",
+#         "SQL"
+#     ],
+#     "active": true,
+#     "gpa": null
+# }
+
+# --- Other useful options ---
+# Sort keys alphabetically:
+sorted_json = json.dumps(student, indent=2, sort_keys=True)
+
+# Handle non-ASCII characters:
+data = {"city": "Zürich", "greeting": "こんにちは"}
+print(json.dumps(data))                          # Escaped: "\u00fc", "\u3053..."
+print(json.dumps(data, ensure_ascii=False))       # Raw: "Zürich", "こんにちは"
+
+# --- What CANNOT be converted to JSON ---
+import datetime
+try:
+    json.dumps({"now": datetime.datetime.now()})
+except TypeError as e:
+    print(f"Error: {e}")
+    # Error: Object of type datetime is not JSON serializable
+    # Fix: convert to string first: str(datetime.datetime.now())</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// --- Convert JavaScript object → JSON string ---
+let student = {
+    name: "Alice",
+    age: 28,
+    courses: ["Python", "SQL"],
+    active: true,
+    gpa: null,
+};
+
+let jsonString = JSON.stringify(student);
+console.log(jsonString);
+// {"name":"Alice","age":28,"courses":["Python","SQL"],"active":true,"gpa":null}
+
+// --- Pretty-printed JSON ---
+let pretty = JSON.stringify(student, null, 4);
+console.log(pretty);
+// {
+//     "name": "Alice",
+//     "age": 28,
+//     ...
+// }
+
+// The second argument is a "replacer" — use null to include everything.
+// The third argument is the indent (spaces or a string).
+
+// --- Replacer: control which properties are included ---
+let filtered = JSON.stringify(student, ["name", "age"], 2);
+console.log(filtered);
+// {
+//   "name": "Alice",
+//   "age": 28
+// }
+
+// --- What CANNOT be converted to JSON ---
+let problematic = {
+    func: function() {},     // Functions are DROPPED silently!
+    undef: undefined,        // undefined is DROPPED silently!
+    date: new Date(),        // Dates become strings (ISO format)
+    regex: /abc/,            // RegExp becomes {}
+};
+
+console.log(JSON.stringify(problematic, null, 2));
+// {
+//   "date": "2026-04-13T10:30:00.000Z",
+//   "regex": {}
+// }
+// Notice: func and undef are completely gone!</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">using System.Text.Json;
+
+// --- Method 1: Serialize from a class ---
+class Student
+{
+    public string Name { get; set; } = "";
+    public int Age { get; set; }
+    public List&lt;string&gt; Courses { get; set; } = new();
+    public bool Active { get; set; }
+    public double? Gpa { get; set; }    // nullable → JSON null
+}
+
+var student = new Student
+{
+    Name = "Alice",
+    Age = 28,
+    Courses = new List&lt;string&gt; { "Python", "SQL" },
+    Active = true,
+    Gpa = null
+};
+
+string jsonString = JsonSerializer.Serialize(student);
+Console.WriteLine(jsonString);
+// {"Name":"Alice","Age":28,"Courses":["Python","SQL"],"Active":true,"Gpa":null}
+
+// --- Pretty-printed JSON ---
+var options = new JsonSerializerOptions { WriteIndented = true };
+string pretty = JsonSerializer.Serialize(student, options);
+Console.WriteLine(pretty);
+
+// --- Use camelCase keys (common for JSON) ---
+var camelOptions = new JsonSerializerOptions
+{
+    WriteIndented = true,
+    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+};
+Console.WriteLine(JsonSerializer.Serialize(student, camelOptions));
+// {
+//   "name": "Alice",
+//   "age": 28,
+//   ...
+// }
+
+// --- Method 2: Serialize from Dictionary ---
+var dict = new Dictionary&lt;string, object?&gt;
+{
+    ["name"] = "Alice",
+    ["age"] = 28,
+    ["active"] = true,
+    ["gpa"] = null,
+};
+Console.WriteLine(JsonSerializer.Serialize(dict, options));</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ Serialize / Stringify Quick Reference</h4>
+                    <ul>
+                        <li>Python: <code>json.dumps(data, indent=4)</code></li>
+                        <li>JavaScript: <code>JSON.stringify(data, null, 4)</code></li>
+                        <li>C#: <code>JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true })</code></li>
+                    </ul>
+                    <p>The <code>indent</code> parameter makes JSON human-readable. Use it for config files and debugging. Omit it for compact JSON (API responses, data transfer).</p>
+                </div>
+            </section>
+
+            <!-- Reading and Writing JSON Files -->
+            <section id="json-files" class="lesson-section">
+                <h2>Reading and Writing JSON Files</h2>
+                <p>The real power of JSON: saving structured data to files and loading it back. This combines the file skills from Lesson 22 with the JSON skills from this lesson.</p>
+
+                <div class="code-tabs" data-title="Writing JSON to a File">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">import json
+from pathlib import Path
+
+# --- Write JSON to a file ---
+students = [
+    {"name": "Alice", "age": 28, "gpa": 3.9},
+    {"name": "Bob", "age": 22, "gpa": 3.2},
+    {"name": "Charlie", "age": 25, "gpa": 3.7},
+]
+
+# Method 1: json.dump() writes directly to a file
+with open("students.json", "w", encoding="utf-8") as file:
+    json.dump(students, file, indent=4)
+    # Note: dump() not dumps() — no 's' means "to file"
+
+# Method 2: Pathlib
+Path("students.json").write_text(
+    json.dumps(students, indent=4),
+    encoding="utf-8"
+)
+
+# --- Read JSON from a file ---
+# Method 1: json.load() reads directly from a file
+with open("students.json", "r", encoding="utf-8") as file:
+    loaded = json.load(file)   # load() not loads()
+
+print(loaded[0]["name"])  # Alice
+
+# Method 2: Pathlib
+loaded = json.loads(Path("students.json").read_text(encoding="utf-8"))
+
+# --- The pattern: Load → Modify → Save ---
+# This is the most common JSON file workflow:
+with open("students.json", "r") as f:
+    data = json.load(f)                        # 1. Load
+
+data.append({"name": "Diana", "age": 24, "gpa": 3.5})  # 2. Modify
+
+with open("students.json", "w") as f:
+    json.dump(data, f, indent=4)               # 3. Save</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">const fs = require("fs");
+
+// --- Write JSON to a file ---
+let students = [
+    { name: "Alice", age: 28, gpa: 3.9 },
+    { name: "Bob", age: 22, gpa: 3.2 },
+    { name: "Charlie", age: 25, gpa: 3.7 },
+];
+
+// Stringify with indent, then write
+fs.writeFileSync("students.json", JSON.stringify(students, null, 4));
+
+// --- Read JSON from a file ---
+let jsonText = fs.readFileSync("students.json", "utf-8");
+let loaded = JSON.parse(jsonText);
+
+console.log(loaded[0].name);  // Alice
+
+// --- The pattern: Load → Modify → Save ---
+let data = JSON.parse(fs.readFileSync("students.json", "utf-8"));  // 1. Load
+data.push({ name: "Diana", age: 24, gpa: 3.5 });                  // 2. Modify
+fs.writeFileSync("students.json", JSON.stringify(data, null, 4));  // 3. Save
+
+// --- Helper functions (common pattern) ---
+function loadJSON(filename) {
+    if (!fs.existsSync(filename)) return null;
+    return JSON.parse(fs.readFileSync(filename, "utf-8"));
+}
+
+function saveJSON(filename, data) {
+    fs.writeFileSync(filename, JSON.stringify(data, null, 4));
+}
+
+// Usage:
+let students2 = loadJSON("students.json") || [];
+students2.push({ name: "Eve", age: 23, gpa: 3.8 });
+saveJSON("students.json", students2);</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">using System.IO;
+using System.Text.Json;
+
+class Student
+{
+    public string Name { get; set; } = "";
+    public int Age { get; set; }
+    public double Gpa { get; set; }
+}
+
+var options = new JsonSerializerOptions
+{
+    WriteIndented = true,
+    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+};
+
+// --- Write JSON to a file ---
+var students = new List&lt;Student&gt;
+{
+    new() { Name = "Alice", Age = 28, Gpa = 3.9 },
+    new() { Name = "Bob", Age = 22, Gpa = 3.2 },
+    new() { Name = "Charlie", Age = 25, Gpa = 3.7 },
+};
+
+string json = JsonSerializer.Serialize(students, options);
+File.WriteAllText("students.json", json);
+
+// --- Read JSON from a file ---
+string jsonText = File.ReadAllText("students.json");
+var readOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+var loaded = JsonSerializer.Deserialize&lt;List&lt;Student&gt;&gt;(jsonText, readOptions);
+
+Console.WriteLine(loaded?[0].Name);  // Alice
+
+// --- The pattern: Load → Modify → Save ---
+string raw = File.ReadAllText("students.json");
+var data = JsonSerializer.Deserialize&lt;List&lt;Student&gt;&gt;(raw, readOptions) ?? new();
+data.Add(new Student { Name = "Diana", Age = 24, Gpa = 3.5 });    // Modify
+File.WriteAllText("students.json", JsonSerializer.Serialize(data, options)); // Save</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Python Naming Tip: <code>load</code> vs. <code>loads</code></h4>
+                    <ul>
+                        <li><code>json.load(file)</code> — <strong>load from a file</strong> object</li>
+                        <li><code>json.loads(string)</code> — <strong>load from a string</strong> (the <code>s</code> = "string")</li>
+                        <li><code>json.dump(data, file)</code> — <strong>dump to a file</strong> object</li>
+                        <li><code>json.dumps(data)</code> — <strong>dump to a string</strong></li>
+                    </ul>
+                    <p>This naming convention is unique to Python. JS uses <code>JSON.parse()</code>/<code>JSON.stringify()</code> for strings, and you combine them with <code>readFileSync</code>/<code>writeFileSync</code> for files.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>The <strong>Load → Modify → Save</strong> pattern is the most important takeaway from this section. This is how real applications work: they read a JSON config or data file, make changes in memory, and write it back. Have students actually create a <code>students.json</code> file, run the code to add a student, then open the file to see it changed. That feedback loop — code changes a file on disk, you see the result — is very satisfying for beginners. The Python <code>load</code> vs <code>loads</code> naming is a common source of confusion; the mnemonic "s = string" helps. In C#, emphasize <code>PropertyNameCaseInsensitive = true</code> because JSON typically uses camelCase but C# properties use PascalCase.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Nested JSON -->
+            <section id="nested-json" class="lesson-section">
+                <h2>Nested JSON and Complex Structures</h2>
+                <p>Real-world JSON is almost always nested — objects inside objects, arrays of objects, arrays inside objects. Here's how to navigate deep structures:</p>
+
+                <div class="code-tabs" data-title="Working with Nested JSON">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">import json
+
+# A realistic JSON structure (imagine this from an API response)
+company_json = '''
+{
+    "company": "TechCorp",
+    "founded": 2015,
+    "departments": [
+        {
+            "name": "Engineering",
+            "head": "Alice Chen",
+            "employees": [
+                {"name": "Bob", "role": "Backend", "skills": ["Python", "SQL"]},
+                {"name": "Carol", "role": "Frontend", "skills": ["React", "CSS"]}
+            ]
+        },
+        {
+            "name": "Marketing",
+            "head": "Dave Kim",
+            "employees": [
+                {"name": "Eve", "role": "Content", "skills": ["Writing", "SEO"]}
+            ]
+        }
+    ]
+}
+'''
+
+data = json.loads(company_json)
+
+# --- Navigating the structure ---
+print(data["company"])                             # "TechCorp"
+print(data["departments"][0]["name"])               # "Engineering"
+print(data["departments"][0]["employees"][1]["name"])  # "Carol"
+print(data["departments"][0]["employees"][0]["skills"][0])  # "Python"
+
+# --- Iterating over nested structures ---
+for dept in data["departments"]:
+    print(f"\n{dept['name']} (Head: {dept['head']})")
+    for emp in dept["employees"]:
+        skills = ", ".join(emp["skills"])
+        print(f"  • {emp['name']} — {emp['role']} ({skills})")
+
+# Output:
+# Engineering (Head: Alice Chen)
+#   • Bob — Backend (Python, SQL)
+#   • Carol — Frontend (React, CSS)
+# Marketing (Head: Dave Kim)
+#   • Eve — Content (Writing, SEO)
+
+# --- Safe access for missing keys ---
+# Use .get() to avoid KeyError:
+phone = data.get("phone", "N/A")         # "N/A" — key doesn't exist
+dept0 = data.get("departments", [])[0]   # Safe even if departments missing</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">let companyJson = `
+{
+    "company": "TechCorp",
+    "founded": 2015,
+    "departments": [
+        {
+            "name": "Engineering",
+            "head": "Alice Chen",
+            "employees": [
+                {"name": "Bob", "role": "Backend", "skills": ["Python", "SQL"]},
+                {"name": "Carol", "role": "Frontend", "skills": ["React", "CSS"]}
+            ]
+        },
+        {
+            "name": "Marketing",
+            "head": "Dave Kim",
+            "employees": [
+                {"name": "Eve", "role": "Content", "skills": ["Writing", "SEO"]}
+            ]
+        }
+    ]
+}
+`;
+
+let data = JSON.parse(companyJson);
+
+// --- Navigating the structure ---
+console.log(data.company);                           // "TechCorp"
+console.log(data.departments[0].name);               // "Engineering"
+console.log(data.departments[0].employees[1].name);  // "Carol"
+console.log(data.departments[0].employees[0].skills[0]); // "Python"
+
+// --- Iterating over nested structures ---
+for (let dept of data.departments) {
+    console.log(`\n${dept.name} (Head: ${dept.head})`);
+    for (let emp of dept.employees) {
+        console.log(`  • ${emp.name} — ${emp.role} (${emp.skills.join(", ")})`);
+    }
+}
+
+// --- Safe access with optional chaining (?.) ---
+// If any part of the chain is null/undefined, returns undefined instead of crashing
+console.log(data?.departments?.[0]?.employees?.[0]?.name);   // "Bob"
+console.log(data?.departments?.[5]?.name);                    // undefined (no crash!)
+console.log(data?.phone ?? "N/A");                            // "N/A"
+
+// Optional chaining (?.) is one of JavaScript's best features for JSON!</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">using System.Text.Json;
+
+// --- Using JsonDocument for dynamic navigation ---
+string companyJson = @"
+{
+    ""company"": ""TechCorp"",
+    ""founded"": 2015,
+    ""departments"": [
+        {
+            ""name"": ""Engineering"",
+            ""head"": ""Alice Chen"",
+            ""employees"": [
+                {""name"": ""Bob"", ""role"": ""Backend"", ""skills"": [""Python"", ""SQL""]},
+                {""name"": ""Carol"", ""role"": ""Frontend"", ""skills"": [""React"", ""CSS""]}
+            ]
+        },
+        {
+            ""name"": ""Marketing"",
+            ""head"": ""Dave Kim"",
+            ""employees"": [
+                {""name"": ""Eve"", ""role"": ""Content"", ""skills"": [""Writing"", ""SEO""]}
+            ]
+        }
+    ]
+}";
+
+JsonDocument doc = JsonDocument.Parse(companyJson);
+JsonElement root = doc.RootElement;
+
+// --- Navigating the structure ---
+Console.WriteLine(root.GetProperty("company").GetString());
+Console.WriteLine(root.GetProperty("departments")[0].GetProperty("name").GetString());
+Console.WriteLine(root.GetProperty("departments")[0]
+    .GetProperty("employees")[1]
+    .GetProperty("name").GetString());   // "Carol"
+
+// --- Iterating over nested structures ---
+foreach (JsonElement dept in root.GetProperty("departments").EnumerateArray())
+{
+    string name = dept.GetProperty("name").GetString()!;
+    string head = dept.GetProperty("head").GetString()!;
+    Console.WriteLine($"\n{name} (Head: {head})");
+
+    foreach (JsonElement emp in dept.GetProperty("employees").EnumerateArray())
+    {
+        string empName = emp.GetProperty("name").GetString()!;
+        string role = emp.GetProperty("role").GetString()!;
+        var skills = emp.GetProperty("skills").EnumerateArray()
+            .Select(s =&gt; s.GetString());
+        Console.WriteLine($"  • {empName} — {role} ({string.Join(", ", skills)})");
+    }
+}
+
+// --- Safe access with TryGetProperty ---
+if (root.TryGetProperty("phone", out JsonElement phoneEl))
+    Console.WriteLine(phoneEl.GetString());
+else
+    Console.WriteLine("N/A");  // Key doesn't exist</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Reading Nested JSON: Think Like a Map</h4>
+                    <p>Read the access chain left to right, like following a map:</p>
+                    <ul>
+                        <li><code>data["departments"]</code> → get the "departments" array</li>
+                        <li><code>[0]</code> → first department (Engineering)</li>
+                        <li><code>["employees"]</code> → get its employees array</li>
+                        <li><code>[1]</code> → second employee (Carol)</li>
+                        <li><code>["name"]</code> → get her name → <code>"Carol"</code></li>
+                    </ul>
+                    <p>If you get lost in nested JSON, use pretty-printing (<code>json.dumps(data, indent=2)</code>) to visualize the structure, or paste it into an online JSON formatter.</p>
+                </div>
+            </section>
+
+            <!-- JSON vs CSV -->
+            <section id="json-vs-csv" class="lesson-section">
+                <h2>JSON vs. CSV</h2>
+                <p>You now know two data formats. When should you use which?</p>
+
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>CSV</th>
+                                <th>JSON</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Structure</strong></td>
+                                <td>Flat — rows and columns only</td>
+                                <td>Nested — objects, arrays, any depth</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Data Types</strong></td>
+                                <td>Everything is a string</td>
+                                <td>Strings, numbers, booleans, null, arrays, objects</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Human Readable</strong></td>
+                                <td>Easy in spreadsheets</td>
+                                <td>Easy with formatting; dense without</td>
+                            </tr>
+                            <tr>
+                                <td><strong>File Size</strong></td>
+                                <td>Smaller (less overhead)</td>
+                                <td>Larger (keys repeated for every record)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Best For</strong></td>
+                                <td>Tabular data (spreadsheets, databases)</td>
+                                <td>APIs, configs, nested/complex data</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Spreadsheet-Friendly</strong></td>
+                                <td>Yes — opens directly in Excel/Sheets</td>
+                                <td>No — needs conversion</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ Quick Decision Guide</h4>
+                    <ul>
+                        <li><strong>Use CSV</strong> when your data is a flat table (rows of the same type with the same columns) — student grades, sales records, sensor readings</li>
+                        <li><strong>Use JSON</strong> when your data has nesting, mixed types, or irregular structure — user profiles, API responses, configuration files, game save states</li>
+                        <li><strong>Rule of thumb:</strong> If it fits neatly in a spreadsheet → CSV. If it doesn't → JSON.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Common Pitfalls -->
+            <section id="common-pitfalls" class="lesson-section">
+                <h2>Common JSON Pitfalls</h2>
+
+                <div class="code-tabs" data-title="JSON Mistakes and How to Fix Them">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">import json
+
+# --- Pitfall 1: Single quotes ---
+bad = "{'name': 'Alice'}"       # ❌ Python-style, not JSON!
+# json.loads(bad)  → JSONDecodeError
+good = '{"name": "Alice"}'      # ✅ Double quotes
+data = json.loads(good)
+
+# --- Pitfall 2: Trailing comma ---
+bad = '{"a": 1, "b": 2,}'      # ❌ Trailing comma after 2
+# json.loads(bad)  → JSONDecodeError
+good = '{"a": 1, "b": 2}'      # ✅ No trailing comma
+
+# --- Pitfall 3: Forgetting that JSON values are strings ---
+data = json.loads('{"age": "28"}')
+# data["age"] is the STRING "28", not the number 28!
+# age = data["age"] + 1  → TypeError!
+age = int(data["age"]) + 1      # ✅ Convert first
+
+# --- Pitfall 4: Trying to serialize non-JSON types ---
+from datetime import datetime
+
+data = {"created": datetime.now()}
+# json.dumps(data)  → TypeError: datetime is not serializable
+
+# Fix: convert to string first
+data = {"created": datetime.now().isoformat()}
+print(json.dumps(data))  # {"created": "2026-04-13T10:30:00.123456"}
+
+# --- Pitfall 5: Not handling missing keys ---
+data = {"name": "Alice"}
+# print(data["age"])  → KeyError!
+print(data.get("age", "unknown"))  # ✅ "unknown"</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// --- Pitfall 1: Confusing JS objects with JSON strings ---
+let obj = { name: "Alice" };        // JS object (live data)
+let str = '{"name": "Alice"}';      // JSON string (text)
+
+// You parse STRINGS, not objects:
+// JSON.parse(obj)  → ERROR — it's already an object!
+// JSON.stringify(str) → Wraps the string in MORE quotes!
+
+// --- Pitfall 2: undefined disappears ---
+let data = { name: "Alice", nickname: undefined };
+console.log(JSON.stringify(data));
+// {"name":"Alice"}  ← nickname is GONE!
+// Fix: use null instead of undefined if you want it in JSON
+
+// --- Pitfall 3: Date objects become strings ---
+let event = { name: "Launch", date: new Date("2026-04-13") };
+let json = JSON.stringify(event);
+let parsed = JSON.parse(json);
+console.log(typeof parsed.date);  // "string" — NOT a Date object!
+// Fix: convert back manually:
+parsed.date = new Date(parsed.date);
+
+// --- Pitfall 4: Circular references ---
+let a = {};
+let b = { ref: a };
+a.ref = b;                          // a → b → a → b → ...
+// JSON.stringify(a)  → TypeError: circular structure!
+// Fix: remove circular refs, or use a library like 'flatted'
+
+// --- Pitfall 5: NaN and Infinity ---
+console.log(JSON.stringify({ val: NaN }));       // {"val":null}
+console.log(JSON.stringify({ val: Infinity }));  // {"val":null}
+// NaN and Infinity become null in JSON — they're not valid JSON numbers!</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">using System.Text.Json;
+
+// --- Pitfall 1: Case sensitivity ---
+// JSON:  {"name": "Alice"}   (camelCase)
+// C#:    public string Name  (PascalCase)
+// Without PropertyNameCaseInsensitive, "name" won't match Name!
+
+var options = new JsonSerializerOptions
+{
+    PropertyNameCaseInsensitive = true   // ✅ Always set this!
+};
+
+// --- Pitfall 2: Null handling ---
+string jsonWithNull = @"{""name"": ""Alice"", ""age"": null}";
+
+class Person
+{
+    public string Name { get; set; } = "";
+    public int Age { get; set; }  // ❌ int can't be null!
+}
+// Fix: use nullable types
+class PersonFixed
+{
+    public string Name { get; set; } = "";
+    public int? Age { get; set; }  // ✅ int? can be null
+}
+
+// --- Pitfall 3: Strict deserialization ---
+// System.Text.Json is STRICT by default.
+// Extra properties in JSON are silently ignored — that's fine.
+// But missing REQUIRED properties can cause issues.
+
+// --- Pitfall 4: DateTime formatting ---
+var data = new { Created = DateTime.Now };
+Console.WriteLine(JsonSerializer.Serialize(data));
+// {"Created":"2026-04-13T10:30:00.1234567"}
+// ISO 8601 format — this is correct and standard!
+// But when deserializing, make sure the format matches.
+
+// --- Pitfall 5: Escaped quotes in verbatim strings ---
+// In @"..." strings, double the quotes:
+string json = @"{""name"": ""Alice""}";  // ✅
+// Or use $ with regular strings:
+string name = "Alice";
+string json2 = $"{{\"name\": \"{name}\"}}";  // ✅ But messy!
+// Best: build objects and serialize, don't hand-write JSON strings</code></pre>
+                    </div>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>The pitfalls section is designed as a troubleshooting reference. Don't try to cover every pitfall in lecture — instead, focus on the top 2–3 for each language. For Python: single quotes and serializing datetime. For JavaScript: undefined disappearing and dates becoming strings. For C#: case sensitivity and null handling. The others will be encountered naturally during exercises. Consider having students deliberately trigger each error to see the error message — recognizing "JSONDecodeError" or "TypeError: circular structure" helps students debug faster when they hit these issues in their own code.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Exercises -->
+            <section id="exercises" class="lesson-section">
+                <h2>Exercises</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 1: JSON Explorer</h3>
+                    <p><strong>Objective:</strong> Given the following JSON string, write code to extract and print specific pieces of information.</p>
+
+                    <pre><code>{
+    "library": "City Central Library",
+    "books": [
+        {
+            "title": "The Great Gatsby",
+            "author": "F. Scott Fitzgerald",
+            "year": 1925,
+            "genres": ["Fiction", "Classic"],
+            "available": true
+        },
+        {
+            "title": "Clean Code",
+            "author": "Robert C. Martin",
+            "year": 2008,
+            "genres": ["Programming", "Software Engineering"],
+            "available": false
+        },
+        {
+            "title": "Dune",
+            "author": "Frank Herbert",
+            "year": 1965,
+            "genres": ["Science Fiction", "Classic"],
+            "available": true
+        }
+    ],
+    "location": {
+        "city": "Portland",
+        "state": "OR",
+        "zip": "97201"
+    }
+}</code></pre>
+
+                    <p><strong>Extract and print:</strong></p>
+                    <ol>
+                        <li>The library name</li>
+                        <li>The title of the second book</li>
+                        <li>The first genre of the third book</li>
+                        <li>The city from the location</li>
+                        <li>All available book titles (loop through and filter)</li>
+                        <li>The total number of books</li>
+                    </ol>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="JSON Explorer Solution">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">import json
+
+json_string = '''{ ... }'''  # (paste the full JSON above)
+data = json.loads(json_string)
+
+# 1. Library name
+print(data["library"])                          # City Central Library
+
+# 2. Title of the second book
+print(data["books"][1]["title"])                 # Clean Code
+
+# 3. First genre of the third book
+print(data["books"][2]["genres"][0])             # Science Fiction
+
+# 4. City from location
+print(data["location"]["city"])                  # Portland
+
+# 5. All available book titles
+for book in data["books"]:
+    if book["available"]:
+        print(f"  Available: {book['title']}")
+# Available: The Great Gatsby
+# Available: Dune
+
+# 6. Total number of books
+print(f"Total books: {len(data['books'])}")     # Total books: 3</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">let jsonString = `{ ... }`;  // (paste the full JSON above)
+let data = JSON.parse(jsonString);
+
+console.log(data.library);                    // City Central Library
+console.log(data.books[1].title);             // Clean Code
+console.log(data.books[2].genres[0]);         // Science Fiction
+console.log(data.location.city);              // Portland
+
+data.books
+    .filter(b =&gt; b.available)
+    .forEach(b =&gt; console.log(`  Available: ${b.title}`));
+
+console.log(`Total books: ${data.books.length}`);</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">var doc = JsonDocument.Parse(jsonString);
+var root = doc.RootElement;
+
+Console.WriteLine(root.GetProperty("library").GetString());
+Console.WriteLine(root.GetProperty("books")[1].GetProperty("title").GetString());
+Console.WriteLine(root.GetProperty("books")[2].GetProperty("genres")[0].GetString());
+Console.WriteLine(root.GetProperty("location").GetProperty("city").GetString());
+
+foreach (var book in root.GetProperty("books").EnumerateArray())
+{
+    if (book.GetProperty("available").GetBoolean())
+        Console.WriteLine($"  Available: {book.GetProperty("title").GetString()}");
+}
+
+Console.WriteLine($"Total books: {root.GetProperty("books").GetArrayLength()}");</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 2: Contact Book</h3>
+                    <p><strong>Objective:</strong> Build a command-line contact book that stores contacts in a JSON file. This extends the note-taking app from Lesson 22 with structured data.</p>
+
+                    <p><strong>Features:</strong></p>
+                    <ol>
+                        <li><strong>Add a contact:</strong> Name, phone number, and email</li>
+                        <li><strong>List all contacts:</strong> Display formatted contact list</li>
+                        <li><strong>Search contacts:</strong> Find by name (case-insensitive)</li>
+                        <li><strong>Delete a contact:</strong> Remove by name</li>
+                        <li>All data <strong>persists</strong> in <code>contacts.json</code></li>
+                    </ol>
+
+                    <p><strong>Sample <code>contacts.json</code>:</strong></p>
+                    <pre><code>[
+    {
+        "name": "Alice Chen",
+        "phone": "555-0101",
+        "email": "alice@example.com"
+    },
+    {
+        "name": "Bob Smith",
+        "phone": "555-0202",
+        "email": "bob@example.com"
+    }
+]</code></pre>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Contact Book Solution">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">import json
+from pathlib import Path
+
+CONTACTS_FILE = "contacts.json"
+
+def load_contacts():
+    path = Path(CONTACTS_FILE)
+    if not path.exists():
+        return []
+    return json.loads(path.read_text(encoding="utf-8"))
+
+def save_contacts(contacts):
+    Path(CONTACTS_FILE).write_text(
+        json.dumps(contacts, indent=4),
+        encoding="utf-8"
+    )
+
+def add_contact():
+    name = input("Name: ").strip()
+    phone = input("Phone: ").strip()
+    email = input("Email: ").strip()
+
+    if not name:
+        print("Name is required.")
+        return
+
+    contacts = load_contacts()
+    contacts.append({"name": name, "phone": phone, "email": email})
+    save_contacts(contacts)
+    print(f"Added {name}!")
+
+def list_contacts():
+    contacts = load_contacts()
+    if not contacts:
+        print("No contacts yet.")
+        return
+
+    print(f"\n--- Contacts ({len(contacts)}) ---")
+    for i, c in enumerate(contacts, 1):
+        print(f"  {i}. {c['name']}")
+        print(f"     Phone: {c['phone']}")
+        print(f"     Email: {c['email']}")
+    print()
+
+def search_contacts():
+    query = input("Search name: ").strip().lower()
+    if not query:
+        return
+
+    contacts = load_contacts()
+    matches = [c for c in contacts if query in c["name"].lower()]
+
+    if not matches:
+        print("No matches found.")
+    else:
+        print(f"\n--- Found {len(matches)} match(es) ---")
+        for c in matches:
+            print(f"  {c['name']} | {c['phone']} | {c['email']}")
+    print()
+
+def delete_contact():
+    name = input("Delete contact named: ").strip().lower()
+    contacts = load_contacts()
+    original_count = len(contacts)
+    contacts = [c for c in contacts if c["name"].lower() != name]
+
+    if len(contacts) == original_count:
+        print("Contact not found.")
+    else:
+        save_contacts(contacts)
+        print("Contact deleted.")
+
+# --- Main loop ---
+while True:
+    print("Contacts: [A]dd | [L]ist | [S]earch | [D]elete | [Q]uit")
+    choice = input("> ").strip().lower()
+
+    if choice == "a": add_contact()
+    elif choice == "l": list_contacts()
+    elif choice == "s": search_contacts()
+    elif choice == "d": delete_contact()
+    elif choice == "q":
+        print("Goodbye!")
+        break
+    else:
+        print("Invalid choice.")</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">const fs = require("fs");
+const readline = require("readline");
+const CONTACTS_FILE = "contacts.json";
+
+const rl = readline.createInterface({
+    input: process.stdin, output: process.stdout
+});
+const prompt = (q) =&gt; new Promise(r =&gt; rl.question(q, r));
+
+function loadContacts() {
+    if (!fs.existsSync(CONTACTS_FILE)) return [];
+    return JSON.parse(fs.readFileSync(CONTACTS_FILE, "utf-8"));
+}
+
+function saveContacts(contacts) {
+    fs.writeFileSync(CONTACTS_FILE, JSON.stringify(contacts, null, 4));
+}
+
+async function addContact() {
+    let name = (await prompt("Name: ")).trim();
+    let phone = (await prompt("Phone: ")).trim();
+    let email = (await prompt("Email: ")).trim();
+    if (!name) { console.log("Name is required."); return; }
+
+    let contacts = loadContacts();
+    contacts.push({ name, phone, email });
+    saveContacts(contacts);
+    console.log(`Added ${name}!`);
+}
+
+function listContacts() {
+    let contacts = loadContacts();
+    if (contacts.length === 0) { console.log("No contacts yet."); return; }
+    console.log(`\n--- Contacts (${contacts.length}) ---`);
+    contacts.forEach((c, i) =&gt; {
+        console.log(`  ${i+1}. ${c.name}\n     Phone: ${c.phone}\n     Email: ${c.email}`);
+    });
+}
+
+async function searchContacts() {
+    let query = (await prompt("Search name: ")).trim().toLowerCase();
+    let matches = loadContacts().filter(c =&gt; c.name.toLowerCase().includes(query));
+    if (matches.length === 0) console.log("No matches.");
+    else matches.forEach(c =&gt; console.log(`  ${c.name} | ${c.phone} | ${c.email}`));
+}
+
+async function deleteContact() {
+    let name = (await prompt("Delete named: ")).trim().toLowerCase();
+    let contacts = loadContacts();
+    let filtered = contacts.filter(c =&gt; c.name.toLowerCase() !== name);
+    if (filtered.length === contacts.length) console.log("Not found.");
+    else { saveContacts(filtered); console.log("Deleted."); }
+}
+
+async function main() {
+    while (true) {
+        let ch = (await prompt("Contacts: [A]dd [L]ist [S]earch [D]elete [Q]uit\n> ")).trim().toLowerCase();
+        if (ch === "a") await addContact();
+        else if (ch === "l") listContacts();
+        else if (ch === "s") await searchContacts();
+        else if (ch === "d") await deleteContact();
+        else if (ch === "q") { console.log("Goodbye!"); rl.close(); break; }
+    }
+}
+main();</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">using System.Text.Json;
+const string ContactsFile = "contacts.json";
+var jsonOpts = new JsonSerializerOptions { WriteIndented = true };
+
+List&lt;Dictionary&lt;string, string&gt;&gt; LoadContacts()
+{
+    if (!File.Exists(ContactsFile)) return new();
+    string json = File.ReadAllText(ContactsFile);
+    return JsonSerializer.Deserialize&lt;List&lt;Dictionary&lt;string, string&gt;&gt;&gt;(json) ?? new();
+}
+
+void SaveContacts(List&lt;Dictionary&lt;string, string&gt;&gt; contacts)
+    =&gt; File.WriteAllText(ContactsFile, JsonSerializer.Serialize(contacts, jsonOpts));
+
+void AddContact()
+{
+    Console.Write("Name: "); string name = Console.ReadLine()?.Trim() ?? "";
+    Console.Write("Phone: "); string phone = Console.ReadLine()?.Trim() ?? "";
+    Console.Write("Email: "); string email = Console.ReadLine()?.Trim() ?? "";
+    if (string.IsNullOrEmpty(name)) { Console.WriteLine("Name required."); return; }
+    var contacts = LoadContacts();
+    contacts.Add(new() { ["name"] = name, ["phone"] = phone, ["email"] = email });
+    SaveContacts(contacts);
+    Console.WriteLine($"Added {name}!");
+}
+
+void ListContacts()
+{
+    var contacts = LoadContacts();
+    if (contacts.Count == 0) { Console.WriteLine("No contacts."); return; }
+    for (int i = 0; i &lt; contacts.Count; i++)
+        Console.WriteLine($"  {i+1}. {contacts[i]["name"]}\n     Phone: {contacts[i]["phone"]}\n     Email: {contacts[i]["email"]}");
+}
+
+while (true)
+{
+    Console.WriteLine("Contacts: [A]dd [L]ist [S]earch [D]elete [Q]uit");
+    Console.Write("> ");
+    string? ch = Console.ReadLine()?.Trim().ToLower();
+    switch (ch)
+    {
+        case "a": AddContact(); break;
+        case "l": ListContacts(); break;
+        case "q": Console.WriteLine("Goodbye!"); return;
+    }
+}</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 3: Config File Manager</h3>
+                    <p><strong>Objective:</strong> Many programs use JSON for configuration. Write a program that:</p>
+                    <ol>
+                        <li>Creates a default <code>config.json</code> if it doesn't exist (with default settings like theme, language, font size)</li>
+                        <li>Reads and displays the current settings</li>
+                        <li>Lets the user change a setting by name and value</li>
+                        <li>Saves the updated config back to the file</li>
+                    </ol>
+
+                    <p><strong>Sample <code>config.json</code>:</strong></p>
+                    <pre><code>{
+    "theme": "dark",
+    "language": "en",
+    "fontSize": 14,
+    "autoSave": true,
+    "maxRecentFiles": 10
+}</code></pre>
+
+                    <details>
+                        <summary>💡 Hints</summary>
+                        <p>Use the Load → Modify → Save pattern. When the user changes a setting, you'll need to convert the value from a string input to the appropriate type (number, boolean, or keep as string). You can check if the value looks like a number (<code>isdigit()</code>), or if it's "true"/"false".</p>
+                    </details>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Exercise 1 (JSON Explorer) is a warmup — it practices accessing nested data without the complexity of file I/O. Exercise 2 (Contact Book) is the main project — it's a direct evolution of the note-taking app from Lesson 22, upgrading from raw text to structured JSON. Students should compare the two and see how JSON makes the data much easier to search, filter, and display. Exercise 3 (Config File Manager) introduces a real-world use case — nearly every app they'll build or use has a config file. The type conversion challenge (string input → correct type) is a good stretch goal. If time is short, prioritize Exercise 2.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong>JSON</strong> is the universal text format for structured data — supported by every language, used by every API</li>
+                        <li><strong>JSON syntax is strict:</strong> double quotes only, no trailing commas, no comments, lowercase booleans, <code>null</code> not <code>None</code></li>
+                        <li><strong>Parsing</strong> converts a JSON string → native data structures (dicts, objects, arrays)</li>
+                        <li><strong>Serializing</strong> converts native data → a JSON string; use <code>indent</code> for readability</li>
+                        <li><strong>Load → Modify → Save</strong> is the standard JSON file workflow</li>
+                        <li><strong>Nested JSON</strong> is navigated with chained access: <code>data["key"][0]["nested"]</code></li>
+                        <li><strong>JSON vs. CSV:</strong> Use CSV for flat tables, JSON for nested/complex/mixed-type data</li>
+                        <li><strong>Always handle errors:</strong> invalid JSON, missing keys, wrong types</li>
+                    </ul>
+                </div>
+
+                <h3>Cross-Language Comparison</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Operation</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Parse string</td>
+                                <td><code>json.loads(s)</code></td>
+                                <td><code>JSON.parse(s)</code></td>
+                                <td><code>JsonSerializer.Deserialize&lt;T&gt;(s)</code></td>
+                            </tr>
+                            <tr>
+                                <td>Stringify</td>
+                                <td><code>json.dumps(d, indent=4)</code></td>
+                                <td><code>JSON.stringify(d, null, 4)</code></td>
+                                <td><code>JsonSerializer.Serialize(d)</code></td>
+                            </tr>
+                            <tr>
+                                <td>Read from file</td>
+                                <td><code>json.load(file)</code></td>
+                                <td><code>JSON.parse(readFileSync())</code></td>
+                                <td><code>Deserialize(ReadAllText())</code></td>
+                            </tr>
+                            <tr>
+                                <td>Write to file</td>
+                                <td><code>json.dump(d, file)</code></td>
+                                <td><code>writeFileSync(stringify())</code></td>
+                                <td><code>WriteAllText(Serialize())</code></td>
+                            </tr>
+                            <tr>
+                                <td>Safe key access</td>
+                                <td><code>d.get("key", default)</code></td>
+                                <td><code>d?.key ?? default</code></td>
+                                <td><code>TryGetProperty()</code></td>
+                            </tr>
+                            <tr>
+                                <td>Module/namespace</td>
+                                <td><code>import json</code></td>
+                                <td>Built-in <code>JSON</code></td>
+                                <td><code>System.Text.Json</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>🚀 What's Next?</h3>
+                <p>You can now save and load structured data with JSON. In the next lesson, we'll use JSON in its most important context: <strong>making API requests</strong>. You'll learn to fetch live data from the internet — weather, news, user profiles — and process the JSON responses in your programs. This is where your code starts talking to the rest of the world.</p>
+
+                <!-- Quiz -->
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Check</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> Which of these is valid JSON?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="JSON requires DOUBLE quotes for both keys and string values. Single quotes are not valid.">A) <code>{'name': 'Alice'}</code></button>
+                            <button class="quiz-option" data-correct="true" data-explanation="JSON requires double quotes for both keys and values. All other options violate JSON syntax rules: single quotes (A), trailing comma (C), and unquoted key (D) are all invalid.">B) <code>{"name": "Alice"}</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="JSON does NOT allow trailing commas. The comma after 28 makes this invalid.">C) <code>{"name": "Alice", "age": 28,}</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="JSON requires ALL keys to be in double quotes. Unquoted keys are a JavaScript feature, not valid JSON.">D) <code>{name: "Alice"}</code></button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 2:</strong> What does Python's <code>json.loads()</code> do?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="That's json.load() (no 's') — which reads from a file object.">A) Reads JSON directly from a file</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="json.loads() — 'load string' — takes a JSON string and converts it into Python data types (dict, list, str, int, float, bool, None). Its counterpart json.load() reads from a file object. The 's' suffix means 'string'.">B) Parses a JSON string into Python data structures</button>
+                            <button class="quiz-option" data-correct="false" data-hint="That's json.dumps() — the reverse operation (dump to string).">C) Converts a Python dictionary to a JSON string</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 3:</strong> When should you use JSON instead of CSV?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="CSV is actually better for spreadsheet data — it opens directly in Excel/Sheets. JSON can't do that.">A) When your data is a flat table like a spreadsheet</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="JSON excels at representing data with nesting (objects within objects), mixed types (strings, numbers, booleans together), and irregular structure. CSV is limited to flat rows and columns where everything is a string. APIs, config files, and complex data models all use JSON for this reason.">B) When your data has nesting, mixed types, or irregular structure</button>
+                            <button class="quiz-option" data-correct="false" data-hint="CSV actually produces smaller files because it has less overhead. JSON includes key names for every single record, which adds size.">C) When you need the smallest possible file size</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_22.html" class="prev-lesson">← Previous: Reading and Writing Files</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_24.html" class="next-lesson">Next: Making API Requests →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

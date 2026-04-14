@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn how Python, JavaScript, and C# convert between data types — and why JavaScript's implicit coercion creates infamous surprises.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 2.3: Type Conversion and Coercion - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 2</a></li>
+            <li aria-current="page">Lesson 2.3: Type Conversion and Coercion</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🔄 Lesson 2.3: Type Conversion and Coercion</h1>
+                <p class="lead">When types collide — how to convert data intentionally, and why JavaScript sometimes does it behind your back.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Distinguish between <strong>explicit conversion</strong> (you ask for it) and <strong>implicit coercion</strong> (the language does it automatically)</li>
+                        <li>Convert between strings, numbers, and booleans in all three languages</li>
+                        <li>Explain JavaScript's coercion rules and why <code>"5" + 3</code> ≠ <code>"5" - 3</code></li>
+                        <li>Handle user input that arrives as a string but needs to be a number</li>
+                        <li>Avoid common type conversion bugs</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 45 minutes</p>
+                    <p><strong>Project:</strong> A "Type Converter Playground" that converts user input between types</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary><h2 style="display: inline; margin: 0;">📑 In This Lesson</h2></summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#explicit-vs-implicit" class="toc-link">Explicit vs. Implicit Conversion</a></li>
+                        <li><a href="#string-to-number" class="toc-link">String → Number</a></li>
+                        <li><a href="#number-to-string" class="toc-link">Number → String</a></li>
+                        <li><a href="#boolean-conversions" class="toc-link">Boolean Conversions</a></li>
+                        <li><a href="#js-coercion" class="toc-link">JavaScript's Coercion Surprises</a></li>
+                        <li><a href="#real-world" class="toc-link">Real-World Scenario: User Input</a></li>
+                        <li><a href="#exercises" class="toc-link">Exercises</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Explicit vs Implicit -->
+            <section id="explicit-vs-implicit" class="lesson-section">
+                <h2>Explicit vs. Implicit Conversion</h2>
+                <p>There are two ways a value's type can change:</p>
+
+                <div class="mermaid">
+                    graph LR
+                    A["Type Conversion"] --> B["Explicit<br/>(You ask for it)"]
+                    A --> C["Implicit / Coercion<br/>(Language does it)"]
+                    B --> D["int('42')<br/>Number('42')<br/>int.Parse('42')"]
+                    C --> E["'5' + 3 → '53'<br/>(JS converts number<br/>to string silently)"]
+                    style A fill:#3b82f6,stroke:#1e40af,color:#fff,stroke-width:2px
+                    style B fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px
+                    style C fill:#f59e0b,stroke:#d97706,color:#fff,stroke-width:2px
+                </div>
+
+                <ul>
+                    <li><strong>Explicit conversion</strong> — you write code that says "convert this to a number." It's clear, intentional, and predictable.</li>
+                    <li><strong>Implicit coercion</strong> — the language automatically converts a value behind the scenes to make an operation work. Sometimes helpful, sometimes shocking.</li>
+                </ul>
+
+                <div class="card card-accent">
+                    <h4>📖 Language Philosophies</h4>
+                    <p style="color:#fff;"><strong>Python</strong> says: "Explicit is better than implicit." It almost never coerces types — you must convert manually.<br>
+                    <strong>JavaScript</strong> says: "I'll try to make it work." It coerces aggressively, which causes famous gotchas.<br>
+                    <strong>C#</strong> says: "I'll help with safe conversions." It allows some implicit conversions (small → big) but blocks lossy ones.</p>
+                </div>
+            </section>
+
+            <!-- String to Number -->
+            <section id="string-to-number" class="lesson-section">
+                <h2>String → Number</h2>
+                <p>This is the most common conversion you'll need — especially when dealing with user input, which almost always arrives as a string.</p>
+
+                <div class="code-tabs" data-title="String to Number">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python: use int() and float()
+age_str = "25"
+price_str = "19.99"
+
+age = int(age_str)         # 25 (integer)
+price = float(price_str)   # 19.99 (float)
+
+print(age + 5)     # 30
+print(price * 2)   # 39.98
+
+# What if the string isn't a valid number?
+# bad = int("hello")  # ValueError: invalid literal
+# bad = int("12.5")   # ValueError: can't convert float string to int
+# Use float() first: int(float("12.5"))  → 12</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript: several options
+let ageStr = "25";
+let priceStr = "19.99";
+
+// Number() — the cleanest option
+let age = Number(ageStr);        // 25
+let price = Number(priceStr);    // 19.99
+
+// parseInt() and parseFloat() — more forgiving
+let parsed1 = parseInt("42px");      // 42 (stops at non-digit)
+let parsed2 = parseFloat("3.14abc"); // 3.14
+
+// The + shortcut (unary plus)
+let quick = +"25";  // 25
+
+// What if the string isn't a valid number?
+console.log(Number("hello"));   // NaN (Not a Number)
+console.log(Number(""));        // 0 (empty string → 0!)
+console.log(Number("  "));      // 0 (whitespace → 0!)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C#: Parse() or Convert methods
+string ageStr = "25";
+string priceStr = "19.99";
+
+int age = int.Parse(ageStr);          // 25
+double price = double.Parse(priceStr); // 19.99
+
+// Convert class (alternative)
+int age2 = Convert.ToInt32(ageStr);    // 25
+double price2 = Convert.ToDouble(priceStr); // 19.99
+
+// What if the string isn't valid?
+// int bad = int.Parse("hello");  // FormatException!
+
+// TryParse — safe conversion (no crash)
+if (int.TryParse("42", out int result))
+{
+    Console.WriteLine($"Parsed: {result}");  // Parsed: 42
+}
+else
+{
+    Console.WriteLine("Not a valid number");
+}</code></pre>
+                    </div>
+                </div>
+
+                <h3>String → Number Cheat Sheet</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Task</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>String → Integer</td>
+                                <td><code>int("42")</code></td>
+                                <td><code>Number("42")</code> or <code>parseInt("42")</code></td>
+                                <td><code>int.Parse("42")</code></td>
+                            </tr>
+                            <tr>
+                                <td>String → Decimal</td>
+                                <td><code>float("3.14")</code></td>
+                                <td><code>Number("3.14")</code> or <code>parseFloat("3.14")</code></td>
+                                <td><code>double.Parse("3.14")</code></td>
+                            </tr>
+                            <tr>
+                                <td>Invalid string</td>
+                                <td><code>ValueError</code> (crash)</td>
+                                <td><code>NaN</code> (silent failure)</td>
+                                <td><code>FormatException</code> (crash)</td>
+                            </tr>
+                            <tr>
+                                <td>Safe conversion</td>
+                                <td><code>try/except</code></td>
+                                <td><code>isNaN()</code> check</td>
+                                <td><code>int.TryParse()</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ JavaScript's Silent Failures</h4>
+                    <p>JavaScript's <code>Number("hello")</code> returns <code>NaN</code> instead of crashing. This sounds convenient, but <code>NaN</code> is contagious — <em>any</em> math with <code>NaN</code> produces <code>NaN</code>. Your program keeps running with garbage data instead of stopping at the real problem. Always check with <code>isNaN()</code> after converting.</p>
+                </div>
+            </section>
+
+            <!-- Number to String -->
+            <section id="number-to-string" class="lesson-section">
+                <h2>Number → String</h2>
+                <p>Converting numbers to strings is simpler — every number has a valid string representation.</p>
+
+                <div class="code-tabs" data-title="Number to String">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python: use str()
+age = 25
+price = 19.99
+
+age_str = str(age)       # "25"
+price_str = str(price)   # "19.99"
+
+# Useful for concatenation
+print("Age: " + str(age))   # "Age: 25"
+
+# But f-strings handle this automatically!
+print(f"Age: {age}")         # "Age: 25" (easier!)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript: several options
+let age = 25;
+let price = 19.99;
+
+// String() function
+let ageStr = String(age);        // "25"
+
+// .toString() method
+let priceStr = price.toString(); // "19.99"
+
+// Concatenation trick (implicit coercion)
+let quick = age + "";            // "25"
+let quick2 = "" + price;         // "19.99"
+
+// Template literals handle it automatically
+console.log(`Age: ${age}`);      // "Age: 25"</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C#: .ToString() or Convert
+int age = 25;
+double price = 19.99;
+
+string ageStr = age.ToString();       // "25"
+string priceStr = price.ToString();   // "19.99"
+
+// Convert class
+string ageStr2 = Convert.ToString(age);  // "25"
+
+// Formatting while converting
+string formatted = price.ToString("F2");   // "19.99"
+string currency = price.ToString("C");     // "$19.99"
+
+// Interpolation handles it automatically
+Console.WriteLine($"Age: {age}");  // "Age: 25"</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ Pro Tip: Just Use String Interpolation</h4>
+                    <p>In practice, you rarely need explicit number-to-string conversion because <strong>string interpolation handles it automatically</strong>. When you write <code>f"Score: {score}"</code> (Python), <code>`Score: ${score}`</code> (JS), or <code>$"Score: {score}"</code> (C#), the number is converted for you.</p>
+                </div>
+            </section>
+
+            <!-- Boolean Conversions -->
+            <section id="boolean-conversions" class="lesson-section">
+                <h2>Boolean Conversions</h2>
+                <p>Any value can be interpreted as a boolean. The rules for what's "truthy" (acts like true) and "falsy" (acts like false) are important for writing conditions.</p>
+
+                <div class="code-tabs" data-title="Truthy and Falsy Values">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python: use bool() to see the boolean value
+
+# Falsy values (these all become False):
+print(bool(0))        # False
+print(bool(0.0))      # False
+print(bool(""))       # False (empty string)
+print(bool([]))       # False (empty list)
+print(bool(None))     # False
+
+# Truthy values (everything else is True):
+print(bool(1))        # True
+print(bool(-5))       # True (any non-zero number)
+print(bool("hello"))  # True (any non-empty string)
+print(bool(" "))      # True (space is not empty!)
+print(bool([1,2]))    # True (non-empty list)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript: use Boolean() to see the boolean value
+
+// Falsy values (these all become false):
+console.log(Boolean(0));          // false
+console.log(Boolean(""));         // false (empty string)
+console.log(Boolean(null));       // false
+console.log(Boolean(undefined));  // false
+console.log(Boolean(NaN));        // false
+
+// Truthy values (everything else is true):
+console.log(Boolean(1));          // true
+console.log(Boolean(-5));         // true
+console.log(Boolean("hello"));    // true
+console.log(Boolean(" "));        // true
+console.log(Boolean("0"));        // true! ("0" is non-empty)
+console.log(Boolean([]));         // true! (empty array is truthy!)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C#: strict — no automatic truthy/falsy!
+
+// C# does NOT let you use numbers or strings as booleans:
+// if (1) {}        // ERROR: Cannot convert int to bool
+// if ("hello") {}  // ERROR: Cannot convert string to bool
+
+// You must use explicit boolean expressions:
+int count = 5;
+if (count > 0)  // explicit comparison — this is OK
+{
+    Console.WriteLine("Has items");
+}
+
+// Convert explicitly with Convert.ToBoolean
+Console.WriteLine(Convert.ToBoolean(0));     // False
+Console.WriteLine(Convert.ToBoolean(1));     // True
+Console.WriteLine(Convert.ToBoolean("true")); // True
+// Convert.ToBoolean("hello")  // FormatException!</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ JavaScript Gotcha: "0" is Truthy!</h4>
+                    <p>In JavaScript, the string <code>"0"</code> is <strong>truthy</strong> (because it's a non-empty string), but the number <code>0</code> is <strong>falsy</strong>. And an empty array <code>[]</code> is truthy, even though it contains nothing! These quirks trip up even experienced developers.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>The truthy/falsy concept is best taught through live experimentation. Open a Python REPL and JavaScript console side by side, and have students predict the output of <code>bool([])</code> vs <code>Boolean([])</code>. The different result (Python: False, JS: true) is a great hook. Emphasize that C# avoids this entire category of bugs by refusing to treat non-booleans as booleans.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- JavaScript Coercion -->
+            <section id="js-coercion" class="lesson-section">
+                <h2>JavaScript's Coercion Surprises</h2>
+                <p>JavaScript is uniquely aggressive about implicit type conversion. Let's see the famous examples:</p>
+
+                <div class="code-tabs" data-title="JavaScript Coercion">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python: refuses to mix types — CLEAR errors
+
+# print("5" + 3)     # TypeError!
+# print("5" - 3)     # TypeError!
+# print("5" * 3)     # "555" — this one works! (string repetition)
+# print("5" * "3")   # TypeError!
+
+# Python's philosophy: if it's ambiguous, crash.
+# This means bugs are found EARLY.</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript: wild implicit coercion
+
+// The + operator: if EITHER side is a string, concatenate
+console.log("5" + 3);      // "53" (number → string, then join)
+console.log(5 + "3");      // "53"
+console.log("5" + true);   // "5true"
+
+// Other operators: convert strings TO numbers
+console.log("5" - 3);      // 2  (string → number, then subtract)
+console.log("5" * 3);      // 15 (string → number, then multiply)
+console.log("5" / "2");    // 2.5
+
+// The REALLY weird stuff:
+console.log(true + true);      // 2
+console.log(true + "1");       // "true1"
+console.log([] + []);          // "" (empty string!)
+console.log([] + {});          // "[object Object]"
+console.log({} + []);          // 0 (or "[object Object]" — depends!)
+
+// Why does + behave differently from - ?
+// + is BOTH addition AND concatenation.
+// - is ONLY subtraction, so JS converts to numbers.</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C#: allows SAFE implicit conversions only
+
+// Small type → big type: OK (no data loss)
+int small = 42;
+double big = small;     // int → double (implicit, safe)
+long bigger = small;    // int → long (implicit, safe)
+
+// Big type → small type: REQUIRES explicit cast
+double pi = 3.14;
+// int truncated = pi;           // ERROR: cannot implicitly convert
+int truncated = (int)pi;         // 3 — explicit cast required
+
+// String + number: converts number to string (like JS)
+Console.WriteLine("Score: " + 42);   // "Score: 42"
+
+// But string - number: NOT allowed (unlike JS)
+// Console.WriteLine("5" - 3);      // ERROR!</code></pre>
+                    </div>
+                </div>
+
+                <blockquote>
+                    <strong>💡 The + Operator Rule:</strong> In JavaScript, <code>+</code> does double duty as both addition <em>and</em> string concatenation. If <em>either</em> operand is a string, <code>+</code> chooses concatenation. All other math operators (<code>-</code>, <code>*</code>, <code>/</code>) can <em>only</em> do math, so they convert strings to numbers.
+                </blockquote>
+
+                <div class="card card-success">
+                    <h4>✅ How to Stay Safe</h4>
+                    <ul>
+                        <li><strong>Python:</strong> You're already safe — Python forces you to be explicit.</li>
+                        <li><strong>JavaScript:</strong> Always convert before math: <code>Number(x) + Number(y)</code>. Use <code>===</code> instead of <code>==</code>. Lint tools like ESLint catch common coercion traps.</li>
+                        <li><strong>C#:</strong> The compiler has your back — it blocks unsafe conversions at compile time.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Real-World: User Input -->
+            <section id="real-world" class="lesson-section">
+                <h2>Real-World Scenario: User Input</h2>
+                <p>In real programs, user input almost always arrives as a <strong>string</strong> — even if the user typed a number. Here's how to handle it:</p>
+
+                <div class="code-tabs" data-title="User Input Handling">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python: input() always returns a string
+user_input = input("Enter your age: ")   # e.g., user types "25"
+print(type(user_input))   # &lt;class 'str'&gt;
+
+# Must convert before doing math!
+age = int(user_input)
+birth_year = 2026 - age
+print(f"You were born around {birth_year}")
+
+# Safe version with error handling
+try:
+    age = int(input("Enter your age: "))
+    print(f"Next year you'll be {age + 1}")
+except ValueError:
+    print("That's not a valid number!")</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// Browser: prompt() always returns a string (or null)
+let userInput = prompt("Enter your age:");  // e.g., "25"
+console.log(typeof userInput);  // "string"
+
+// Must convert before doing math!
+let age = Number(userInput);
+
+// Check for invalid input
+if (isNaN(age) || userInput === null) {
+    console.log("That's not a valid number!");
+} else {
+    let birthYear = 2026 - age;
+    console.log(`You were born around ${birthYear}`);
+}
+
+// Node.js uses readline (more complex — shown later)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C#: Console.ReadLine() always returns a string
+Console.Write("Enter your age: ");
+string userInput = Console.ReadLine();  // e.g., "25"
+
+// Safe conversion with TryParse
+if (int.TryParse(userInput, out int age))
+{
+    int birthYear = 2026 - age;
+    Console.WriteLine($"You were born around {birthYear}");
+}
+else
+{
+    Console.WriteLine("That's not a valid number!");
+}</code></pre>
+                    </div>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>This is a great section to do as a live coding exercise. Have students build the "age calculator" themselves. The most common mistake: forgetting to convert <code>input()</code> to <code>int()</code> and getting string concatenation instead of addition. Let them hit that bug, then fix it. C#'s <code>TryParse</code> pattern is elegant and worth highlighting as a best practice — it's the safest approach of the three.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Exercises -->
+            <section id="exercises" class="lesson-section">
+                <h2>Exercises</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 1: Temperature Converter</h3>
+                    <p><strong>Objective:</strong> Write a program that converts a temperature from Fahrenheit to Celsius.</p>
+                    <ol>
+                        <li>Store a Fahrenheit temperature as a <strong>string</strong> (simulating user input): <code>"98.6"</code></li>
+                        <li>Convert it to a number</li>
+                        <li>Apply the formula: <code>celsius = (fahrenheit - 32) × 5 / 9</code></li>
+                        <li>Display the result with one decimal place using string interpolation</li>
+                    </ol>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Temperature Converter">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">fahr_str = "98.6"
+fahr = float(fahr_str)
+celsius = (fahr - 32) * 5 / 9
+print(f"{fahr}°F = {celsius:.1f}°C")
+# 98.6°F = 37.0°C</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">let fahrStr = "98.6";
+let fahr = Number(fahrStr);
+let celsius = (fahr - 32) * 5 / 9;
+console.log(`${fahr}°F = ${celsius.toFixed(1)}°C`);
+// 98.6°F = 37.0°C</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">string fahrStr = "98.6";
+double fahr = double.Parse(fahrStr);
+double celsius = (fahr - 32) * 5.0 / 9;
+Console.WriteLine($"{fahr}°F = {celsius:F1}°C");
+// 98.6°F = 37.0°C</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 2: Coercion Predictor</h3>
+                    <p><strong>Objective:</strong> Without running the code, predict what each expression produces in JavaScript. Then check your answers.</p>
+                    <ol>
+                        <li><code>"10" + 5</code></li>
+                        <li><code>"10" - 5</code></li>
+                        <li><code>"10" * "2"</code></li>
+                        <li><code>true + 1</code></li>
+                        <li><code>"hello" - 1</code></li>
+                        <li><code>"" + 0</code></li>
+                        <li><code>Boolean("false")</code></li>
+                    </ol>
+
+                    <details>
+                        <summary>✅ Answers</summary>
+                        <div class="code-tabs" data-title="Coercion Answers">
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">console.log("10" + 5);        // "105" — string wins with +
+console.log("10" - 5);        // 5    — only math, converts to number
+console.log("10" * "2");      // 20   — both convert to numbers
+console.log(true + 1);        // 2    — true becomes 1
+console.log("hello" - 1);     // NaN  — "hello" can't become a number
+console.log("" + 0);          // "0"  — string wins with +
+console.log(Boolean("false")); // true — "false" is a non-empty string!</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python"># In Python, most of these would be TypeErrors:
+# "10" + 5      → TypeError
+# "10" - 5      → TypeError
+# "10" * "2"    → TypeError
+# True + 1      → 2 (booleans ARE ints in Python)
+# "hello" - 1   → TypeError
+# "" + 0         → TypeError
+# bool("false")  → True (non-empty string)</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">// In C#, most won't even compile:
+// "10" + 5      → "105" (string concatenation)
+// "10" - 5      → Compile Error!
+// "10" * "2"    → Compile Error!
+// true + 1      → Compile Error!
+// "hello" - 1   → Compile Error!
+// "" + 0         → "0" (string concatenation)
+// Convert.ToBoolean("false") → false (C# parses the word)</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 3: Receipt Calculator</h3>
+                    <p><strong>Objective:</strong> Build a receipt calculator that handles string inputs.</p>
+                    <ol>
+                        <li>Start with these string values (simulating form input): item name = <code>"Widget"</code>, price = <code>"12.50"</code>, quantity = <code>"3"</code>, tax rate = <code>"0.08"</code></li>
+                        <li>Convert to the appropriate types</li>
+                        <li>Calculate subtotal, tax amount, and total</li>
+                        <li>Display a formatted receipt with currency formatting</li>
+                    </ol>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Receipt Calculator">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">item_name = "Widget"
+price_str = "12.50"
+qty_str = "3"
+tax_rate_str = "0.08"
+
+price = float(price_str)
+qty = int(qty_str)
+tax_rate = float(tax_rate_str)
+
+subtotal = price * qty
+tax = subtotal * tax_rate
+total = subtotal + tax
+
+print(f"Item:     {item_name} x{qty}")
+print(f"Subtotal: ${subtotal:.2f}")
+print(f"Tax:      ${tax:.2f}")
+print(f"Total:    ${total:.2f}")</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">let itemName = "Widget";
+let priceStr = "12.50";
+let qtyStr = "3";
+let taxRateStr = "0.08";
+
+let price = Number(priceStr);
+let qty = Number(qtyStr);
+let taxRate = Number(taxRateStr);
+
+let subtotal = price * qty;
+let tax = subtotal * taxRate;
+let total = subtotal + tax;
+
+console.log(`Item:     ${itemName} x${qty}`);
+console.log(`Subtotal: $${subtotal.toFixed(2)}`);
+console.log(`Tax:      $${tax.toFixed(2)}`);
+console.log(`Total:    $${total.toFixed(2)}`);</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">string itemName = "Widget";
+string priceStr = "12.50";
+string qtyStr = "3";
+string taxRateStr = "0.08";
+
+decimal price = decimal.Parse(priceStr);
+int qty = int.Parse(qtyStr);
+decimal taxRate = decimal.Parse(taxRateStr);
+
+decimal subtotal = price * qty;
+decimal tax = subtotal * taxRate;
+decimal total = subtotal + tax;
+
+Console.WriteLine($"Item:     {itemName} x{qty}");
+Console.WriteLine($"Subtotal: {subtotal:C}");
+Console.WriteLine($"Tax:      {tax:C}");
+Console.WriteLine($"Total:    {total:C}");</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Exercise 2 (Coercion Predictor) works brilliantly as a class activity. Put the expressions on screen and have students vote on what they think the output is. The reveal is always entertaining, especially <code>Boolean("false")</code> being <code>true</code>. Exercise 3 is a real-world pattern — form data always comes as strings, and the receipt format is satisfying to build. Note C#'s use of <code>decimal</code> for money — worth emphasizing why <code>double</code> is a bad choice for financial calculations.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong>Explicit conversion</strong> is when you ask to convert: <code>int()</code>, <code>Number()</code>, <code>int.Parse()</code></li>
+                        <li><strong>Implicit coercion</strong> is when the language converts for you — JavaScript does this aggressively, Python rarely, C# only for safe (widening) conversions</li>
+                        <li>JavaScript's <code>+</code> operator favors strings (concatenation) while <code>-</code>, <code>*</code>, <code>/</code> favor numbers</li>
+                        <li>User input is <strong>always a string</strong> — convert it before doing math</li>
+                        <li>Use safe conversion patterns: Python's <code>try/except</code>, JavaScript's <code>isNaN()</code>, C#'s <code>TryParse()</code></li>
+                        <li>For money, use <code>decimal</code> in C# — <code>float</code> and <code>double</code> have rounding errors</li>
+                    </ul>
+                </div>
+
+                <h3>🚀 What's Next?</h3>
+                <p>You can now store data and convert between types. Next, we'll learn how to make <strong>decisions</strong> based on that data. Get ready for <strong>conditionals: if, else, and switch</strong>!</p>
+
+                <!-- Quiz -->
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Check</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What does <code>"5" + 3</code> produce in JavaScript?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="That would require JavaScript to convert '5' to a number, but + favors strings.">A) 8</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="When + has a string on either side, JavaScript converts everything to strings and concatenates. So '5' + 3 becomes '5' + '3' = '53'.">B) "53"</button>
+                            <button class="quiz-option" data-correct="false" data-hint="JavaScript doesn't crash here — it silently coerces the types.">C) TypeError</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 2:</strong> What does <code>"5" - 3</code> produce in JavaScript?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="The - operator only does subtraction (not concatenation), so JavaScript converts '5' to the number 5, then computes 5 - 3 = 2.">A) 2</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The - operator doesn't concatenate strings — it only does math.">B) "53"</button>
+                            <button class="quiz-option" data-correct="false" data-hint="JavaScript doesn't give up that easily — minus forces numeric conversion.">C) NaN</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 3:</strong> In C#, which method safely converts a string to an integer without crashing?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="int.Parse() throws a FormatException if the string isn't valid.">A) <code>int.Parse()</code></button>
+                            <button class="quiz-option" data-correct="true" data-explanation="int.TryParse() returns true/false and puts the result in an 'out' parameter, so your program never crashes from bad input.">B) <code>int.TryParse()</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="Convert.ToInt32() also throws exceptions on invalid input.">C) <code>Convert.ToInt32()</code></button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_05.html" class="prev-lesson">← Previous: Data Types — Numbers, Strings, Booleans</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_07.html" class="next-lesson">Next: Conditionals — if, else, and switch →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Master logical operators (and/or/not, &&/||/!) and understand truthiness and falsiness in Python, JavaScript, and C#.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 3.3: Logical Operators and Truthiness - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 3</a></li>
+            <li aria-current="page">Lesson 3.3: Logical Operators and Truthiness</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🧠 Lesson 3.3: Logical Operators and Truthiness</h1>
+                <p class="lead">Real decisions are rarely simple yes/no questions. Logical operators let you combine conditions — and truthiness determines what each language considers "true enough."</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Use AND, OR, and NOT operators in all three languages</li>
+                        <li>Understand Python's word-based operators (<code>and</code>, <code>or</code>, <code>not</code>) vs. JS/C#'s symbol-based operators (<code>&amp;&amp;</code>, <code>||</code>, <code>!</code>)</li>
+                        <li>Explain short-circuit evaluation and why it matters</li>
+                        <li>Identify truthy and falsy values in Python and JavaScript</li>
+                        <li>Understand why C# takes a stricter approach to boolean logic</li>
+                        <li>Combine logical operators with comparison operators to build complex conditions</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 45 minutes</p>
+                    <p><strong>Project:</strong> An access-control checker that validates multiple criteria</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary><h2 style="display: inline; margin: 0;">📑 In This Lesson</h2></summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#logical-operators" class="toc-link">The Three Logical Operators</a></li>
+                        <li><a href="#syntax-comparison" class="toc-link">Words vs. Symbols</a></li>
+                        <li><a href="#combining-conditions" class="toc-link">Combining Conditions</a></li>
+                        <li><a href="#short-circuit" class="toc-link">Short-Circuit Evaluation</a></li>
+                        <li><a href="#truthiness" class="toc-link">Truthiness and Falsiness</a></li>
+                        <li><a href="#truthy-patterns" class="toc-link">Common Truthy/Falsy Patterns</a></li>
+                        <li><a href="#operator-precedence" class="toc-link">Operator Precedence</a></li>
+                        <li><a href="#exercises" class="toc-link">Exercises</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- The Three Logical Operators -->
+            <section id="logical-operators" class="lesson-section">
+                <h2>The Three Logical Operators</h2>
+                <p>Logical operators combine boolean values (or expressions that produce booleans) to make more complex decisions. There are exactly three:</p>
+
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Logic</th>
+                                <th>Meaning</th>
+                                <th>True when…</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>AND</strong></td>
+                                <td>Both must be true</td>
+                                <td><code>True AND True</code> → True (all other combos → False)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>OR</strong></td>
+                                <td>At least one must be true</td>
+                                <td><code>False OR False</code> → False (all other combos → True)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>NOT</strong></td>
+                                <td>Flip the value</td>
+                                <td><code>NOT True</code> → False, <code>NOT False</code> → True</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mermaid">
+                    graph LR
+                    subgraph "AND (both must be true)"
+                    A1["True AND True"] -->|"True ✓"| R1["✅"]
+                    A2["True AND False"] -->|"False ✗"| R2["❌"]
+                    A3["False AND True"] -->|"False ✗"| R3["❌"]
+                    A4["False AND False"] -->|"False ✗"| R4["❌"]
+                    end
+                    style R1 fill:#10b981,stroke:#059669,color:#fff
+                    style R2 fill:#ef4444,stroke:#dc2626,color:#fff
+                    style R3 fill:#ef4444,stroke:#dc2626,color:#fff
+                    style R4 fill:#ef4444,stroke:#dc2626,color:#fff
+                </div>
+            </section>
+
+            <!-- Words vs. Symbols -->
+            <section id="syntax-comparison" class="lesson-section">
+                <h2>Words vs. Symbols</h2>
+                <p>This is the biggest syntax divergence in this lesson: Python uses <strong>English words</strong>, while JavaScript and C# use <strong>symbols</strong>.</p>
+
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Operation</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>AND</td>
+                                <td><code>and</code></td>
+                                <td><code>&amp;&amp;</code></td>
+                                <td><code>&amp;&amp;</code></td>
+                            </tr>
+                            <tr>
+                                <td>OR</td>
+                                <td><code>or</code></td>
+                                <td><code>||</code></td>
+                                <td><code>||</code></td>
+                            </tr>
+                            <tr>
+                                <td>NOT</td>
+                                <td><code>not</code></td>
+                                <td><code>!</code></td>
+                                <td><code>!</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="code-tabs" data-title="Basic Logical Operators">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python uses English words: and, or, not
+age = 25
+has_id = True
+
+# AND — both must be true
+if age >= 18 and has_id:
+    print("Entry allowed")
+
+# OR — at least one must be true
+is_student = False
+is_senior = True
+if is_student or is_senior:
+    print("Discount available!")
+
+# NOT — flips the value
+is_banned = False
+if not is_banned:
+    print("Welcome!")</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript uses symbols: &&, ||, !
+let age = 25;
+let hasId = true;
+
+// AND — both must be true
+if (age >= 18 && hasId) {
+    console.log("Entry allowed");
+}
+
+// OR — at least one must be true
+let isStudent = false;
+let isSenior = true;
+if (isStudent || isSenior) {
+    console.log("Discount available!");
+}
+
+// NOT — flips the value
+let isBanned = false;
+if (!isBanned) {
+    console.log("Welcome!");
+}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C# uses the same symbols as JavaScript: &&, ||, !
+int age = 25;
+bool hasId = true;
+
+// AND — both must be true
+if (age >= 18 && hasId)
+{
+    Console.WriteLine("Entry allowed");
+}
+
+// OR — at least one must be true
+bool isStudent = false;
+bool isSenior = true;
+if (isStudent || isSenior)
+{
+    Console.WriteLine("Discount available!");
+}
+
+// NOT — flips the value
+bool isBanned = false;
+if (!isBanned)
+{
+    Console.WriteLine("Welcome!");
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Don't Mix Them Up!</h4>
+                    <p>Writing <code>&amp;&amp;</code> in Python is a <strong>bitwise</strong> operator (very different behavior). Writing <code>and</code> in JavaScript or C# is a <strong>syntax error</strong>. The correct mapping is: Python <code>and</code> = JS/C# <code>&amp;&amp;</code>, Python <code>or</code> = JS/C# <code>||</code>, Python <code>not</code> = JS/C# <code>!</code>.</p>
+                </div>
+            </section>
+
+            <!-- Combining Conditions -->
+            <section id="combining-conditions" class="lesson-section">
+                <h2>Combining Conditions</h2>
+                <p>The real power of logical operators is combining multiple comparisons into a single, expressive condition.</p>
+
+                <div class="code-tabs" data-title="Combining Multiple Conditions">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Can this person rent a car?
+age = 22
+has_license = True
+has_insurance = True
+
+can_rent = age >= 21 and has_license and has_insurance
+print(f"Can rent: {can_rent}")  # True
+
+# Is this a weekend or holiday?
+day = "Saturday"
+is_holiday = False
+
+day_off = day in ("Saturday", "Sunday") or is_holiday
+print(f"Day off: {day_off}")  # True
+
+# Is this a valid password?
+password = "Secret123"
+
+is_valid = (
+    len(password) >= 8
+    and any(c.isupper() for c in password)
+    and any(c.isdigit() for c in password)
+)
+print(f"Valid password: {is_valid}")  # True</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// Can this person rent a car?
+let age = 22;
+let hasLicense = true;
+let hasInsurance = true;
+
+let canRent = age >= 21 && hasLicense && hasInsurance;
+console.log(`Can rent: ${canRent}`);  // true
+
+// Is this a weekend or holiday?
+let day = "Saturday";
+let isHoliday = false;
+
+let dayOff = day === "Saturday" || day === "Sunday" || isHoliday;
+console.log(`Day off: ${dayOff}`);  // true
+
+// Is this a valid password?
+let password = "Secret123";
+
+let isValid =
+    password.length >= 8 &&
+    /[A-Z]/.test(password) &&
+    /[0-9]/.test(password);
+console.log(`Valid password: ${isValid}`);  // true</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// Can this person rent a car?
+int age = 22;
+bool hasLicense = true;
+bool hasInsurance = true;
+
+bool canRent = age >= 21 && hasLicense && hasInsurance;
+Console.WriteLine($"Can rent: {canRent}");  // True
+
+// Is this a weekend or holiday?
+string day = "Saturday";
+bool isHoliday = false;
+
+bool dayOff = day == "Saturday" || day == "Sunday" || isHoliday;
+Console.WriteLine($"Day off: {dayOff}");  // True
+
+// Is this a valid password?
+string password = "Secret123";
+
+bool isValid =
+    password.Length >= 8 &&
+    password.Any(char.IsUpper) &&
+    password.Any(char.IsDigit);
+Console.WriteLine($"Valid password: {isValid}");  // True</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Readability Tip: Use Parentheses</h4>
+                    <p>When combining AND and OR in the same expression, add parentheses to make your intent crystal clear — even when they're not strictly required. Compare these two:</p>
+                    <pre><code>// Ambiguous (what gets evaluated first?)
+if (a || b && c) ...
+
+// Clear (AND is evaluated before OR anyway, but now it's obvious)
+if (a || (b && c)) ...</code></pre>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>The car rental and password examples are great for showing how logical operators solve real problems. For the password validation, point out how each language takes a different approach: Python uses generator expressions, JavaScript uses regex, and C# uses LINQ. Don't deep-dive those features now — just note that the logical structure (<code>condition1 AND condition2 AND condition3</code>) is the same everywhere. The validation details are for later lessons.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Short-Circuit Evaluation -->
+            <section id="short-circuit" class="lesson-section">
+                <h2>Short-Circuit Evaluation</h2>
+                <p>All three languages use <strong>short-circuit evaluation</strong>: they stop checking conditions as soon as the outcome is certain.</p>
+
+                <div class="mermaid">
+                    graph TD
+                    A["Evaluate: A and B"] --> B{"Is A true?"}
+                    B -->|No| C["Result: False<br/>(B never checked!)"]
+                    B -->|Yes| D{"Is B true?"}
+                    D -->|No| E["Result: False"]
+                    D -->|Yes| F["Result: True"]
+                    style C fill:#f59e0b,stroke:#d97706,color:#fff,stroke-width:2px
+                </div>
+
+                <ul>
+                    <li><strong>AND</strong>: If the first condition is false, the whole thing is false — skip the rest</li>
+                    <li><strong>OR</strong>: If the first condition is true, the whole thing is true — skip the rest</li>
+                </ul>
+
+                <div class="code-tabs" data-title="Short-Circuit in Action">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># AND short-circuits on the first False
+x = 0
+# The second condition is never checked (would cause ZeroDivisionError)
+if x != 0 and 10 / x > 2:
+    print("Safe division!")
+else:
+    print("Skipped — x is zero")   # This runs
+
+# OR short-circuits on the first True
+name = ""
+display_name = name or "Anonymous"  # "" is falsy → uses "Anonymous"
+print(display_name)  # Anonymous
+
+# This pattern is very common for default values in Python:
+config_value = None
+setting = config_value or "default"
+print(setting)  # default</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// AND short-circuits on the first falsy value
+let x = 0;
+if (x !== 0 && 10 / x > 2) {
+    console.log("Safe division!");
+} else {
+    console.log("Skipped — x is zero");  // This runs
+}
+
+// OR short-circuits on the first truthy value
+let name = "";
+let displayName = name || "Anonymous";  // "" is falsy
+console.log(displayName);  // Anonymous
+
+// Nullish coalescing (??) — a better default operator
+// Only treats null and undefined as "missing" (not "" or 0)
+let count = 0;
+let result1 = count || 10;   // 10 (0 is falsy — oops!)
+let result2 = count ?? 10;   // 0  (?? only catches null/undefined)
+console.log(result1, result2);  // 10  0</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// AND short-circuits on the first false
+int x = 0;
+if (x != 0 && 10 / x > 2)
+{
+    Console.WriteLine("Safe division!");
+}
+else
+{
+    Console.WriteLine("Skipped — x is zero");  // This runs
+}
+
+// C# doesn't do truthy/falsy OR defaults the same way
+// Instead, use the null-coalescing operator (??)
+string name = null;
+string displayName = name ?? "Anonymous";
+Console.WriteLine(displayName);  // Anonymous
+
+// Null-coalescing works with any nullable type:
+int? configValue = null;
+int setting = configValue ?? 42;
+Console.WriteLine(setting);  // 42</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ Why Short-Circuiting Matters</h4>
+                    <p>Short-circuit evaluation isn't just a performance trick — it's a <strong>safety feature</strong>. The <code>x != 0 and 10 / x</code> pattern prevents division by zero. You'll see guard clauses like this constantly in real code: check that something exists <em>before</em> you try to use it.</p>
+                </div>
+            </section>
+
+            <!-- Truthiness and Falsiness -->
+            <section id="truthiness" class="lesson-section">
+                <h2>Truthiness and Falsiness</h2>
+                <p>In Python and JavaScript, <code>if</code> statements don't require an actual boolean. They accept <em>any</em> value and treat it as either "truthy" (acts like true) or "falsy" (acts like false). C# is stricter — it demands real booleans.</p>
+
+                <h3>Falsy Values — What Counts as False?</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>🐍 Python falsy values</th>
+                                <th>⚡ JavaScript falsy values</th>
+                                <th>🔷 C# approach</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>False</code></td>
+                                <td><code>false</code></td>
+                                <td rowspan="8" style="vertical-align: middle;"><strong>Only <code>bool</code> values are allowed in conditions.</strong> You must explicitly compare: <code>if (str.Length > 0)</code>, not <code>if (str)</code>.</td>
+                            </tr>
+                            <tr>
+                                <td><code>None</code></td>
+                                <td><code>null</code>, <code>undefined</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>0</code>, <code>0.0</code></td>
+                                <td><code>0</code>, <code>-0</code>, <code>0n</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>""</code> (empty string)</td>
+                                <td><code>""</code> (empty string)</td>
+                            </tr>
+                            <tr>
+                                <td><code>[]</code> (empty list)</td>
+                                <td><code>NaN</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>{}</code> (empty dict)</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><code>set()</code> (empty set)</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p><strong>Everything else is truthy.</strong> Non-zero numbers, non-empty strings, non-empty collections — all truthy.</p>
+
+                <div class="code-tabs" data-title="Truthiness in Practice">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python: empty collections and zero are falsy
+items = []
+if items:
+    print("Has items")
+else:
+    print("Empty list!")  # This runs
+
+name = "Alice"
+if name:
+    print(f"Hello, {name}!")  # This runs — non-empty string is truthy
+
+count = 0
+if count:
+    print("Has items")
+else:
+    print("Count is zero")  # This runs — 0 is falsy
+
+# Very Pythonic — check for empty/None in one step:
+data = None
+if not data:
+    print("No data available")  # Catches None AND empty collections</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript: similar to Python, but with some surprises
+let items = [];
+if (items.length) {
+    console.log("Has items");
+} else {
+    console.log("Empty array!");  // This runs
+}
+
+// ⚠️ GOTCHA: empty arrays are TRUTHY in JavaScript!
+if ([]) {
+    console.log("Empty array is truthy!");  // This runs!
+}
+// Check .length instead: if (items.length)
+
+let name = "Alice";
+if (name) {
+    console.log(`Hello, ${name}!`);  // Truthy — non-empty string
+}
+
+// NaN is falsy (unique to JavaScript)
+let result = parseInt("hello");  // NaN
+if (result) {
+    console.log("Valid");
+} else {
+    console.log("NaN is falsy!");  // This runs
+}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C#: NO implicit truthiness — must use explicit booleans
+string[] items = Array.Empty&lt;string&gt;();
+
+// if (items) { }         // ❌ Compile error!
+if (items.Length > 0)      // ✅ Explicit comparison required
+{
+    Console.WriteLine("Has items");
+}
+else
+{
+    Console.WriteLine("Empty array!");
+}
+
+string name = "Alice";
+// if (name) { }          // ❌ Compile error!
+if (!string.IsNullOrEmpty(name))  // ✅ Explicit check
+{
+    Console.WriteLine($"Hello, {name}!");
+}
+
+// C#'s strictness catches bugs at compile time:
+int count = 0;
+// if (count) { }         // ❌ Can't use int as bool
+if (count != 0)           // ✅ Must compare explicitly
+{
+    Console.WriteLine("Has items");
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ JavaScript's Empty Array Gotcha</h4>
+                    <p>In Python, <code>[]</code> (empty list) is <strong>falsy</strong>. In JavaScript, <code>[]</code> (empty array) is <strong>truthy</strong>! This trips up developers who switch between languages. In JavaScript, always check <code>array.length</code> instead of using the array directly in a condition.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>The truthy/falsy table is dense. Don't try to memorize it all at once — focus on the practical takeaways: empty strings, zero, None/null are falsy; empty arrays need <code>.length</code> in JS. The key insight for beginners is that Python and JS let you write shorter, more expressive conditions (<code>if name:</code> vs. <code>if name != ""</code>), but C#'s strictness catches a whole category of bugs at compile time. Each approach has trade-offs. Have students predict what each value will do in an <code>if</code> statement — it's a great interactive exercise.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Common Truthy/Falsy Patterns -->
+            <section id="truthy-patterns" class="lesson-section">
+                <h2>Common Truthy/Falsy Patterns</h2>
+                <p>Experienced developers use truthiness constantly. Here are patterns you'll see in real code:</p>
+
+                <div class="code-tabs" data-title="Default Values">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Pattern 1: Default values with "or"
+username = ""
+display = username or "Guest"
+print(display)  # "Guest" (empty string is falsy)
+
+# Pattern 2: Guard clause with "and"
+user = {"name": "Alice", "email": "alice@example.com"}
+email = user and user.get("email")
+print(email)  # "alice@example.com"
+
+# Pattern 3: Checking if a list has items
+results = [1, 2, 3]
+if results:
+    print(f"Found {len(results)} results")
+
+# Pattern 4: None check before use
+data = None
+if data is not None:   # More explicit than "if data:" 
+    process(data)      # (because 0 and "" would also be falsy)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// Pattern 1: Default values with "||"
+let username = "";
+let display = username || "Guest";
+console.log(display);  // "Guest"
+
+// Better: use ?? for defaults (doesn't treat "" and 0 as missing)
+let port = 0;
+let serverPort1 = port || 3000;   // 3000 (0 is falsy — bug!)
+let serverPort2 = port ?? 3000;   // 0    (?? only catches null/undefined)
+
+// Pattern 2: Optional chaining (?.) — safe property access
+let user = { name: "Alice", address: { city: "NYC" } };
+let city = user?.address?.city;       // "NYC"
+let zip = user?.address?.zipCode;     // undefined (no error!)
+
+// Pattern 3: Combining ?. with ??
+let country = user?.address?.country ?? "Unknown";
+console.log(country);  // "Unknown"</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// Pattern 1: Null-coalescing for defaults
+string username = null;
+string display = username ?? "Guest";
+Console.WriteLine(display);  // "Guest"
+
+// Pattern 2: Null-conditional (?.) — safe property access
+// (Similar to JavaScript's optional chaining)
+string[]? items = null;
+int? count = items?.Length;    // null (no NullReferenceException!)
+
+// Pattern 3: Combining ?. with ??
+string? city = user?.Address?.City ?? "Unknown";
+
+// Pattern 4: Null-coalescing assignment (??=)
+string name = null;
+name ??= "Default";   // Assigns "Default" only if name is null
+Console.WriteLine(name);  // "Default"
+
+// Pattern 5: String-specific checks
+string input = "";
+if (!string.IsNullOrEmpty(input))    // Checks null AND ""
+    Console.WriteLine(input);
+if (!string.IsNullOrWhiteSpace(input))  // Also checks "   "
+    Console.WriteLine(input);</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 The <code>??</code> Operator — Available in JS and C#</h4>
+                    <p>JavaScript's <code>??</code> (nullish coalescing) and C#'s <code>??</code> (null-coalescing) look identical and work similarly: they provide a fallback only when the left side is <code>null</code> or <code>undefined</code>/<code>null</code>. Unlike <code>||</code>, they <em>don't</em> treat <code>0</code>, <code>""</code>, or <code>false</code> as "missing." Python doesn't have an equivalent operator — you'd use <code>x if x is not None else default</code>.</p>
+                </div>
+            </section>
+
+            <!-- Operator Precedence -->
+            <section id="operator-precedence" class="lesson-section">
+                <h2>Operator Precedence</h2>
+                <p>When you mix logical operators, which one gets evaluated first? The order is the same in all three languages:</p>
+
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Priority</th>
+                                <th>Operator</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JS / 🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1 (highest)</td>
+                                <td>NOT</td>
+                                <td><code>not</code></td>
+                                <td><code>!</code></td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>AND</td>
+                                <td><code>and</code></td>
+                                <td><code>&amp;&amp;</code></td>
+                            </tr>
+                            <tr>
+                                <td>3 (lowest)</td>
+                                <td>OR</td>
+                                <td><code>or</code></td>
+                                <td><code>||</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="code-tabs" data-title="Precedence Example">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># What does this evaluate to?
+result = True or False and False
+print(result)  # True
+
+# Why? AND binds tighter than OR:
+# True or (False and False)
+# True or False
+# True
+
+# Make it explicit with parentheses:
+result = (True or False) and False
+print(result)  # False — now OR happens first</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// What does this evaluate to?
+let result = true || false && false;
+console.log(result);  // true
+
+// Why? && binds tighter than ||:
+// true || (false && false)
+// true || false
+// true
+
+// Make it explicit:
+result = (true || false) && false;
+console.log(result);  // false</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// Same precedence rules as JavaScript
+bool result = true || false && false;
+Console.WriteLine(result);  // True
+
+// && binds tighter than ||:
+// true || (false && false)
+// true || false
+// True
+
+// Explicit:
+result = (true || false) && false;
+Console.WriteLine(result);  // False</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ Golden Rule: Use Parentheses</h4>
+                    <p>Don't rely on remembering precedence rules. When combining AND and OR, <strong>always use parentheses</strong> to make your intent obvious. Your future self (and your teammates) will thank you.</p>
+                </div>
+            </section>
+
+            <!-- Exercises -->
+            <section id="exercises" class="lesson-section">
+                <h2>Exercises</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 1: Access Control Checker</h3>
+                    <p><strong>Objective:</strong> Write a program that checks if a user can access a restricted resource.</p>
+                    <p>Access is granted if:</p>
+                    <ul>
+                        <li>The user is an admin, <strong>OR</strong></li>
+                        <li>The user is a member <strong>AND</strong> their account is active <strong>AND</strong> they are not banned</li>
+                    </ul>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Access Control">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">role = "member"
+is_active = True
+is_banned = False
+
+has_access = (
+    role == "admin"
+    or (role == "member" and is_active and not is_banned)
+)
+
+if has_access:
+    print("✅ Access granted")
+else:
+    print("❌ Access denied")
+
+# Test with different values:
+# admin → always granted
+# banned member → denied
+# inactive member → denied
+# active, non-banned member → granted</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">let role = "member";
+let isActive = true;
+let isBanned = false;
+
+let hasAccess =
+    role === "admin" ||
+    (role === "member" && isActive && !isBanned);
+
+if (hasAccess) {
+    console.log("✅ Access granted");
+} else {
+    console.log("❌ Access denied");
+}</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">string role = "member";
+bool isActive = true;
+bool isBanned = false;
+
+bool hasAccess =
+    role == "admin" ||
+    (role == "member" && isActive && !isBanned);
+
+if (hasAccess)
+    Console.WriteLine("✅ Access granted");
+else
+    Console.WriteLine("❌ Access denied");</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 2: Truthy/Falsy Predictor</h3>
+                    <p><strong>Objective:</strong> For each value below, predict whether it is truthy or falsy in Python and JavaScript, then verify by running the code.</p>
+                    <ol>
+                        <li><code>0</code></li>
+                        <li><code>""</code> (empty string)</li>
+                        <li><code>"0"</code> (string containing zero)</li>
+                        <li><code>[]</code> (empty list/array)</li>
+                        <li><code>"false"</code> (the word "false" as a string)</li>
+                        <li><code>-1</code></li>
+                        <li><code>None</code> / <code>null</code></li>
+                    </ol>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Truthy/Falsy Results">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">values = [0, "", "0", [], "false", -1, None]
+labels = ['0', '""', '"0"', '[]', '"false"', '-1', 'None']
+
+print("Python Truthiness:")
+print("-" * 25)
+for label, val in zip(labels, values):
+    result = "truthy" if val else "falsy"
+    print(f"  {label:10s} → {result}")
+
+# Results:
+# 0          → falsy
+# ""         → falsy
+# "0"        → truthy  (non-empty string!)
+# []         → falsy   (empty list)
+# "false"    → truthy  (non-empty string!)
+# -1         → truthy  (non-zero number)
+# None       → falsy</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">let values = [0, "", "0", [], "false", -1, null];
+let labels = ['0', '""', '"0"', '[]', '"false"', '-1', 'null'];
+
+console.log("JavaScript Truthiness:");
+console.log("-".repeat(25));
+for (let i = 0; i < values.length; i++) {
+    let result = values[i] ? "truthy" : "falsy";
+    console.log(`  ${labels[i].padEnd(10)} → ${result}`);
+}
+
+// Results:
+// 0          → falsy
+// ""         → falsy
+// "0"        → truthy  (non-empty string!)
+// []         → truthy  (⚠️ DIFFERENT from Python!)
+// "false"    → truthy  (non-empty string!)
+// -1         → truthy  (non-zero number)
+// null       → falsy</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">// C# doesn't have implicit truthiness — this exercise
+// only applies to Python and JavaScript.
+//
+// In C#, you'd need explicit comparisons:
+//   if (number != 0) ...
+//   if (!string.IsNullOrEmpty(text)) ...
+//   if (array.Length > 0) ...
+//   if (obj != null) ...
+//
+// C# catches truthy/falsy confusion at compile time,
+// which prevents the subtle bugs shown in the
+// Python/JavaScript examples.</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 3: Smart Login Validator</h3>
+                    <p><strong>Objective:</strong> Write a login checker that uses short-circuit evaluation. The checker should:</p>
+                    <ol>
+                        <li>Verify the username is not empty</li>
+                        <li>Verify the password is at least 8 characters</li>
+                        <li>Verify the account is not locked</li>
+                        <li>Print which check failed (using short-circuit logic)</li>
+                    </ol>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Smart Login">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">username = "alice"
+password = "Sec123"
+is_locked = False
+
+# Check each condition and report the first failure
+if not username:
+    print("❌ Username is required")
+elif len(password) < 8:
+    print(f"❌ Password too short ({len(password)}/8 characters)")
+elif is_locked:
+    print("❌ Account is locked — contact support")
+else:
+    print(f"✅ Welcome, {username}!")
+
+# Alternatively, as a single expression:
+is_valid = bool(username) and len(password) >= 8 and not is_locked
+print(f"Login valid: {is_valid}")</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">let username = "alice";
+let password = "Sec123";
+let isLocked = false;
+
+if (!username) {
+    console.log("❌ Username is required");
+} else if (password.length < 8) {
+    console.log(`❌ Password too short (${password.length}/8 characters)`);
+} else if (isLocked) {
+    console.log("❌ Account is locked — contact support");
+} else {
+    console.log(`✅ Welcome, ${username}!`);
+}
+
+let isValid = !!username && password.length >= 8 && !isLocked;
+console.log(`Login valid: ${isValid}`);</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">string username = "alice";
+string password = "Sec123";
+bool isLocked = false;
+
+if (string.IsNullOrEmpty(username))
+{
+    Console.WriteLine("❌ Username is required");
+}
+else if (password.Length < 8)
+{
+    Console.WriteLine($"❌ Password too short ({password.Length}/8 characters)");
+}
+else if (isLocked)
+{
+    Console.WriteLine("❌ Account is locked — contact support");
+}
+else
+{
+    Console.WriteLine($"✅ Welcome, {username}!");
+}
+
+bool isValid = !string.IsNullOrEmpty(username)
+    && password.Length >= 8
+    && !isLocked;
+Console.WriteLine($"Login valid: {isValid}");</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Exercise 1 is the must-do — it directly tests combining AND, OR, and NOT with proper parentheses. Exercise 2 is fantastic for interactive class time: put the values on screen and have students vote truthy/falsy before revealing the answer. The JavaScript empty-array surprise always gets a good reaction. Exercise 3 ties together short-circuiting with practical validation logic. For homework, challenge students to add more checks (e.g., password must contain uppercase, account must be verified).</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>Python uses <code>and</code>, <code>or</code>, <code>not</code>; JavaScript and C# use <code>&amp;&amp;</code>, <code>||</code>, <code>!</code></li>
+                        <li><strong>Short-circuit evaluation</strong> stops checking as soon as the result is certain — useful for safety guards like <code>x != 0 and 10/x</code></li>
+                        <li>Python and JavaScript have <strong>truthy/falsy</strong> values: zero, empty strings, None/null/undefined are falsy; everything else is truthy</li>
+                        <li><strong>Gotcha:</strong> empty arrays <code>[]</code> are falsy in Python but truthy in JavaScript</li>
+                        <li>C# requires <strong>explicit booleans</strong> in conditions — no implicit truthiness, which catches bugs at compile time</li>
+                        <li>The <code>??</code> operator (JS and C#) provides defaults for null/undefined only, unlike <code>||</code> which triggers on any falsy value</li>
+                        <li>AND has higher precedence than OR — but <strong>always use parentheses</strong> to make complex conditions clear</li>
+                    </ul>
+                </div>
+
+                <h3>🏁 Module 3 Complete!</h3>
+                <p>You've now mastered the complete <strong>control flow</strong> toolkit: conditionals for decisions, loops for repetition, and logical operators for combining conditions. Up next: <strong>Module 4 — Functions</strong>, where you'll learn to organize your code into reusable, named blocks.</p>
+
+                <!-- Quiz -->
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Check</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What is the Python equivalent of JavaScript's <code>&amp;&amp;</code>?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Python uses the word 'and' where JavaScript and C# use the symbols '&&'. They work the same way.">A) and</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The '&' operator in Python is bitwise AND, which operates on individual bits — very different from logical AND.">B) &amp;</button>
+                            <button class="quiz-option" data-correct="false" data-hint="&& is not valid syntax in Python for logical operations.">C) &amp;&amp;</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 2:</strong> In JavaScript, what is the truthiness of an empty array <code>[]</code>?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Unlike Python (where empty lists are falsy), JavaScript treats ALL arrays as truthy — even empty ones. Always check .length to see if an array has items.">A) Truthy</button>
+                            <button class="quiz-option" data-correct="false" data-hint="That's how it works in Python, but JavaScript is different! In JS, all objects (including arrays) are truthy.">B) Falsy</button>
+                            <button class="quiz-option" data-correct="false" data-hint="JavaScript does have implicit truthiness — it's C# that requires explicit booleans.">C) It depends on the context</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_08.html" class="prev-lesson">← Previous: Loops — for and while</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_10.html" class="next-lesson">Next: Defining and Calling Functions →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

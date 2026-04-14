@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Master iteration patterns: for loops, map, filter, reduce, and common collection-processing techniques in Python, JavaScript, and C#.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 5.3: Iterating Over Collections - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 5</a></li>
+            <li aria-current="page">Lesson 5.3: Iterating Over Collections</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🔄 Lesson 5.3: Iterating Over Collections</h1>
+                <p class="lead">You know how to create and modify collections. Now it's time to master the art of <strong>processing every element</strong> — transforming data, filtering results, accumulating totals, and combining collections. These patterns are the backbone of real-world programming.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Choose the right <strong>loop type</strong> for each situation</li>
+                        <li>Use <strong>enumerate</strong> to get both index and value</li>
+                        <li>Apply <strong>map, filter, and reduce</strong> to transform collections</li>
+                        <li>Use <strong>any/all</strong> checks, <strong>zip</strong>, and other common patterns</li>
+                        <li><strong>Chain</strong> operations for elegant data pipelines</li>
+                        <li>Know when to use loops vs. functional methods</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 45 minutes</p>
+                    <p><strong>Project:</strong> Build a grade report processor that filters, transforms, and summarizes student data</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary><h2 style="display: inline; margin: 0;">📑 In This Lesson</h2></summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#basic-loops" class="toc-link">Basic Collection Loops</a></li>
+                        <li><a href="#enumerate" class="toc-link">Enumerate: Index + Value</a></li>
+                        <li><a href="#map-filter" class="toc-link">Map and Filter</a></li>
+                        <li><a href="#reduce" class="toc-link">Reduce: Accumulating a Result</a></li>
+                        <li><a href="#common-patterns" class="toc-link">Common Patterns</a></li>
+                        <li><a href="#chaining" class="toc-link">Chaining Operations</a></li>
+                        <li><a href="#loops-vs-methods" class="toc-link">Loops vs. Functional Methods</a></li>
+                        <li><a href="#exercises" class="toc-link">Exercises</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Basic Loops -->
+            <section id="basic-loops" class="lesson-section">
+                <h2>Basic Collection Loops</h2>
+                <p>The simplest way to process every element: a <code>for</code> loop. You've seen this in Module 3 — now let's focus on the patterns specific to collections.</p>
+
+                <div class="code-tabs" data-title="Looping Over Lists">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># for...in — the standard Python loop
+colors = ["red", "green", "blue"]
+
+for color in colors:
+    print(color)
+# red, green, blue
+
+# When you need the index too, DON'T do this:
+# for i in range(len(colors)):  ← works but not Pythonic
+#     print(i, colors[i])
+
+# DO use enumerate() instead (next section!)
+
+# Looping over a dictionary
+scores = {"Alice": 95, "Bob": 87, "Charlie": 92}
+
+# Keys only (default)
+for name in scores:
+    print(name)
+
+# Key-value pairs
+for name, score in scores.items():
+    print(f"{name}: {score}")</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">let colors = ["red", "green", "blue"];
+
+// for...of — iterates over VALUES (use this for arrays!)
+for (let color of colors) {
+    console.log(color);
+}
+// red, green, blue
+
+// .forEach() — callback style
+colors.forEach(color =&gt; console.log(color));
+
+// Classic for loop — when you need the index
+for (let i = 0; i &lt; colors.length; i++) {
+    console.log(i, colors[i]);
+}
+
+// ⚠️ for...in — iterates over KEYS (use for objects, NOT arrays)
+let scores = { Alice: 95, Bob: 87, Charlie: 92 };
+
+for (let name in scores) {
+    console.log(`${name}: ${scores[name]}`);
+}
+
+// for...of with Object.entries() (cleaner for objects)
+for (let [name, score] of Object.entries(scores)) {
+    console.log(`${name}: ${score}`);
+}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">List&lt;string&gt; colors = new List&lt;string&gt; { "red", "green", "blue" };
+
+// foreach — the standard C# collection loop
+foreach (string color in colors)
+{
+    Console.WriteLine(color);
+}
+
+// Classic for loop — when you need the index
+for (int i = 0; i &lt; colors.Count; i++)
+{
+    Console.WriteLine($"{i}: {colors[i]}");
+}
+
+// Looping over a dictionary
+Dictionary&lt;string, int&gt; scores = new Dictionary&lt;string, int&gt;
+{
+    { "Alice", 95 }, { "Bob", 87 }, { "Charlie", 92 }
+};
+
+foreach (var (name, score) in scores)
+{
+    Console.WriteLine($"{name}: {score}");
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ JavaScript: <code>for...of</code> vs. <code>for...in</code></h4>
+                    <p><code>for...of</code> gives you <strong>values</strong> — use it for arrays. <code>for...in</code> gives you <strong>keys</strong> (indices for arrays, property names for objects) — use it for objects. Using <code>for...in</code> on arrays can produce unexpected results because it also iterates over inherited properties.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>The <code>for...of</code> vs. <code>for...in</code> distinction is a perennial JavaScript confusion point. A simple mnemonic: "<code>of</code> = values <code>of</code> an array" and "<code>in</code> = keys <code>in</code> an object." Write both on the board side by side with examples. Python and C# don't have this ambiguity — their <code>for...in</code> / <code>foreach</code> always gives values for lists and key-value pairs for dicts.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Enumerate -->
+            <section id="enumerate" class="lesson-section">
+                <h2>Enumerate: Index + Value</h2>
+                <p>Often you need both the <strong>position</strong> and the <strong>value</strong> during iteration. Each language has a clean way to do this.</p>
+
+                <div class="code-tabs" data-title="Getting Index and Value">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">fruits = ["apple", "banana", "cherry", "date"]
+
+# enumerate() gives you (index, value) pairs
+for i, fruit in enumerate(fruits):
+    print(f"{i}: {fruit}")
+# 0: apple
+# 1: banana
+# 2: cherry
+# 3: date
+
+# Start counting from a different number
+for i, fruit in enumerate(fruits, start=1):
+    print(f"{i}. {fruit}")
+# 1. apple
+# 2. banana
+# 3. cherry
+# 4. date
+
+# Useful for finding items
+scores = [85, 92, 78, 95, 88]
+for i, score in enumerate(scores):
+    if score &gt;= 90:
+        print(f"High score at position {i}: {score}")
+# High score at position 1: 92
+# High score at position 3: 95</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">let fruits = ["apple", "banana", "cherry", "date"];
+
+// .forEach() provides (value, index)
+fruits.forEach((fruit, i) =&gt; {
+    console.log(`${i}: ${fruit}`);
+});
+
+// for...of with .entries() — gives [index, value] pairs
+for (let [i, fruit] of fruits.entries()) {
+    console.log(`${i}: ${fruit}`);
+}
+
+// Classic for loop also works
+for (let i = 0; i &lt; fruits.length; i++) {
+    console.log(`${i + 1}. ${fruits[i]}`);
+}
+
+// Finding items with index
+let scores = [85, 92, 78, 95, 88];
+scores.forEach((score, i) =&gt; {
+    if (score &gt;= 90) {
+        console.log(`High score at position ${i}: ${score}`);
+    }
+});</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">List&lt;string&gt; fruits = new List&lt;string&gt;
+    { "apple", "banana", "cherry", "date" };
+
+// Classic for loop (most common in C# for indexed access)
+for (int i = 0; i &lt; fruits.Count; i++)
+{
+    Console.WriteLine($"{i}: {fruits[i]}");
+}
+
+// LINQ Select with index
+foreach (var (fruit, i) in fruits.Select((f, i) =&gt; (f, i)))
+{
+    Console.WriteLine($"{i}: {fruit}");
+}
+
+// Finding items with index
+List&lt;int&gt; scores = new List&lt;int&gt; { 85, 92, 78, 95, 88 };
+for (int i = 0; i &lt; scores.Count; i++)
+{
+    if (scores[i] &gt;= 90)
+        Console.WriteLine($"High score at position {i}: {scores[i]}");
+}</code></pre>
+                    </div>
+                </div>
+
+                <h3>Enumerate Quick Reference</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Pattern</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Index + value</td>
+                                <td><code>enumerate(list)</code></td>
+                                <td><code>.forEach((val, i))</code><br>or <code>.entries()</code></td>
+                                <td><code>for (int i = 0; ...)</code></td>
+                            </tr>
+                            <tr>
+                                <td>Custom start</td>
+                                <td><code>enumerate(list, 1)</code></td>
+                                <td>Manual <code>i + 1</code></td>
+                                <td>Manual <code>i + 1</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Map and Filter -->
+            <section id="map-filter" class="lesson-section">
+                <h2>Map and Filter</h2>
+                <p>Two of the most important collection operations: <strong>map</strong> transforms every element, and <strong>filter</strong> keeps only elements that pass a test. We previewed these in Lesson 13 — now let's go deeper.</p>
+
+                <div class="code-tabs" data-title="Map: Transform Every Element">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">prices = [10.99, 24.50, 7.25, 15.00, 32.99]
+
+# List comprehension (preferred in Python)
+with_tax = [price * 1.08 for price in prices]
+print(with_tax)  # [11.87, 26.46, 7.83, 16.20, 35.63]
+
+# Round them
+with_tax = [round(price * 1.08, 2) for price in prices]
+
+# map() function (alternative)
+with_tax2 = list(map(lambda p: round(p * 1.08, 2), prices))
+
+# Transform strings
+names = ["alice smith", "bob jones", "charlie brown"]
+titled = [name.title() for name in names]
+print(titled)  # ['Alice Smith', 'Bob Jones', 'Charlie Brown']
+
+# Extract a field from dicts
+students = [
+    {"name": "Alice", "grade": 95},
+    {"name": "Bob", "grade": 87},
+    {"name": "Charlie", "grade": 92}
+]
+names_only = [s["name"] for s in students]
+print(names_only)  # ['Alice', 'Bob', 'Charlie']</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">let prices = [10.99, 24.50, 7.25, 15.00, 32.99];
+
+// .map() — returns a new array with transformed values
+let withTax = prices.map(price =&gt; Math.round(price * 1.08 * 100) / 100);
+console.log(withTax);  // [11.87, 26.46, 7.83, 16.20, 35.63]
+
+// Transform strings
+let names = ["alice smith", "bob jones", "charlie brown"];
+let titled = names.map(name =&gt;
+    name.split(" ").map(w =&gt; w[0].toUpperCase() + w.slice(1)).join(" ")
+);
+console.log(titled);  // ['Alice Smith', 'Bob Jones', 'Charlie Brown']
+
+// Extract a field from objects
+let students = [
+    { name: "Alice", grade: 95 },
+    { name: "Bob", grade: 87 },
+    { name: "Charlie", grade: 92 }
+];
+let namesOnly = students.map(s =&gt; s.name);
+console.log(namesOnly);  // ['Alice', 'Bob', 'Charlie']</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">List&lt;double&gt; prices = new List&lt;double&gt;
+    { 10.99, 24.50, 7.25, 15.00, 32.99 };
+
+// .Select() — LINQ's map
+List&lt;double&gt; withTax = prices
+    .Select(p =&gt; Math.Round(p * 1.08, 2))
+    .ToList();
+Console.WriteLine(string.Join(", ", withTax));
+
+// Transform strings
+List&lt;string&gt; names = new List&lt;string&gt;
+    { "alice smith", "bob jones", "charlie brown" };
+var titled = names
+    .Select(n =&gt; System.Globalization.CultureInfo.CurrentCulture
+        .TextInfo.ToTitleCase(n))
+    .ToList();
+
+// Extract a field (with anonymous types or tuples)
+var students = new List&lt;(string Name, int Grade)&gt;
+{
+    ("Alice", 95), ("Bob", 87), ("Charlie", 92)
+};
+List&lt;string&gt; namesOnly = students.Select(s =&gt; s.Name).ToList();</code></pre>
+                    </div>
+                </div>
+
+                <div class="code-tabs" data-title="Filter: Keep What Passes">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+# List comprehension with condition
+evens = [n for n in numbers if n % 2 == 0]
+print(evens)  # [2, 4, 6, 8, 10]
+
+big = [n for n in numbers if n &gt; 5]
+print(big)  # [6, 7, 8, 9, 10]
+
+# filter() function
+evens2 = list(filter(lambda n: n % 2 == 0, numbers))
+
+# Filter objects
+students = [
+    {"name": "Alice", "grade": 95},
+    {"name": "Bob", "grade": 67},
+    {"name": "Charlie", "grade": 92},
+    {"name": "Diana", "grade": 55}
+]
+
+passing = [s for s in students if s["grade"] &gt;= 70]
+print([s["name"] for s in passing])  # ['Alice', 'Charlie']
+
+# Filter + transform in one comprehension
+honor_names = [s["name"] for s in students if s["grade"] &gt;= 90]
+print(honor_names)  # ['Alice', 'Charlie']</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+// .filter() — returns elements that pass the test
+let evens = numbers.filter(n =&gt; n % 2 === 0);
+console.log(evens);  // [2, 4, 6, 8, 10]
+
+let big = numbers.filter(n =&gt; n &gt; 5);
+console.log(big);  // [6, 7, 8, 9, 10]
+
+// Filter objects
+let students = [
+    { name: "Alice", grade: 95 },
+    { name: "Bob", grade: 67 },
+    { name: "Charlie", grade: 92 },
+    { name: "Diana", grade: 55 }
+];
+
+let passing = students.filter(s =&gt; s.grade &gt;= 70);
+console.log(passing.map(s =&gt; s.name));  // ['Alice', 'Charlie']
+
+// Filter + transform (chain them)
+let honorNames = students
+    .filter(s =&gt; s.grade &gt;= 90)
+    .map(s =&gt; s.name);
+console.log(honorNames);  // ['Alice', 'Charlie']</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">List&lt;int&gt; numbers = new List&lt;int&gt;
+    { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+// .Where() — LINQ's filter
+List&lt;int&gt; evens = numbers.Where(n =&gt; n % 2 == 0).ToList();
+Console.WriteLine(string.Join(", ", evens));  // 2, 4, 6, 8, 10
+
+// Filter objects
+var students = new List&lt;(string Name, int Grade)&gt;
+{
+    ("Alice", 95), ("Bob", 67), ("Charlie", 92), ("Diana", 55)
+};
+
+var passing = students.Where(s =&gt; s.Grade &gt;= 70).ToList();
+
+// Filter + transform (chain)
+var honorNames = students
+    .Where(s =&gt; s.Grade &gt;= 90)
+    .Select(s =&gt; s.Name)
+    .ToList();
+Console.WriteLine(string.Join(", ", honorNames));  // Alice, Charlie</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reduce -->
+            <section id="reduce" class="lesson-section">
+                <h2>Reduce: Accumulating a Result</h2>
+                <p><strong>Reduce</strong> (also called <em>fold</em> or <em>aggregate</em>) processes every element and combines them into a single result — a total, a string, a dictionary, or anything else.</p>
+
+                <div class="code-tabs" data-title="Reduce / Aggregate">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">from functools import reduce
+
+numbers = [1, 2, 3, 4, 5]
+
+# Sum (built-in is simpler, but reduce shows the concept)
+total = reduce(lambda acc, n: acc + n, numbers, 0)
+print(total)  # 15
+
+# But Python prefers built-in functions:
+print(sum(numbers))       # 15
+print(max(numbers))       # 5
+print(min(numbers))       # 1
+
+# Join strings
+words = ["Hello", "beautiful", "world"]
+sentence = " ".join(words)
+print(sentence)  # "Hello beautiful world"
+
+# Build a frequency map (reduce-style thinking)
+letters = ["a", "b", "a", "c", "b", "a"]
+freq = {}
+for letter in letters:
+    freq[letter] = freq.get(letter, 0) + 1
+print(freq)  # {'a': 3, 'b': 2, 'c': 1}
+
+# Group items
+students = [
+    {"name": "Alice", "grade": "A"},
+    {"name": "Bob", "grade": "B"},
+    {"name": "Charlie", "grade": "A"},
+    {"name": "Diana", "grade": "B"}
+]
+by_grade = {}
+for s in students:
+    by_grade.setdefault(s["grade"], []).append(s["name"])
+print(by_grade)  # {'A': ['Alice', 'Charlie'], 'B': ['Bob', 'Diana']}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">let numbers = [1, 2, 3, 4, 5];
+
+// .reduce(callback, initialValue)
+let total = numbers.reduce((acc, n) =&gt; acc + n, 0);
+console.log(total);  // 15
+
+// Find max
+let max = numbers.reduce((a, b) =&gt; a &gt; b ? a : b);
+console.log(max);  // 5
+
+// Join strings
+let words = ["Hello", "beautiful", "world"];
+let sentence = words.join(" ");
+console.log(sentence);  // "Hello beautiful world"
+
+// Build a frequency map
+let letters = ["a", "b", "a", "c", "b", "a"];
+let freq = letters.reduce((acc, letter) =&gt; {
+    acc[letter] = (acc[letter] ?? 0) + 1;
+    return acc;
+}, {});
+console.log(freq);  // {a: 3, b: 2, c: 1}
+
+// Group items
+let students = [
+    { name: "Alice", grade: "A" },
+    { name: "Bob", grade: "B" },
+    { name: "Charlie", grade: "A" },
+    { name: "Diana", grade: "B" }
+];
+let byGrade = students.reduce((acc, s) =&gt; {
+    (acc[s.grade] ??= []).push(s.name);
+    return acc;
+}, {});
+console.log(byGrade);  // {A: ['Alice','Charlie'], B: ['Bob','Diana']}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">List&lt;int&gt; numbers = new List&lt;int&gt; { 1, 2, 3, 4, 5 };
+
+// .Aggregate() — LINQ's reduce
+int total = numbers.Aggregate(0, (acc, n) =&gt; acc + n);
+Console.WriteLine(total);  // 15
+
+// Built-in LINQ methods (usually preferred)
+Console.WriteLine(numbers.Sum());   // 15
+Console.WriteLine(numbers.Max());   // 5
+Console.WriteLine(numbers.Min());   // 1
+
+// Join strings
+List&lt;string&gt; words = new List&lt;string&gt; { "Hello", "beautiful", "world" };
+string sentence = string.Join(" ", words);
+Console.WriteLine(sentence);
+
+// Group items
+var students = new List&lt;(string Name, string Grade)&gt;
+{
+    ("Alice", "A"), ("Bob", "B"), ("Charlie", "A"), ("Diana", "B")
+};
+
+var byGrade = students
+    .GroupBy(s =&gt; s.Grade)
+    .ToDictionary(g =&gt; g.Key, g =&gt; g.Select(s =&gt; s.Name).ToList());
+
+foreach (var (grade, names) in byGrade)
+    Console.WriteLine($"{grade}: {string.Join(", ", names)}");
+// A: Alice, Charlie
+// B: Bob, Diana</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 When to Use Reduce</h4>
+                    <p><strong>Reduce</strong> is the most powerful iteration method — any operation you can do with a loop, you can express as a reduce. But power comes with complexity. Use built-in functions (<code>sum</code>, <code>max</code>, <code>join</code>) when they exist; reach for reduce when you need custom accumulation logic like building frequency maps or grouping data.</p>
+                </div>
+            </section>
+
+            <!-- Common Patterns -->
+            <section id="common-patterns" class="lesson-section">
+                <h2>Common Patterns</h2>
+                <p>Beyond map, filter, and reduce, here are patterns you'll use regularly.</p>
+
+                <h3>Any / All — Check Conditions</h3>
+                <div class="code-tabs" data-title="Any and All">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">scores = [85, 92, 78, 95, 88]
+
+# any() — is at least one True?
+has_perfect = any(s == 100 for s in scores)
+has_failing = any(s &lt; 60 for s in scores)
+print(has_perfect)  # False
+print(has_failing)  # False
+
+# all() — are ALL True?
+all_passing = all(s &gt;= 70 for s in scores)
+print(all_passing)  # True
+
+all_honor = all(s &gt;= 90 for s in scores)
+print(all_honor)  # False</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">let scores = [85, 92, 78, 95, 88];
+
+// .some() — at least one passes?
+let hasPerfect = scores.some(s =&gt; s === 100);
+let hasFailing = scores.some(s =&gt; s &lt; 60);
+console.log(hasPerfect);  // false
+console.log(hasFailing);  // false
+
+// .every() — ALL pass?
+let allPassing = scores.every(s =&gt; s &gt;= 70);
+console.log(allPassing);  // true
+
+let allHonor = scores.every(s =&gt; s &gt;= 90);
+console.log(allHonor);  // false</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">List&lt;int&gt; scores = new List&lt;int&gt; { 85, 92, 78, 95, 88 };
+
+// .Any() — at least one?
+bool hasPerfect = scores.Any(s =&gt; s == 100);  // false
+bool hasFailing = scores.Any(s =&gt; s &lt; 60);    // false
+
+// .All() — every one?
+bool allPassing = scores.All(s =&gt; s &gt;= 70);   // true
+bool allHonor = scores.All(s =&gt; s &gt;= 90);     // false</code></pre>
+                    </div>
+                </div>
+
+                <h3>Find — Get the First Match</h3>
+                <div class="code-tabs" data-title="Find First Match">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">users = [
+    {"name": "Alice", "role": "admin"},
+    {"name": "Bob", "role": "user"},
+    {"name": "Charlie", "role": "admin"}
+]
+
+# next() with generator expression
+first_admin = next((u for u in users if u["role"] == "admin"), None)
+print(first_admin)  # {'name': 'Alice', 'role': 'admin'}
+
+# With a default if not found
+first_mod = next((u for u in users if u["role"] == "mod"), None)
+print(first_mod)  # None</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">let users = [
+    { name: "Alice", role: "admin" },
+    { name: "Bob", role: "user" },
+    { name: "Charlie", role: "admin" }
+];
+
+// .find() — first element that passes
+let firstAdmin = users.find(u =&gt; u.role === "admin");
+console.log(firstAdmin);  // {name: 'Alice', role: 'admin'}
+
+// .findIndex() — index of first match
+let idx = users.findIndex(u =&gt; u.role === "admin");
+console.log(idx);  // 0
+
+// Not found = undefined / -1
+let firstMod = users.find(u =&gt; u.role === "mod");
+console.log(firstMod);  // undefined</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">var users = new List&lt;(string Name, string Role)&gt;
+{
+    ("Alice", "admin"), ("Bob", "user"), ("Charlie", "admin")
+};
+
+// .First() — throws if none found
+var firstAdmin = users.First(u =&gt; u.Role == "admin");
+Console.WriteLine(firstAdmin.Name);  // Alice
+
+// .FirstOrDefault() — returns default if none found
+var firstMod = users.FirstOrDefault(u =&gt; u.Role == "mod");
+Console.WriteLine(firstMod.Name ?? "None");  // None
+
+// .FindIndex()
+int idx = users.FindIndex(u =&gt; u.Role == "admin");
+Console.WriteLine(idx);  // 0</code></pre>
+                    </div>
+                </div>
+
+                <h3>Zip — Combine Two Collections</h3>
+                <div class="code-tabs" data-title="Zip: Pair Elements Together">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">names = ["Alice", "Bob", "Charlie"]
+scores = [95, 87, 92]
+
+# zip() pairs elements by position
+for name, score in zip(names, scores):
+    print(f"{name}: {score}")
+# Alice: 95, Bob: 87, Charlie: 92
+
+# Create a dictionary from two lists
+grade_book = dict(zip(names, scores))
+print(grade_book)  # {'Alice': 95, 'Bob': 87, 'Charlie': 92}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">let names = ["Alice", "Bob", "Charlie"];
+let scores = [95, 87, 92];
+
+// No built-in zip — use .map() with index
+let paired = names.map((name, i) =&gt; [name, scores[i]]);
+console.log(paired);  // [['Alice',95], ['Bob',87], ['Charlie',92]]
+
+// Create an object from two arrays
+let gradeBook = Object.fromEntries(
+    names.map((name, i) =&gt; [name, scores[i]])
+);
+console.log(gradeBook);  // {Alice: 95, Bob: 87, Charlie: 92}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">List&lt;string&gt; names = new List&lt;string&gt; { "Alice", "Bob", "Charlie" };
+List&lt;int&gt; scores = new List&lt;int&gt; { 95, 87, 92 };
+
+// .Zip() pairs elements
+foreach (var (name, score) in names.Zip(scores))
+{
+    Console.WriteLine($"{name}: {score}");
+}
+
+// Create a dictionary from two lists
+var gradeBook = names.Zip(scores)
+    .ToDictionary(pair =&gt; pair.First, pair =&gt; pair.Second);</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Chaining -->
+            <section id="chaining" class="lesson-section">
+                <h2>Chaining Operations</h2>
+                <p>The real power of map/filter/reduce is <strong>chaining</strong> them together to build data processing pipelines.</p>
+
+                <div class="code-tabs" data-title="Chaining: Data Processing Pipeline">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Scenario: Process student records
+students = [
+    {"name": "Alice", "grade": 95, "subject": "Math"},
+    {"name": "Bob", "grade": 67, "subject": "Math"},
+    {"name": "Charlie", "grade": 92, "subject": "Science"},
+    {"name": "Diana", "grade": 88, "subject": "Math"},
+    {"name": "Eve", "grade": 55, "subject": "Science"},
+    {"name": "Frank", "grade": 91, "subject": "Math"}
+]
+
+# Pipeline: Math students → passing → names → sorted
+math_honor = sorted([
+    s["name"]
+    for s in students
+    if s["subject"] == "Math" and s["grade"] &gt;= 70
+], reverse=True)
+
+print(math_honor)  # ['Frank', 'Diana', 'Alice']
+
+# Pipeline: Average grade per subject
+from collections import defaultdict
+by_subject = defaultdict(list)
+for s in students:
+    by_subject[s["subject"]].append(s["grade"])
+
+averages = {
+    subject: round(sum(grades) / len(grades), 1)
+    for subject, grades in by_subject.items()
+}
+print(averages)  # {'Math': 85.3, 'Science': 73.5}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">let students = [
+    { name: "Alice", grade: 95, subject: "Math" },
+    { name: "Bob", grade: 67, subject: "Math" },
+    { name: "Charlie", grade: 92, subject: "Science" },
+    { name: "Diana", grade: 88, subject: "Math" },
+    { name: "Eve", grade: 55, subject: "Science" },
+    { name: "Frank", grade: 91, subject: "Math" }
+];
+
+// Pipeline: Math students → passing → names → sorted
+let mathHonor = students
+    .filter(s =&gt; s.subject === "Math")
+    .filter(s =&gt; s.grade &gt;= 70)
+    .map(s =&gt; s.name)
+    .sort()
+    .reverse();
+
+console.log(mathHonor);  // ['Frank', 'Diana', 'Alice']
+
+// Pipeline: Average grade per subject
+let bySubject = students.reduce((acc, s) =&gt; {
+    (acc[s.subject] ??= []).push(s.grade);
+    return acc;
+}, {});
+
+let averages = Object.fromEntries(
+    Object.entries(bySubject).map(([subject, grades]) =&gt; [
+        subject,
+        Math.round(grades.reduce((a, b) =&gt; a + b, 0) / grades.length * 10) / 10
+    ])
+);
+console.log(averages);  // {Math: 85.3, Science: 73.5}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">var students = new List&lt;(string Name, int Grade, string Subject)&gt;
+{
+    ("Alice", 95, "Math"), ("Bob", 67, "Math"),
+    ("Charlie", 92, "Science"), ("Diana", 88, "Math"),
+    ("Eve", 55, "Science"), ("Frank", 91, "Math")
+};
+
+// Pipeline: Math students → passing → names → sorted
+var mathHonor = students
+    .Where(s =&gt; s.Subject == "Math")
+    .Where(s =&gt; s.Grade &gt;= 70)
+    .Select(s =&gt; s.Name)
+    .OrderByDescending(n =&gt; n)
+    .ToList();
+
+Console.WriteLine(string.Join(", ", mathHonor));  // Frank, Diana, Alice
+
+// Pipeline: Average grade per subject
+var averages = students
+    .GroupBy(s =&gt; s.Subject)
+    .ToDictionary(g =&gt; g.Key, g =&gt; Math.Round(g.Average(s =&gt; s.Grade), 1));
+
+foreach (var (subject, avg) in averages)
+    Console.WriteLine($"{subject}: {avg}");</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ Read Chained Operations Top to Bottom</h4>
+                    <p>When you see a chain like <code>.filter().filter().map().sort()</code>, read it as a step-by-step process: "Start with all students, keep only Math students, keep only passing, extract names, sort alphabetically." Each step feeds its result into the next. This is called a <strong>data pipeline</strong>.</p>
+                </div>
+            </section>
+
+            <!-- Loops vs Methods -->
+            <section id="loops-vs-methods" class="lesson-section">
+                <h2>Loops vs. Functional Methods</h2>
+                <p>You can accomplish the same thing with either approach. Here's guidance on when to use which.</p>
+
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Use Case</th>
+                                <th>Recommendation</th>
+                                <th>Why</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Transform every element</td>
+                                <td><strong>map / comprehension</strong></td>
+                                <td>Clear intent: "make a new collection from this one"</td>
+                            </tr>
+                            <tr>
+                                <td>Keep some elements</td>
+                                <td><strong>filter / comprehension</strong></td>
+                                <td>Clear intent: "keep items matching this condition"</td>
+                            </tr>
+                            <tr>
+                                <td>Accumulate a single result</td>
+                                <td><strong>reduce</strong> or <strong>loop</strong></td>
+                                <td>Use built-ins (sum, max) when possible; loops for complex logic</td>
+                            </tr>
+                            <tr>
+                                <td>Side effects (print, modify external state)</td>
+                                <td><strong>for loop</strong></td>
+                                <td>Loops make side effects visible; map/filter should be pure</td>
+                            </tr>
+                            <tr>
+                                <td>Break early on condition</td>
+                                <td><strong>for loop</strong></td>
+                                <td>map/filter process everything; loops can <code>break</code></td>
+                            </tr>
+                            <tr>
+                                <td>Complex multi-step processing</td>
+                                <td><strong>chained methods</strong></td>
+                                <td>Pipeline reads like a recipe; nested loops get confusing</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 The Pragmatic Rule</h4>
+                    <p>Use whichever is <strong>easier to read</strong>. If a chain of map/filter makes the intent clear in one line, use it. If you're struggling to cram logic into a lambda, use a for loop. Readability beats cleverness every time.</p>
+                </div>
+            </section>
+
+            <!-- Exercises -->
+            <section id="exercises" class="lesson-section">
+                <h2>Exercises</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 1: Data Transformer</h3>
+                    <p><strong>Objective:</strong> Given a list of temperatures in Fahrenheit, produce:</p>
+                    <ul>
+                        <li>A list of temperatures converted to Celsius (formula: <code>(F - 32) × 5/9</code>)</li>
+                        <li>Only temperatures above freezing (Celsius &gt; 0)</li>
+                        <li>The average of all Celsius temperatures</li>
+                    </ul>
+                    <p>Input: <code>[32, 50, 68, 14, 86, 23, 104]</code></p>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Temperature Converter">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">fahrenheit = [32, 50, 68, 14, 86, 23, 104]
+
+celsius = [round((f - 32) * 5/9, 1) for f in fahrenheit]
+print(celsius)  # [0.0, 10.0, 20.0, -10.0, 30.0, -5.0, 40.0]
+
+above_freezing = [c for c in celsius if c &gt; 0]
+print(above_freezing)  # [10.0, 20.0, 30.0, 40.0]
+
+average = round(sum(celsius) / len(celsius), 1)
+print(f"Average: {average}°C")  # 12.1°C</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">let fahrenheit = [32, 50, 68, 14, 86, 23, 104];
+
+let celsius = fahrenheit.map(f =&gt; Math.round((f - 32) * 5/9 * 10) / 10);
+console.log(celsius);  // [0, 10, 20, -10, 30, -5, 40]
+
+let aboveFreezing = celsius.filter(c =&gt; c &gt; 0);
+console.log(aboveFreezing);  // [10, 20, 30, 40]
+
+let average = Math.round(celsius.reduce((a, b) =&gt; a + b, 0) / celsius.length * 10) / 10;
+console.log(`Average: ${average}°C`);  // 12.1°C</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">List&lt;int&gt; fahrenheit = new List&lt;int&gt; { 32, 50, 68, 14, 86, 23, 104 };
+
+var celsius = fahrenheit.Select(f =&gt; Math.Round((f - 32) * 5.0 / 9, 1)).ToList();
+var aboveFreezing = celsius.Where(c =&gt; c &gt; 0).ToList();
+double average = Math.Round(celsius.Average(), 1);
+
+Console.WriteLine($"Average: {average}°C");  // 12.1°C</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 2: Grade Report Processor</h3>
+                    <p><strong>Objective:</strong> Given student records, write functions to:</p>
+                    <ul>
+                        <li><code>get_passing(students)</code> — return students with grade &gt;= 70</li>
+                        <li><code>get_honor_roll(students)</code> — return names of students with grade &gt;= 90, sorted alphabetically</li>
+                        <li><code>average_by_subject(students)</code> — return a dict of subject → average grade</li>
+                        <li><code>highest_per_subject(students)</code> — return the top student per subject</li>
+                    </ul>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Grade Report">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">students = [
+    {"name": "Alice", "grade": 95, "subject": "Math"},
+    {"name": "Bob", "grade": 67, "subject": "Math"},
+    {"name": "Charlie", "grade": 92, "subject": "Science"},
+    {"name": "Diana", "grade": 88, "subject": "Science"},
+    {"name": "Eve", "grade": 91, "subject": "Math"}
+]
+
+def get_passing(students):
+    return [s for s in students if s["grade"] &gt;= 70]
+
+def get_honor_roll(students):
+    return sorted([s["name"] for s in students if s["grade"] &gt;= 90])
+
+def average_by_subject(students):
+    from collections import defaultdict
+    by_subj = defaultdict(list)
+    for s in students:
+        by_subj[s["subject"]].append(s["grade"])
+    return {subj: round(sum(g)/len(g), 1) for subj, g in by_subj.items()}
+
+def highest_per_subject(students):
+    best = {}
+    for s in students:
+        subj = s["subject"]
+        if subj not in best or s["grade"] &gt; best[subj]["grade"]:
+            best[subj] = s
+    return best
+
+print("Passing:", [s["name"] for s in get_passing(students)])
+print("Honor Roll:", get_honor_roll(students))
+print("Averages:", average_by_subject(students))
+print("Top per subject:", {k: v["name"] for k, v in highest_per_subject(students).items()})</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">let students = [
+    { name: "Alice", grade: 95, subject: "Math" },
+    { name: "Bob", grade: 67, subject: "Math" },
+    { name: "Charlie", grade: 92, subject: "Science" },
+    { name: "Diana", grade: 88, subject: "Science" },
+    { name: "Eve", grade: 91, subject: "Math" }
+];
+
+const getPassing = (students) =&gt;
+    students.filter(s =&gt; s.grade &gt;= 70);
+
+const getHonorRoll = (students) =&gt;
+    students.filter(s =&gt; s.grade &gt;= 90).map(s =&gt; s.name).sort();
+
+const averageBySubject = (students) =&gt; {
+    let groups = students.reduce((acc, s) =&gt; {
+        (acc[s.subject] ??= []).push(s.grade);
+        return acc;
+    }, {});
+    return Object.fromEntries(
+        Object.entries(groups).map(([subj, grades]) =&gt;
+            [subj, Math.round(grades.reduce((a,b) =&gt; a+b,0) / grades.length * 10) / 10])
+    );
+};
+
+const highestPerSubject = (students) =&gt;
+    students.reduce((acc, s) =&gt; {
+        if (!acc[s.subject] || s.grade &gt; acc[s.subject].grade)
+            acc[s.subject] = s;
+        return acc;
+    }, {});
+
+console.log("Passing:", getPassing(students).map(s =&gt; s.name));
+console.log("Honor Roll:", getHonorRoll(students));
+console.log("Averages:", averageBySubject(students));
+console.log("Top:", highestPerSubject(students));</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">var students = new List&lt;(string Name, int Grade, string Subject)&gt;
+{
+    ("Alice", 95, "Math"), ("Bob", 67, "Math"),
+    ("Charlie", 92, "Science"), ("Diana", 88, "Science"),
+    ("Eve", 91, "Math")
+};
+
+var passing = students.Where(s =&gt; s.Grade &gt;= 70).ToList();
+var honorRoll = students.Where(s =&gt; s.Grade &gt;= 90)
+    .Select(s =&gt; s.Name).OrderBy(n =&gt; n).ToList();
+var avgBySubj = students.GroupBy(s =&gt; s.Subject)
+    .ToDictionary(g =&gt; g.Key, g =&gt; Math.Round(g.Average(s =&gt; s.Grade), 1));
+var topPerSubj = students.GroupBy(s =&gt; s.Subject)
+    .ToDictionary(g =&gt; g.Key, g =&gt; g.OrderByDescending(s =&gt; s.Grade).First());
+
+Console.WriteLine($"Passing: {string.Join(", ", passing.Select(s =&gt; s.Name))}");
+Console.WriteLine($"Honor Roll: {string.Join(", ", honorRoll)}");
+foreach (var (subj, avg) in avgBySubj)
+    Console.WriteLine($"{subj} avg: {avg}");
+foreach (var (subj, top) in topPerSubj)
+    Console.WriteLine($"{subj} top: {top.Name} ({top.Grade})");</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Exercise 1 is a gentle warm-up — convert, filter, average. Exercise 2 is the full capstone that ties together everything from Module 5: lists, dicts, filter, map, reduce, grouping, and chaining. Walk through the JavaScript <code>.reduce()</code> grouping pattern carefully — it's the hardest concept here. Note how C# LINQ shines for this kind of data processing with <code>GroupBy</code> and <code>Average</code>. Challenge fast students: add a <code>generate_report(students)</code> that produces a formatted multi-line string summary.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong>Basic loops:</strong> Python <code>for...in</code>, JS <code>for...of</code> (values) / <code>for...in</code> (keys), C# <code>foreach</code></li>
+                        <li><strong>Enumerate:</strong> Python <code>enumerate()</code>, JS <code>.forEach((val, i))</code> or <code>.entries()</code>, C# classic <code>for</code></li>
+                        <li><strong>Map</strong> transforms every element: Python comprehension, JS <code>.map()</code>, C# <code>.Select()</code></li>
+                        <li><strong>Filter</strong> keeps elements that pass: Python comprehension with <code>if</code>, JS <code>.filter()</code>, C# <code>.Where()</code></li>
+                        <li><strong>Reduce</strong> accumulates a single result: Python <code>reduce()</code>, JS <code>.reduce()</code>, C# <code>.Aggregate()</code></li>
+                        <li><strong>Any/All:</strong> Python <code>any()</code>/<code>all()</code>, JS <code>.some()</code>/<code>.every()</code>, C# <code>.Any()</code>/<code>.All()</code></li>
+                        <li><strong>Zip</strong> pairs two collections: Python <code>zip()</code>, JS <code>.map()</code> with index, C# <code>.Zip()</code></li>
+                        <li><strong>Chaining</strong> builds readable data pipelines: filter → transform → sort → extract</li>
+                    </ul>
+                </div>
+
+                <h3>🚀 What's Next?</h3>
+                <p>That wraps up Module 5: Collections! You've learned to store, access, transform, and process data with lists and dictionaries. In Module 6, we step into <strong>Object-Oriented Programming</strong> — modeling real-world concepts with classes, objects, and methods.</p>
+
+                <!-- Quiz -->
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Check</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> In JavaScript, which array method transforms every element into a new value?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="filter() keeps or removes elements based on a condition — it doesn't transform them.">A) .filter()</button>
+                            <button class="quiz-option" data-correct="true" data-explanation=".map() calls a function on every element and returns a new array with the results. For example, [1,2,3].map(n => n * 2) returns [2,4,6].">B) .map()</button>
+                            <button class="quiz-option" data-correct="false" data-hint="reduce() combines all elements into a single value, not a new array of transformed values.">C) .reduce()</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 2:</strong> What does Python's <code>any([False, False, True, False])</code> return?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="any() returns True if at least one element is truthy. Since the third element is True, any() returns True.">A) True</button>
+                            <button class="quiz-option" data-correct="false" data-hint="That would be all() — which checks if every element is truthy.">B) False</button>
+                            <button class="quiz-option" data-correct="false" data-hint="any() always returns a boolean (True/False), not a number.">C) 1</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 3:</strong> Which LINQ method is C#'s equivalent of JavaScript's <code>.filter()</code>?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Select() is the equivalent of .map() — it transforms elements.">A) .Select()</button>
+                            <button class="quiz-option" data-correct="true" data-explanation=".Where() filters elements based on a condition, just like JavaScript's .filter(). For example, list.Where(n => n > 5) keeps only elements greater than 5.">B) .Where()</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Aggregate() is the equivalent of .reduce() — it accumulates a single result.">C) .Aggregate()</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_14.html" class="prev-lesson">← Previous: Dictionaries, Objects, and Maps</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_16.html" class="next-lesson">Next: Classes and Objects →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

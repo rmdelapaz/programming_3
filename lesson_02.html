@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Install VS Code, Python, Node.js, and the .NET SDK — everything you need to code in three languages.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 1.2: Setting Up Your Environment - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 1</a></li>
+            <li aria-current="page">Lesson 1.2: Setting Up Your Environment</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🛠️ Lesson 1.2: Setting Up Your Environment</h1>
+                <p class="lead">Install everything you need to write and run code in Python, JavaScript, and C# — all using VS Code.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Install and configure VS Code as your code editor</li>
+                        <li>Install Python, Node.js, and the .NET SDK</li>
+                        <li>Verify each installation from the terminal</li>
+                        <li>Understand what a terminal/command line is and how to open it</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 45 minutes</p>
+                    <p><strong>Hands-on:</strong> You'll install real software and verify it works</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary><h2 style="display: inline; margin: 0;">📑 In This Lesson</h2></summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#what-youll-install" class="toc-link">What You'll Install</a></li>
+                        <li><a href="#the-terminal" class="toc-link">The Terminal</a></li>
+                        <li><a href="#install-vscode" class="toc-link">Step 1: Install VS Code</a></li>
+                        <li><a href="#install-python" class="toc-link">Step 2: Install Python</a></li>
+                        <li><a href="#install-nodejs" class="toc-link">Step 3: Install Node.js</a></li>
+                        <li><a href="#install-dotnet" class="toc-link">Step 4: Install .NET SDK</a></li>
+                        <li><a href="#verify-everything" class="toc-link">Verify Everything</a></li>
+                        <li><a href="#troubleshooting" class="toc-link">Troubleshooting</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- What You'll Install -->
+            <section id="what-youll-install" class="lesson-section">
+                <h2>What You'll Install</h2>
+                <p>You need four pieces of software. One is your <strong>code editor</strong> (where you write code), and the other three are <strong>language runtimes</strong> (what actually runs your code).</p>
+
+                <div class="mermaid">
+                    graph TD
+                    VS["🖥️ VS Code<br/>Code Editor"] --> PY["🐍 Python<br/>Runtime"]
+                    VS --> JS["⚡ Node.js<br/>JavaScript Runtime"]
+                    VS --> CS["🔷 .NET SDK<br/>C# Runtime"]
+                    style VS fill:#3b82f6,stroke:#1e40af,color:#fff,stroke-width:2px
+                    style PY fill:#3776ab,stroke:#2a5a83,color:#fff
+                    style JS fill:#f0db4f,stroke:#b8a33a,color:#333
+                    style CS fill:#68217a,stroke:#4e1860,color:#fff
+                </div>
+
+                <div class="card card-accent">
+                    <h4>📖 Key Terms</h4>
+                    <p style="color: #fff;"><strong>Code Editor:</strong> A program designed for writing code. Like a word processor, but for programming. VS Code is the most popular free code editor.</p>
+                    <p style="color: #fff;"><strong>Runtime:</strong> The software that reads and executes your code. Python code needs the Python runtime, JavaScript needs Node.js, and C# needs the .NET SDK.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>If teaching in a lab, ideally have these pre-installed or provide a setup script. If students are on their own machines, allocate extra time — installation issues are the #1 barrier in the first week. Consider having a TA available or doing a live walkthrough on a fresh machine via screen share. For Chromebook users, point them to the online alternatives listed in the troubleshooting section.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- The Terminal -->
+            <section id="the-terminal" class="lesson-section">
+                <h2>The Terminal</h2>
+                <p>Before we install anything, you need to know about the <strong>terminal</strong> (also called the <strong>command line</strong> or <strong>console</strong>). The terminal is a text-based way to talk to your computer. Instead of clicking icons, you type commands.</p>
+
+                <p>You'll use the terminal to run your programs in all three languages. Here's how to open it:</p>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Operating System</th>
+                                <th>How to Open the Terminal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Windows</strong></td>
+                                <td>Press <kbd>Win</kbd> + <kbd>R</kbd>, type <code>cmd</code>, press Enter. <em>Or</em> search for "Terminal" in the Start menu.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>macOS</strong></td>
+                                <td>Press <kbd>Cmd</kbd> + <kbd>Space</kbd>, type "Terminal", press Enter.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Linux</strong></td>
+                                <td>Press <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>T</kbd> (on most distributions).</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ Pro Tip</h4>
+                    <p>VS Code has a <strong>built-in terminal</strong> — once it's installed, you can press <kbd>Ctrl</kbd> + <kbd>`</kbd> (backtick) to open it. This means you can write code and run it without leaving the editor.</p>
+                </div>
+            </section>
+
+            <!-- Step 1: Install VS Code -->
+            <section id="install-vscode" class="lesson-section">
+                <h2>Step 1: Install VS Code</h2>
+                <p><strong>Visual Studio Code</strong> (VS Code) is a free, lightweight code editor from Microsoft. It works on Windows, macOS, and Linux, and supports all three of our languages through extensions.</p>
+
+                <ol>
+                    <li>Go to <a href="https://code.visualstudio.com/" target="_blank" rel="noopener">code.visualstudio.com</a></li>
+                    <li>Click the large <strong>Download</strong> button (it detects your OS automatically)</li>
+                    <li>Run the installer and follow the prompts (accept all defaults)</li>
+                    <li>Launch VS Code when the installation is complete</li>
+                </ol>
+
+                <h3>Recommended Extensions</h3>
+                <p>Extensions add language support to VS Code. Install these three:</p>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Extension</th>
+                                <th>Publisher</th>
+                                <th>What It Adds</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Python</strong></td>
+                                <td>Microsoft</td>
+                                <td>Python syntax highlighting, IntelliSense, debugging, linting</td>
+                            </tr>
+                            <tr>
+                                <td><strong>C# Dev Kit</strong></td>
+                                <td>Microsoft</td>
+                                <td>C# IntelliSense, debugging, project management, test support</td>
+                            </tr>
+                            <tr>
+                                <td><strong>ESLint</strong></td>
+                                <td>Microsoft</td>
+                                <td>JavaScript linting (catches common mistakes)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p>To install an extension: click the <strong>Extensions icon</strong> in the left sidebar (it looks like four squares), search for the extension name, and click <strong>Install</strong>.</p>
+
+                <div class="card card-warning">
+                    <h4>⚠️ VS Code vs. Visual Studio</h4>
+                    <p>These are <em>different products</em>. <strong>VS Code</strong> is free, lightweight, and cross-platform. <strong>Visual Studio</strong> (without the "Code") is Microsoft's full IDE — much larger and Windows/Mac only. We use <strong>VS Code</strong> for this course.</p>
+                </div>
+            </section>
+
+            <!-- Step 2: Install Python -->
+            <section id="install-python" class="lesson-section">
+                <h2>Step 2: Install Python</h2>
+
+                <h3>Windows</h3>
+                <ol>
+                    <li>Go to <a href="https://www.python.org/downloads/" target="_blank" rel="noopener">python.org/downloads</a></li>
+                    <li>Click <strong>Download Python 3.x.x</strong> (the latest version)</li>
+                    <li><strong>Important:</strong> On the first installer screen, check the box that says <strong>"Add python.exe to PATH"</strong></li>
+                    <li>Click <strong>Install Now</strong></li>
+                </ol>
+
+                <div class="card card-danger">
+                    <h4>🚨 Don't Skip This!</h4>
+                    <p>The "Add to PATH" checkbox is <strong>critical</strong>. Without it, your terminal won't recognize the <code>python</code> command. If you missed it, uninstall and reinstall Python with the box checked.</p>
+                </div>
+
+                <h3>macOS</h3>
+                <ol>
+                    <li>macOS comes with an older Python, but you want the latest version</li>
+                    <li>Go to <a href="https://www.python.org/downloads/" target="_blank" rel="noopener">python.org/downloads</a> and download the macOS installer</li>
+                    <li>Run the <code>.pkg</code> file and follow the prompts</li>
+                    <li>Use <code>python3</code> (not <code>python</code>) in the terminal</li>
+                </ol>
+
+                <h3>Linux</h3>
+                <p>Most Linux distributions come with Python pre-installed. Open a terminal and type:</p>
+                <pre><code>python3 --version</code></pre>
+                <p>If it's not installed, use your package manager:</p>
+                <pre><code># Ubuntu/Debian
+sudo apt update && sudo apt install python3
+
+# Fedora
+sudo dnf install python3</code></pre>
+
+                <h3>Verify Python</h3>
+                <p>Open a terminal and type:</p>
+                <pre><code>python --version</code></pre>
+                <p>You should see something like <code>Python 3.12.4</code> (your version number may differ). On macOS/Linux, you may need to use <code>python3 --version</code> instead.</p>
+            </section>
+
+            <!-- Step 3: Install Node.js -->
+            <section id="install-nodejs" class="lesson-section">
+                <h2>Step 3: Install Node.js</h2>
+                <p><strong>Node.js</strong> lets you run JavaScript outside a web browser. Without it, JavaScript only works inside browser pages.</p>
+
+                <ol>
+                    <li>Go to <a href="https://nodejs.org/" target="_blank" rel="noopener">nodejs.org</a></li>
+                    <li>Download the <strong>LTS</strong> (Long Term Support) version — this is the stable, recommended version</li>
+                    <li>Run the installer and follow the prompts (accept all defaults)</li>
+                </ol>
+
+                <div class="card card-info">
+                    <h4>💡 LTS vs. Current</h4>
+                    <p>The Node.js website shows two download options: <strong>LTS</strong> and <strong>Current</strong>. Always choose <strong>LTS</strong> for learning — it's more stable and better supported.</p>
+                </div>
+
+                <h3>Verify Node.js</h3>
+                <p>Open a terminal and type:</p>
+                <pre><code>node --version</code></pre>
+                <p>You should see something like <code>v20.14.0</code>. Also verify npm (Node's package manager):</p>
+                <pre><code>npm --version</code></pre>
+            </section>
+
+            <!-- Step 4: Install .NET SDK -->
+            <section id="install-dotnet" class="lesson-section">
+                <h2>Step 4: Install .NET SDK</h2>
+                <p>The <strong>.NET SDK</strong> (Software Development Kit) includes everything you need to write, compile, and run C# programs.</p>
+
+                <ol>
+                    <li>Go to <a href="https://dotnet.microsoft.com/download" target="_blank" rel="noopener">dotnet.microsoft.com/download</a></li>
+                    <li>Download the <strong>.NET 8 SDK</strong> (or the latest LTS version)</li>
+                    <li>Run the installer and follow the prompts</li>
+                </ol>
+
+                <div class="card card-accent">
+                    <h4>📖 What's an SDK?</h4>
+                    <p style="color:#fff;"><strong>SDK</strong> stands for Software Development Kit. It bundles the compiler (turns your C# code into a runnable program), the runtime (runs the compiled program), and the CLI tools (commands like <code>dotnet new</code> and <code>dotnet run</code>).</p>
+                </div>
+
+                <h3>Verify .NET</h3>
+                <p>Open a terminal and type:</p>
+                <pre><code>dotnet --version</code></pre>
+                <p>You should see something like <code>8.0.301</code>.</p>
+            </section>
+
+            <!-- Verify Everything -->
+            <section id="verify-everything" class="lesson-section">
+                <h2>Verify Everything</h2>
+                <p>Let's run all the verification commands in one place. Open a terminal (or use VS Code's built-in terminal with <kbd>Ctrl</kbd> + <kbd>`</kbd>) and run each command:</p>
+
+                <div class="code-tabs" data-title="Verification Commands">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Check Python is installed
+python --version
+# Expected output: Python 3.x.x
+
+# On macOS/Linux, you may need:
+python3 --version</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// Check Node.js is installed
+node --version
+// Expected output: v20.x.x
+
+// Check npm is installed
+npm --version
+// Expected output: 10.x.x</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// Check .NET SDK is installed
+dotnet --version
+// Expected output: 8.x.x
+
+// List installed SDKs
+dotnet --list-sdks</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-success">
+                    <h3>🎉 All Three Working?</h3>
+                    <p>If all three commands return version numbers, congratulations — your environment is ready! You're set up to code in Python, JavaScript, and C#, all from VS Code.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>This is typically the point where some students will be stuck. Common issues: Python not added to PATH (Windows), Node.js requiring a terminal restart, .NET SDK needing a reboot. Have students who finish early help those who are stuck — peer support builds community. Consider a shared checklist on the board where students mark off each verification step.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Troubleshooting -->
+            <section id="troubleshooting" class="lesson-section">
+                <h2>Troubleshooting</h2>
+
+                <h3>"command not found" or "not recognized"</h3>
+                <p>This almost always means the program wasn't added to your system's <strong>PATH</strong>. The PATH is a list of folders your terminal checks when you type a command. Solutions:</p>
+                <ul>
+                    <li><strong>Close and reopen your terminal</strong> (or restart VS Code) — some installations require a fresh terminal</li>
+                    <li><strong>Restart your computer</strong> — this forces all PATH changes to take effect</li>
+                    <li><strong>Reinstall the software</strong> and make sure to check any "Add to PATH" options</li>
+                </ul>
+
+                <h3>macOS: "python" vs "python3"</h3>
+                <p>On macOS, the <code>python</code> command may point to an old system Python 2 or not exist at all. Always use <code>python3</code> and <code>pip3</code> on macOS.</p>
+
+                <h3>Using a Chromebook or Can't Install Software?</h3>
+                <p>If you can't install local software, you can use online alternatives for all three languages:</p>
+                <ul>
+                    <li><strong>Python:</strong> <a href="https://www.online-python.com/" target="_blank" rel="noopener">online-python.com</a> or <a href="https://replit.com/languages/python3" target="_blank" rel="noopener">Replit</a></li>
+                    <li><strong>JavaScript:</strong> <a href="https://replit.com/languages/nodejs" target="_blank" rel="noopener">Replit (Node.js)</a></li>
+                    <li><strong>C#:</strong> <a href="https://dotnetfiddle.net/" target="_blank" rel="noopener">dotnetfiddle.net</a></li>
+                </ul>
+                <p>These online tools work great for learning. You can always install the real tools later.</p>
+
+                <h3>Permission Errors on Linux</h3>
+                <p>If you see "Permission denied" errors, you may need to prefix commands with <code>sudo</code>. Never use <code>sudo</code> to run your own code — only for system-level installations.</p>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong>VS Code</strong> is your code editor — one editor for all three languages</li>
+                        <li><strong>Python</strong>, <strong>Node.js</strong>, and the <strong>.NET SDK</strong> are the runtimes that execute your code</li>
+                        <li>The <strong>terminal</strong> is where you run programs — <code>python</code>, <code>node</code>, and <code>dotnet run</code></li>
+                        <li>Always verify installations with <code>--version</code> commands</li>
+                        <li>If you can't install locally, online alternatives work great for learning</li>
+                    </ul>
+                </div>
+
+                <h3>🚀 What's Next?</h3>
+                <p>Your tools are installed — now let's <strong>use them!</strong> In the next lesson, you'll write your first "Hello World" program in all three languages and run them from the terminal.</p>
+
+                <!-- Quiz -->
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Check</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What command do you use to run a JavaScript file from the terminal?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="That command runs Python files, not JavaScript.">A) python file.js</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Node.js is the JavaScript runtime for the terminal. You run JS files with: node filename.js">B) node file.js</button>
+                            <button class="quiz-option" data-correct="false" data-hint="dotnet run is for C# projects, not JavaScript files.">C) dotnet run file.js</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 2:</strong> What does "Add to PATH" mean during installation?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="PATH is about your terminal finding programs, not file storage.">A) It saves the program to a specific folder</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="The PATH is a list of directories your terminal searches when you type a command. Adding a program to PATH lets you run it from any directory.">B) It lets your terminal find and run the program from any location</button>
+                            <button class="quiz-option" data-correct="false" data-hint="PATH is a system environment variable, not a network feature.">C) It connects the program to the internet</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_01.html" class="prev-lesson">← Previous: Welcome &amp; Course Overview</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_03.html" class="next-lesson">Next: Hello World in Three Languages →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

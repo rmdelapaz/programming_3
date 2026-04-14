@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn object-oriented programming fundamentals: defining classes, creating objects, adding attributes and methods in Python, JavaScript, and C#.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 6.1: Classes and Objects - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 6</a></li>
+            <li aria-current="page">Lesson 6.1: Classes and Objects</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🏗️ Lesson 6.1: Classes and Objects</h1>
+                <p class="lead">So far, you've used built-in data types — strings, numbers, lists, dictionaries. But what if you need a <strong>custom type</strong>? A <code>Player</code> with a name and health? A <code>BankAccount</code> with a balance and withdrawal rules? That's what classes are for. They let you create your own blueprints for data and behavior.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Explain why <strong>object-oriented programming</strong> (OOP) exists and when it helps</li>
+                        <li>Define a <strong>class</strong> and create <strong>objects</strong> (instances) from it</li>
+                        <li>Add <strong>attributes</strong> (data) and <strong>methods</strong> (behavior) to a class</li>
+                        <li>Understand <strong>self / this</strong> — the reference to the current object</li>
+                        <li>Write a <strong>constructor</strong> that initializes objects with starting data</li>
+                        <li>Create <strong>multiple objects</strong> from the same class with different data</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 60 minutes</p>
+                    <p><strong>Project:</strong> Build a <code>Player</code> class for a simple RPG inventory system</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary><h2 style="display: inline; margin: 0;">📑 In This Lesson</h2></summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#why-oop" class="toc-link">Why Object-Oriented Programming?</a></li>
+                        <li><a href="#classes-vs-objects" class="toc-link">Classes vs. Objects</a></li>
+                        <li><a href="#defining-a-class" class="toc-link">Defining a Class</a></li>
+                        <li><a href="#constructors" class="toc-link">Constructors: Initializing Objects</a></li>
+                        <li><a href="#methods" class="toc-link">Methods: Adding Behavior</a></li>
+                        <li><a href="#self-this" class="toc-link">Understanding self / this</a></li>
+                        <li><a href="#multiple-objects" class="toc-link">Multiple Objects, One Blueprint</a></li>
+                        <li><a href="#objects-in-collections" class="toc-link">Objects in Collections</a></li>
+                        <li><a href="#exercises" class="toc-link">Exercises</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Why OOP -->
+            <section id="why-oop" class="lesson-section">
+                <h2>Why Object-Oriented Programming?</h2>
+                <p>Until now, your data and your functions have lived separately. You might have a dictionary for a player and a function that operates on it:</p>
+
+                <div class="code-tabs" data-title="Before OOP: Separate Data and Functions">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Data — just a dictionary
+player = {"name": "Alice", "health": 100, "inventory": []}
+
+# Functions that operate on that data
+def take_damage(player, amount):
+    player["health"] -= amount
+    if player["health"] < 0:
+        player["health"] = 0
+
+def add_item(player, item):
+    player["inventory"].append(item)
+
+take_damage(player, 30)
+add_item(player, "sword")
+print(f"{player['name']}: {player['health']} HP")  # Alice: 70 HP</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// Data — just an object
+let player = { name: "Alice", health: 100, inventory: [] };
+
+// Functions that operate on that data
+function takeDamage(player, amount) {
+    player.health -= amount;
+    if (player.health &lt; 0) player.health = 0;
+}
+
+function addItem(player, item) {
+    player.inventory.push(item);
+}
+
+takeDamage(player, 30);
+addItem(player, "sword");
+console.log(`${player.name}: ${player.health} HP`);  // Alice: 70 HP</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// Without OOP, C# would use static methods + arrays/dicts
+// But C# is built for OOP — this is the "fighting the language" way
+
+// You'd have to use dictionaries or parallel arrays
+// and pass them into every function. It gets messy fast.</code></pre>
+                    </div>
+                </div>
+
+                <p>This works for small programs, but it has problems as your code grows:</p>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Problem</th>
+                                <th>Why It Matters</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Data and behavior are separated</td>
+                                <td>You have to remember which functions go with which data. Nothing enforces it.</td>
+                            </tr>
+                            <tr>
+                                <td>No structure guarantee</td>
+                                <td>Any code could set <code>player["health"] = "banana"</code> — no guardrails.</td>
+                            </tr>
+                            <tr>
+                                <td>Hard to reuse</td>
+                                <td>Creating 50 enemies means 50 dictionaries with no guarantee they all have the right keys.</td>
+                            </tr>
+                            <tr>
+                                <td>Difficult to scale</td>
+                                <td>As features grow, you end up with dozens of loose functions and no clear organization.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p><strong>OOP solves this</strong> by bundling data and behavior together into a single unit called a <em>class</em>.</p>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Start by showing the "before" code above and asking: "What happens if we misspell a key? What if we forget to initialize inventory?" Let students feel the pain of loose data before introducing classes as the solution. The RPG/game metaphor works extremely well here — students immediately grasp "a blueprint for creating characters." C# students will feel right at home since the language was designed around OOP. Python and JS students may need more motivation since those languages work fine without classes for small programs.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Classes vs Objects -->
+            <section id="classes-vs-objects" class="lesson-section">
+                <h2>Classes vs. Objects</h2>
+                <p>These two terms get used a lot, so let's nail them down:</p>
+
+                <div class="card card-info">
+                    <h4>🏗️ Class = Blueprint</h4>
+                    <p>A class defines <strong>what</strong> something is — what data it holds and what it can do. Think of it like a cookie cutter or an architect's blueprint. It's not a cookie or a house — it's the <em>plan</em> for making them.</p>
+                </div>
+
+                <div class="card card-success">
+                    <h4>🎯 Object = Instance</h4>
+                    <p>An object (also called an <strong>instance</strong>) is a specific thing created from a class. From a single <code>Player</code> class, you can create <code>player1</code>, <code>player2</code>, <code>player3</code> — each with their own name, health, and inventory.</p>
+                </div>
+
+                <div class="mermaid">
+                    graph LR
+                        A["🏗️ Class: Player<br/>name, health, inventory<br/>take_damage(), add_item()"]
+                        A -->|"new"| B["🎮 player1<br/>Alice, 100 HP<br/>[sword]"]
+                        A -->|"new"| C["🎮 player2<br/>Bob, 85 HP<br/>[shield, potion]"]
+                        A -->|"new"| D["🎮 player3<br/>Charlie, 100 HP<br/>[]"]
+                        style A fill:#3b82f6,stroke:#2563eb,color:#fff
+                        style B fill:#22c55e,stroke:#16a34a,color:#fff
+                        style C fill:#22c55e,stroke:#16a34a,color:#fff
+                        style D fill:#22c55e,stroke:#16a34a,color:#fff
+                </div>
+
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Concept</th>
+                                <th>Real-World Analogy</th>
+                                <th>Code Example</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Class</strong></td>
+                                <td>Cookie cutter / Blueprint / Recipe</td>
+                                <td><code>class Player</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Object</strong></td>
+                                <td>A specific cookie / A built house / A baked cake</td>
+                                <td><code>player1 = Player("Alice", 100)</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Attribute</strong></td>
+                                <td>Color of the house / Flavor of the cake</td>
+                                <td><code>player1.name</code>, <code>player1.health</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Method</strong></td>
+                                <td>Opening the door / Slicing the cake</td>
+                                <td><code>player1.take_damage(30)</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Defining a Class -->
+            <section id="defining-a-class" class="lesson-section">
+                <h2>Defining a Class</h2>
+                <p>Let's start with the simplest possible class — one with just a constructor that stores some data.</p>
+
+                <div class="code-tabs" data-title="Your First Class">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Define the class
+class Player:
+    pass  # Empty class (placeholder)
+
+# Create objects (instances)
+player1 = Player()
+player2 = Player()
+
+# They're separate objects
+print(player1)         # &lt;__main__.Player object at 0x...&gt;
+print(player1 == player2)  # False — different objects!
+print(type(player1))   # &lt;class '__main__.Player'&gt;</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// Define the class
+class Player {
+    // Empty class (placeholder)
+}
+
+// Create objects (instances)
+let player1 = new Player();
+let player2 = new Player();
+
+// They're separate objects
+console.log(player1);              // Player {}
+console.log(player1 === player2);  // false — different objects!
+console.log(typeof player1);       // "object"
+console.log(player1 instanceof Player);  // true</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// Define the class
+class Player
+{
+    // Empty class (placeholder)
+}
+
+// Create objects (instances)
+Player player1 = new Player();
+Player player2 = new Player();
+
+// They're separate objects
+Console.WriteLine(player1);                    // Player
+Console.WriteLine(player1 == player2);         // False
+Console.WriteLine(player1.GetType().Name);     // Player</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Naming Convention: Classes Use PascalCase</h4>
+                    <p>In all three languages, class names start with a <strong>capital letter</strong> and use PascalCase: <code>Player</code>, <code>BankAccount</code>, <code>ShoppingCart</code>. Variables holding instances use camelCase (JS/C#) or snake_case (Python): <code>player1</code>, <code>myAccount</code>, <code>shopping_cart</code>.</p>
+                </div>
+
+                <h3>Syntax Comparison</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Define a class</td>
+                                <td><code>class Player:</code></td>
+                                <td><code>class Player { }</code></td>
+                                <td><code>class Player { }</code></td>
+                            </tr>
+                            <tr>
+                                <td>Create an instance</td>
+                                <td><code>Player()</code></td>
+                                <td><code>new Player()</code></td>
+                                <td><code>new Player()</code></td>
+                            </tr>
+                            <tr>
+                                <td>Keyword <code>new</code>?</td>
+                                <td>No</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                            </tr>
+                            <tr>
+                                <td>Braces or indentation?</td>
+                                <td>Indentation</td>
+                                <td>Braces <code>{ }</code></td>
+                                <td>Braces <code>{ }</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Highlight that Python doesn't use <code>new</code> — calling <code>Player()</code> looks just like calling a function. JS and C# both require <code>new</code>. This is a great time to reinforce the JS/C# "syntax siblings" theme from earlier modules. Also note: the empty class is useless on its own — it's just to show the minimal syntax. The constructor in the next section is where it gets useful.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Constructors -->
+            <section id="constructors" class="lesson-section">
+                <h2>Constructors: Initializing Objects</h2>
+                <p>A <strong>constructor</strong> is a special method that runs automatically when you create an object. It sets up the object's initial data (attributes). Every language has its own syntax for this.</p>
+
+                <div class="code-tabs" data-title="Constructor: Setting Up Initial Data">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">class Player:
+    def __init__(self, name, health=100):
+        self.name = name          # Instance attribute
+        self.health = health      # Instance attribute with default
+        self.inventory = []       # Always starts empty
+
+# Create players
+player1 = Player("Alice")
+player2 = Player("Bob", 85)
+
+print(player1.name)       # Alice
+print(player1.health)     # 100
+print(player2.health)     # 85
+print(player1.inventory)  # []</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">class Player {
+    constructor(name, health = 100) {
+        this.name = name;          // Instance property
+        this.health = health;      // Instance property with default
+        this.inventory = [];       // Always starts empty
+    }
+}
+
+// Create players
+let player1 = new Player("Alice");
+let player2 = new Player("Bob", 85);
+
+console.log(player1.name);       // Alice
+console.log(player1.health);     // 100
+console.log(player2.health);     // 85
+console.log(player1.inventory);  // []</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">class Player
+{
+    public string Name;
+    public int Health;
+    public List&lt;string&gt; Inventory;
+
+    // Constructor — same name as the class
+    public Player(string name, int health = 100)
+    {
+        Name = name;
+        Health = health;
+        Inventory = new List&lt;string&gt;();
+    }
+}
+
+// Create players
+Player player1 = new Player("Alice");
+Player player2 = new Player("Bob", 85);
+
+Console.WriteLine(player1.Name);       // Alice
+Console.WriteLine(player1.Health);     // 100
+Console.WriteLine(player2.Health);     // 85
+Console.WriteLine(player1.Inventory.Count);  // 0</code></pre>
+                    </div>
+                </div>
+
+                <h3>Constructor Syntax Comparison</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Constructor name</td>
+                                <td><code>__init__</code></td>
+                                <td><code>constructor</code></td>
+                                <td>Same as class name</td>
+                            </tr>
+                            <tr>
+                                <td>Self reference</td>
+                                <td><code>self</code> (explicit first param)</td>
+                                <td><code>this</code> (implicit)</td>
+                                <td><code>this</code> (implicit, often omitted)</td>
+                            </tr>
+                            <tr>
+                                <td>Set attribute</td>
+                                <td><code>self.name = name</code></td>
+                                <td><code>this.name = name;</code></td>
+                                <td><code>Name = name;</code></td>
+                            </tr>
+                            <tr>
+                                <td>Default params</td>
+                                <td><code>health=100</code></td>
+                                <td><code>health = 100</code></td>
+                                <td><code>int health = 100</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Python's <code>self</code> — The Explicit Difference</h4>
+                    <p>Python is unique: you must write <code>self</code> as the <strong>first parameter</strong> of every method. JavaScript and C# provide <code>this</code> automatically — you never list it as a parameter. This is one of the biggest syntax differences in OOP across these three languages.</p>
+                </div>
+            </section>
+
+            <!-- Methods -->
+            <section id="methods" class="lesson-section">
+                <h2>Methods: Adding Behavior</h2>
+                <p>Attributes store data. <strong>Methods</strong> are functions defined inside a class that define what the object can <em>do</em>. Methods can read and modify the object's own attributes.</p>
+
+                <div class="code-tabs" data-title="Adding Methods to a Class">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">class Player:
+    def __init__(self, name, health=100):
+        self.name = name
+        self.health = health
+        self.inventory = []
+
+    def take_damage(self, amount):
+        self.health -= amount
+        if self.health < 0:
+            self.health = 0
+        print(f"{self.name} takes {amount} damage! HP: {self.health}")
+
+    def heal(self, amount):
+        self.health += amount
+        if self.health > 100:
+            self.health = 100
+        print(f"{self.name} heals {amount}! HP: {self.health}")
+
+    def add_item(self, item):
+        self.inventory.append(item)
+        print(f"{self.name} picked up {item}")
+
+    def show_status(self):
+        items = ", ".join(self.inventory) if self.inventory else "empty"
+        print(f"{self.name} | HP: {self.health} | Items: {items}")
+
+# Use it
+hero = Player("Alice")
+hero.add_item("sword")
+hero.add_item("potion")
+hero.take_damage(35)
+hero.heal(20)
+hero.show_status()
+# Alice | HP: 85 | Items: sword, potion</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">class Player {
+    constructor(name, health = 100) {
+        this.name = name;
+        this.health = health;
+        this.inventory = [];
+    }
+
+    takeDamage(amount) {
+        this.health -= amount;
+        if (this.health &lt; 0) this.health = 0;
+        console.log(`${this.name} takes ${amount} damage! HP: ${this.health}`);
+    }
+
+    heal(amount) {
+        this.health += amount;
+        if (this.health &gt; 100) this.health = 100;
+        console.log(`${this.name} heals ${amount}! HP: ${this.health}`);
+    }
+
+    addItem(item) {
+        this.inventory.push(item);
+        console.log(`${this.name} picked up ${item}`);
+    }
+
+    showStatus() {
+        let items = this.inventory.length ? this.inventory.join(", ") : "empty";
+        console.log(`${this.name} | HP: ${this.health} | Items: ${items}`);
+    }
+}
+
+// Use it
+let hero = new Player("Alice");
+hero.addItem("sword");
+hero.addItem("potion");
+hero.takeDamage(35);
+hero.heal(20);
+hero.showStatus();
+// Alice | HP: 85 | Items: sword, potion</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">class Player
+{
+    public string Name;
+    public int Health;
+    public List&lt;string&gt; Inventory;
+
+    public Player(string name, int health = 100)
+    {
+        Name = name;
+        Health = health;
+        Inventory = new List&lt;string&gt;();
+    }
+
+    public void TakeDamage(int amount)
+    {
+        Health -= amount;
+        if (Health &lt; 0) Health = 0;
+        Console.WriteLine($"{Name} takes {amount} damage! HP: {Health}");
+    }
+
+    public void Heal(int amount)
+    {
+        Health += amount;
+        if (Health &gt; 100) Health = 100;
+        Console.WriteLine($"{Name} heals {amount}! HP: {Health}");
+    }
+
+    public void AddItem(string item)
+    {
+        Inventory.Add(item);
+        Console.WriteLine($"{Name} picked up {item}");
+    }
+
+    public void ShowStatus()
+    {
+        string items = Inventory.Count &gt; 0
+            ? string.Join(", ", Inventory) : "empty";
+        Console.WriteLine($"{Name} | HP: {Health} | Items: {items}");
+    }
+}
+
+// Use it
+Player hero = new Player("Alice");
+hero.AddItem("sword");
+hero.AddItem("potion");
+hero.TakeDamage(35);
+hero.Heal(20);
+hero.ShowStatus();
+// Alice | HP: 85 | Items: sword, potion</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ Notice the Pattern</h4>
+                    <p>Compare the "before OOP" code at the top of this lesson with the class version. Instead of <code>take_damage(player, 30)</code>, you write <code>hero.take_damage(30)</code>. The data and behavior live together — the <em>object knows how to operate on itself</em>. This is the core idea of OOP.</p>
+                </div>
+
+                <h3>Method Syntax Comparison</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Define a method</td>
+                                <td><code>def heal(self, amount):</code></td>
+                                <td><code>heal(amount) { }</code></td>
+                                <td><code>public void Heal(int amount) { }</code></td>
+                            </tr>
+                            <tr>
+                                <td>Call a method</td>
+                                <td><code>hero.heal(20)</code></td>
+                                <td><code>hero.heal(20)</code></td>
+                                <td><code>hero.Heal(20)</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>function</code> keyword?</td>
+                                <td><code>def</code></td>
+                                <td>No (inside class)</td>
+                                <td>No (return type instead)</td>
+                            </tr>
+                            <tr>
+                                <td>Access modifier?</td>
+                                <td>Not required</td>
+                                <td>Not required</td>
+                                <td><code>public</code> / <code>private</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Walk through building the class method by method, not all at once. Start with just <code>__init__</code>, create an object, access its attributes. Then add <code>take_damage</code>, test it. Then <code>heal</code>, test it. This incremental approach lets students see how each piece works before the full class appears. Emphasize: methods are just functions that live inside a class and have access to <code>self</code>/<code>this</code>.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- self / this -->
+            <section id="self-this" class="lesson-section">
+                <h2>Understanding self / this</h2>
+                <p>The trickiest concept for beginners: when a method runs, <strong>how does it know which object's data to use?</strong> That's what <code>self</code> (Python) and <code>this</code> (JS/C#) do — they're a reference to <em>the specific object that called the method</em>.</p>
+
+                <div class="code-tabs" data-title="How self / this Works">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">class Dog:
+    def __init__(self, name):
+        self.name = name    # self = the object being created
+
+    def bark(self):
+        # self = the object calling this method
+        print(f"{self.name} says Woof!")
+
+fido = Dog("Fido")
+rex = Dog("Rex")
+
+fido.bark()   # "Fido says Woof!"  — self is fido
+rex.bark()    # "Rex says Woof!"   — self is rex
+
+# What Python actually does behind the scenes:
+# fido.bark()  →  Dog.bark(fido)
+# rex.bark()   →  Dog.bark(rex)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">class Dog {
+    constructor(name) {
+        this.name = name;    // this = the object being created
+    }
+
+    bark() {
+        // this = the object calling this method
+        console.log(`${this.name} says Woof!`);
+    }
+}
+
+let fido = new Dog("Fido");
+let rex = new Dog("Rex");
+
+fido.bark();   // "Fido says Woof!"  — this is fido
+rex.bark();    // "Rex says Woof!"   — this is rex
+
+// Note: 'this' in JavaScript can be tricky in callbacks
+// (we'll cover that in Lesson 17)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">class Dog
+{
+    public string Name;
+
+    public Dog(string name)
+    {
+        Name = name;   // 'this' is implicit
+        // this.Name = name;  ← also valid, but not needed here
+    }
+
+    public void Bark()
+    {
+        // 'this' is the object calling the method
+        Console.WriteLine($"{Name} says Woof!");
+        // Console.WriteLine($"{this.Name} says Woof!");  ← same thing
+    }
+}
+
+Dog fido = new Dog("Fido");
+Dog rex = new Dog("Rex");
+
+fido.Bark();   // "Fido says Woof!"  — this is fido
+rex.Bark();    // "Rex says Woof!"   — this is rex</code></pre>
+                    </div>
+                </div>
+
+                <div class="mermaid">
+                    sequenceDiagram
+                        participant Code as Your Code
+                        participant fido as fido (Dog)
+                        participant rex as rex (Dog)
+                        Code->>fido: fido.bark()
+                        Note right of fido: self/this = fido<br/>name = "Fido"
+                        fido-->>Code: "Fido says Woof!"
+                        Code->>rex: rex.bark()
+                        Note right of rex: self/this = rex<br/>name = "Rex"
+                        rex-->>Code: "Rex says Woof!"
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Key Insight</h4>
+                    <p><code>self</code> / <code>this</code> is like a pronoun. When you write <code>self.name</code>, you're saying "my name" — where "my" refers to whichever specific object is running the method. The same method code runs on different data depending on which object calls it.</p>
+                </div>
+            </section>
+
+            <!-- Multiple Objects -->
+            <section id="multiple-objects" class="lesson-section">
+                <h2>Multiple Objects, One Blueprint</h2>
+                <p>The whole point of classes is creating <strong>multiple objects</strong> that share structure but have independent data.</p>
+
+                <div class="code-tabs" data-title="Multiple Independent Objects">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">class Player:
+    def __init__(self, name, health=100):
+        self.name = name
+        self.health = health
+        self.inventory = []
+
+    def add_item(self, item):
+        self.inventory.append(item)
+
+    def show_status(self):
+        items = ", ".join(self.inventory) if self.inventory else "empty"
+        print(f"{self.name} | HP: {self.health} | Items: {items}")
+
+# Create three independent players
+alice = Player("Alice")
+bob = Player("Bob", 85)
+charlie = Player("Charlie")
+
+# Each has their OWN data
+alice.add_item("sword")
+bob.add_item("shield")
+bob.add_item("potion")
+charlie.add_item("bow")
+
+alice.show_status()    # Alice | HP: 100 | Items: sword
+bob.show_status()      # Bob | HP: 85 | Items: shield, potion
+charlie.show_status()  # Charlie | HP: 100 | Items: bow
+
+# Modifying one doesn't affect the others!
+alice.health = 50
+print(bob.health)  # 85 — unchanged</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">class Player {
+    constructor(name, health = 100) {
+        this.name = name;
+        this.health = health;
+        this.inventory = [];
+    }
+
+    addItem(item) { this.inventory.push(item); }
+
+    showStatus() {
+        let items = this.inventory.length ? this.inventory.join(", ") : "empty";
+        console.log(`${this.name} | HP: ${this.health} | Items: ${items}`);
+    }
+}
+
+// Create three independent players
+let alice = new Player("Alice");
+let bob = new Player("Bob", 85);
+let charlie = new Player("Charlie");
+
+// Each has their OWN data
+alice.addItem("sword");
+bob.addItem("shield");
+bob.addItem("potion");
+charlie.addItem("bow");
+
+alice.showStatus();    // Alice | HP: 100 | Items: sword
+bob.showStatus();      // Bob | HP: 85 | Items: shield, potion
+charlie.showStatus();  // Charlie | HP: 100 | Items: bow
+
+// Modifying one doesn't affect the others!
+alice.health = 50;
+console.log(bob.health);  // 85 — unchanged</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">class Player
+{
+    public string Name;
+    public int Health;
+    public List&lt;string&gt; Inventory;
+
+    public Player(string name, int health = 100)
+    {
+        Name = name;
+        Health = health;
+        Inventory = new List&lt;string&gt;();
+    }
+
+    public void AddItem(string item) =&gt; Inventory.Add(item);
+
+    public void ShowStatus()
+    {
+        string items = Inventory.Count &gt; 0
+            ? string.Join(", ", Inventory) : "empty";
+        Console.WriteLine($"{Name} | HP: {Health} | Items: {items}");
+    }
+}
+
+// Create three independent players
+Player alice = new Player("Alice");
+Player bob = new Player("Bob", 85);
+Player charlie = new Player("Charlie");
+
+// Each has their OWN data
+alice.AddItem("sword");
+bob.AddItem("shield");
+bob.AddItem("potion");
+charlie.AddItem("bow");
+
+alice.ShowStatus();    // Alice | HP: 100 | Items: sword
+bob.ShowStatus();      // Bob | HP: 85 | Items: shield, potion
+charlie.ShowStatus();  // Charlie | HP: 100 | Items: bow
+
+// Modifying one doesn't affect the others!
+alice.Health = 50;
+Console.WriteLine(bob.Health);  // 85 — unchanged</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Objects in Collections -->
+            <section id="objects-in-collections" class="lesson-section">
+                <h2>Objects in Collections</h2>
+                <p>Objects are values — you can store them in lists, loop over them, filter them, and pass them to functions. This is where OOP starts to feel powerful.</p>
+
+                <div class="code-tabs" data-title="Lists of Objects">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">class Player:
+    def __init__(self, name, health=100):
+        self.name = name
+        self.health = health
+        self.inventory = []
+
+    def is_alive(self):
+        return self.health > 0
+
+    def show_status(self):
+        status = "alive" if self.is_alive() else "defeated"
+        print(f"  {self.name}: {self.health} HP ({status})")
+
+# Create a party of adventurers
+party = [
+    Player("Alice", 100),
+    Player("Bob", 45),
+    Player("Charlie", 0),
+    Player("Diana", 78)
+]
+
+# Loop over objects
+print("=== Party Status ===")
+for player in party:
+    player.show_status()
+
+# Filter: who's still alive?
+alive = [p for p in party if p.is_alive()]
+print(f"\nSurvivors: {[p.name for p in alive]}")
+# Survivors: ['Alice', 'Bob', 'Diana']
+
+# Find: who has the lowest health (among the living)?
+weakest = min(alive, key=lambda p: p.health)
+print(f"Needs healing: {weakest.name} ({weakest.health} HP)")
+# Needs healing: Bob (45 HP)
+
+# Total party health
+total_hp = sum(p.health for p in party)
+print(f"Total party HP: {total_hp}")  # 223</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">class Player {
+    constructor(name, health = 100) {
+        this.name = name;
+        this.health = health;
+        this.inventory = [];
+    }
+
+    isAlive() { return this.health &gt; 0; }
+
+    showStatus() {
+        let status = this.isAlive() ? "alive" : "defeated";
+        console.log(`  ${this.name}: ${this.health} HP (${status})`);
+    }
+}
+
+// Create a party of adventurers
+let party = [
+    new Player("Alice", 100),
+    new Player("Bob", 45),
+    new Player("Charlie", 0),
+    new Player("Diana", 78)
+];
+
+// Loop over objects
+console.log("=== Party Status ===");
+party.forEach(p =&gt; p.showStatus());
+
+// Filter: who's still alive?
+let alive = party.filter(p =&gt; p.isAlive());
+console.log(`\nSurvivors: ${alive.map(p =&gt; p.name)}`);
+
+// Find: lowest health among the living
+let weakest = alive.reduce((min, p) =&gt; p.health &lt; min.health ? p : min);
+console.log(`Needs healing: ${weakest.name} (${weakest.health} HP)`);
+
+// Total party health
+let totalHP = party.reduce((sum, p) =&gt; sum + p.health, 0);
+console.log(`Total party HP: ${totalHP}`);  // 223</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">class Player
+{
+    public string Name;
+    public int Health;
+
+    public Player(string name, int health = 100)
+    {
+        Name = name;
+        Health = health;
+    }
+
+    public bool IsAlive() =&gt; Health &gt; 0;
+
+    public void ShowStatus()
+    {
+        string status = IsAlive() ? "alive" : "defeated";
+        Console.WriteLine($"  {Name}: {Health} HP ({status})");
+    }
+}
+
+// Create a party of adventurers
+var party = new List&lt;Player&gt;
+{
+    new Player("Alice", 100),
+    new Player("Bob", 45),
+    new Player("Charlie", 0),
+    new Player("Diana", 78)
+};
+
+// Loop over objects
+Console.WriteLine("=== Party Status ===");
+party.ForEach(p =&gt; p.ShowStatus());
+
+// Filter: who's still alive?
+var alive = party.Where(p =&gt; p.IsAlive()).ToList();
+Console.WriteLine($"\nSurvivors: {string.Join(", ", alive.Select(p =&gt; p.Name))}");
+
+// Find: lowest health among the living
+var weakest = alive.OrderBy(p =&gt; p.Health).First();
+Console.WriteLine($"Needs healing: {weakest.Name} ({weakest.Health} HP)");
+
+// Total party health
+int totalHP = party.Sum(p =&gt; p.Health);
+Console.WriteLine($"Total party HP: {totalHP}");  // 223</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ Collections + OOP = Real Programs</h4>
+                    <p>This is exactly how real applications work: a shopping cart is a list of <code>Product</code> objects, a chat app stores a list of <code>Message</code> objects, a game manages a list of <code>Entity</code> objects. The collection patterns you learned in Module 5 (filter, map, reduce, find) apply directly to lists of your own objects.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>This section ties Module 5 directly to Module 6. Point out that <code>party.filter(p =&gt; p.isAlive())</code> is the same pattern as <code>scores.filter(s =&gt; s &gt;= 70)</code> — just with objects instead of numbers. Students who were comfortable with filter/map/reduce should see this as a natural extension, not something new. The RPG party example is engaging and immediately relatable.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Exercises -->
+            <section id="exercises" class="lesson-section">
+                <h2>Exercises</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 1: BankAccount Class</h3>
+                    <p><strong>Objective:</strong> Create a <code>BankAccount</code> class with:</p>
+                    <ul>
+                        <li>Constructor that takes <code>owner</code> (string) and optional <code>balance</code> (default 0)</li>
+                        <li><code>deposit(amount)</code> — adds to balance, prints confirmation</li>
+                        <li><code>withdraw(amount)</code> — subtracts from balance, but <strong>rejects</strong> if insufficient funds</li>
+                        <li><code>get_balance()</code> / <code>getBalance()</code> — returns the current balance</li>
+                    </ul>
+                    <p>Test with two accounts performing deposits and withdrawals.</p>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="BankAccount">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">class BankAccount:
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self.balance = balance
+
+    def deposit(self, amount):
+        if amount <= 0:
+            print("Deposit must be positive!")
+            return
+        self.balance += amount
+        print(f"{self.owner}: Deposited ${amount:.2f}. Balance: ${self.balance:.2f}")
+
+    def withdraw(self, amount):
+        if amount <= 0:
+            print("Withdrawal must be positive!")
+            return
+        if amount > self.balance:
+            print(f"{self.owner}: Insufficient funds! Balance: ${self.balance:.2f}")
+            return
+        self.balance -= amount
+        print(f"{self.owner}: Withdrew ${amount:.2f}. Balance: ${self.balance:.2f}")
+
+    def get_balance(self):
+        return self.balance
+
+# Test
+acct1 = BankAccount("Alice", 1000)
+acct2 = BankAccount("Bob")
+
+acct1.deposit(500)       # Alice: Deposited $500.00. Balance: $1500.00
+acct1.withdraw(200)      # Alice: Withdrew $200.00. Balance: $1300.00
+acct2.deposit(100)       # Bob: Deposited $100.00. Balance: $100.00
+acct2.withdraw(150)      # Bob: Insufficient funds! Balance: $100.00</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">class BankAccount {
+    constructor(owner, balance = 0) {
+        this.owner = owner;
+        this.balance = balance;
+    }
+
+    deposit(amount) {
+        if (amount &lt;= 0) { console.log("Deposit must be positive!"); return; }
+        this.balance += amount;
+        console.log(`${this.owner}: Deposited $${amount.toFixed(2)}. Balance: $${this.balance.toFixed(2)}`);
+    }
+
+    withdraw(amount) {
+        if (amount &lt;= 0) { console.log("Withdrawal must be positive!"); return; }
+        if (amount &gt; this.balance) {
+            console.log(`${this.owner}: Insufficient funds! Balance: $${this.balance.toFixed(2)}`);
+            return;
+        }
+        this.balance -= amount;
+        console.log(`${this.owner}: Withdrew $${amount.toFixed(2)}. Balance: $${this.balance.toFixed(2)}`);
+    }
+
+    getBalance() { return this.balance; }
+}
+
+// Test
+let acct1 = new BankAccount("Alice", 1000);
+let acct2 = new BankAccount("Bob");
+
+acct1.deposit(500);       // Alice: Deposited $500.00. Balance: $1500.00
+acct1.withdraw(200);      // Alice: Withdrew $200.00. Balance: $1300.00
+acct2.deposit(100);       // Bob: Deposited $100.00. Balance: $100.00
+acct2.withdraw(150);      // Bob: Insufficient funds! Balance: $100.00</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">class BankAccount
+{
+    public string Owner;
+    public decimal Balance;
+
+    public BankAccount(string owner, decimal balance = 0)
+    {
+        Owner = owner;
+        Balance = balance;
+    }
+
+    public void Deposit(decimal amount)
+    {
+        if (amount &lt;= 0) { Console.WriteLine("Deposit must be positive!"); return; }
+        Balance += amount;
+        Console.WriteLine($"{Owner}: Deposited ${Balance:F2}. Balance: ${Balance:F2}");
+    }
+
+    public void Withdraw(decimal amount)
+    {
+        if (amount &lt;= 0) { Console.WriteLine("Withdrawal must be positive!"); return; }
+        if (amount &gt; Balance)
+        {
+            Console.WriteLine($"{Owner}: Insufficient funds! Balance: ${Balance:F2}");
+            return;
+        }
+        Balance -= amount;
+        Console.WriteLine($"{Owner}: Withdrew ${amount:F2}. Balance: ${Balance:F2}");
+    }
+
+    public decimal GetBalance() =&gt; Balance;
+}
+
+// Test
+BankAccount acct1 = new BankAccount("Alice", 1000);
+BankAccount acct2 = new BankAccount("Bob");
+
+acct1.Deposit(500);       // Alice: Deposited $500.00. Balance: $1500.00
+acct1.Withdraw(200);      // Alice: Withdrew $200.00. Balance: $1300.00
+acct2.Deposit(100);       // Bob: Deposited $100.00. Balance: $100.00
+acct2.Withdraw(150);      // Bob: Insufficient funds! Balance: $100.00</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 2: RPG Party Manager</h3>
+                    <p><strong>Objective:</strong> Using the <code>Player</code> class from this lesson, write code that:</p>
+                    <ul>
+                        <li>Creates a party of 4 players with different names and health values</li>
+                        <li>Gives each player at least one inventory item</li>
+                        <li>Simulates a battle: deal random damage (10–40) to each player</li>
+                        <li>After the battle, prints: who survived, who was defeated, total party HP remaining</li>
+                        <li>Finds the player with the most items in their inventory</li>
+                    </ul>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="RPG Party Manager">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">import random
+
+class Player:
+    def __init__(self, name, health=100):
+        self.name = name
+        self.health = health
+        self.inventory = []
+
+    def take_damage(self, amount):
+        self.health -= amount
+        if self.health < 0:
+            self.health = 0
+
+    def add_item(self, item):
+        self.inventory.append(item)
+
+    def is_alive(self):
+        return self.health > 0
+
+# Build the party
+party = [
+    Player("Alice", 100),
+    Player("Bob", 80),
+    Player("Charlie", 90),
+    Player("Diana", 70)
+]
+
+# Give items
+party[0].add_item("sword")
+party[0].add_item("shield")
+party[1].add_item("bow")
+party[2].add_item("staff")
+party[2].add_item("potion")
+party[2].add_item("scroll")
+party[3].add_item("dagger")
+
+# Simulate battle
+print("=== Battle! ===")
+for player in party:
+    damage = random.randint(10, 40)
+    player.take_damage(damage)
+    status = "survived" if player.is_alive() else "DEFEATED"
+    print(f"  {player.name} took {damage} damage → {player.health} HP ({status})")
+
+# Results
+survivors = [p for p in party if p.is_alive()]
+defeated = [p for p in party if not p.is_alive()]
+total_hp = sum(p.health for p in party)
+
+print(f"\nSurvivors: {[p.name for p in survivors]}")
+print(f"Defeated: {[p.name for p in defeated]}")
+print(f"Total HP remaining: {total_hp}")
+
+# Most items
+most_items = max(party, key=lambda p: len(p.inventory))
+print(f"Most items: {most_items.name} ({len(most_items.inventory)} items)")</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">class Player {
+    constructor(name, health = 100) {
+        this.name = name;
+        this.health = health;
+        this.inventory = [];
+    }
+
+    takeDamage(amount) {
+        this.health -= amount;
+        if (this.health &lt; 0) this.health = 0;
+    }
+
+    addItem(item) { this.inventory.push(item); }
+    isAlive() { return this.health &gt; 0; }
+}
+
+// Build the party
+let party = [
+    new Player("Alice", 100),
+    new Player("Bob", 80),
+    new Player("Charlie", 90),
+    new Player("Diana", 70)
+];
+
+// Give items
+party[0].addItem("sword"); party[0].addItem("shield");
+party[1].addItem("bow");
+party[2].addItem("staff"); party[2].addItem("potion"); party[2].addItem("scroll");
+party[3].addItem("dagger");
+
+// Simulate battle
+console.log("=== Battle! ===");
+for (let player of party) {
+    let damage = Math.floor(Math.random() * 31) + 10;
+    player.takeDamage(damage);
+    let status = player.isAlive() ? "survived" : "DEFEATED";
+    console.log(`  ${player.name} took ${damage} damage → ${player.health} HP (${status})`);
+}
+
+// Results
+let survivors = party.filter(p =&gt; p.isAlive());
+let defeated = party.filter(p =&gt; !p.isAlive());
+let totalHP = party.reduce((sum, p) =&gt; sum + p.health, 0);
+
+console.log(`\nSurvivors: ${survivors.map(p =&gt; p.name)}`);
+console.log(`Defeated: ${defeated.map(p =&gt; p.name)}`);
+console.log(`Total HP remaining: ${totalHP}`);
+
+let mostItems = party.reduce((max, p) =&gt;
+    p.inventory.length &gt; max.inventory.length ? p : max);
+console.log(`Most items: ${mostItems.name} (${mostItems.inventory.length} items)`);</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">class Player
+{
+    public string Name;
+    public int Health;
+    public List&lt;string&gt; Inventory = new();
+
+    public Player(string name, int health = 100)
+    { Name = name; Health = health; }
+
+    public void TakeDamage(int amount)
+    { Health -= amount; if (Health &lt; 0) Health = 0; }
+
+    public void AddItem(string item) =&gt; Inventory.Add(item);
+    public bool IsAlive() =&gt; Health &gt; 0;
+}
+
+var party = new List&lt;Player&gt;
+{
+    new Player("Alice", 100), new Player("Bob", 80),
+    new Player("Charlie", 90), new Player("Diana", 70)
+};
+
+party[0].AddItem("sword"); party[0].AddItem("shield");
+party[1].AddItem("bow");
+party[2].AddItem("staff"); party[2].AddItem("potion"); party[2].AddItem("scroll");
+party[3].AddItem("dagger");
+
+var rng = new Random();
+Console.WriteLine("=== Battle! ===");
+foreach (var p in party)
+{
+    int damage = rng.Next(10, 41);
+    p.TakeDamage(damage);
+    string status = p.IsAlive() ? "survived" : "DEFEATED";
+    Console.WriteLine($"  {p.Name} took {damage} damage → {p.Health} HP ({status})");
+}
+
+var survivors = party.Where(p =&gt; p.IsAlive()).ToList();
+var defeated = party.Where(p =&gt; !p.IsAlive()).ToList();
+int totalHP = party.Sum(p =&gt; p.Health);
+
+Console.WriteLine($"\nSurvivors: {string.Join(", ", survivors.Select(p =&gt; p.Name))}");
+Console.WriteLine($"Defeated: {string.Join(", ", defeated.Select(p =&gt; p.Name))}");
+Console.WriteLine($"Total HP remaining: {totalHP}");
+
+var mostItems = party.OrderByDescending(p =&gt; p.Inventory.Count).First();
+Console.WriteLine($"Most items: {mostItems.Name} ({mostItems.Inventory.Count} items)");</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Exercise 1 (BankAccount) reinforces the core class mechanics: constructor, methods, guarding data with conditions. Exercise 2 (RPG Party) ties OOP to collections from Module 5 and adds randomness for engagement. Students will get different results each run, which makes it fun to compare. Challenge fast students: add a <code>transfer(from_account, to_account, amount)</code> function or a <code>Player.attack(target)</code> method that deals damage to another player.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong>OOP</strong> bundles data (attributes) and behavior (methods) into classes</li>
+                        <li>A <strong>class</strong> is a blueprint; an <strong>object</strong> is a specific instance created from it</li>
+                        <li><strong>Constructors</strong> initialize objects: Python <code>__init__</code>, JS <code>constructor</code>, C# same-name-as-class</li>
+                        <li><strong>self / this</strong> refers to the current object — Python requires it as an explicit parameter, JS/C# provide it implicitly</li>
+                        <li><strong>Methods</strong> are functions that live inside a class and operate on the object's data</li>
+                        <li>Objects are values — you can store them in <strong>lists</strong>, filter them, loop over them, and pass them to functions</li>
+                        <li>JS and C# use <code>new</code> to create instances; Python does not</li>
+                    </ul>
+                </div>
+
+                <h3>🚀 What's Next?</h3>
+                <p>You can now create classes with attributes and methods. In the next lesson, we'll go deeper into <strong>properties, methods, and constructors</strong> — including return values from methods, string representations (<code>__str__</code> / <code>toString</code>), and controlling access to data with public/private visibility.</p>
+
+                <!-- Quiz -->
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Check</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What is the Python constructor method called?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="constructor() is the JavaScript syntax for a constructor.">A) constructor()</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Python uses __init__ (double underscores on each side) as its constructor. It's called automatically when you create an object with Player().">B) __init__()</button>
+                            <button class="quiz-option" data-correct="false" data-hint="In C#, the constructor has the same name as the class — but Python uses __init__ instead.">C) Player()</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 2:</strong> Which language requires <code>new</code> to create an object?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Python doesn't use 'new' — you just call the class like a function: Player().">A) Python only</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Both JavaScript and C# require the 'new' keyword: new Player(). Python creates objects without 'new' — you just write Player().">B) JavaScript and C#</button>
+                            <button class="quiz-option" data-correct="false" data-hint="All three can create objects, but they don't all use the same syntax.">C) All three languages</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 3:</strong> What does <code>self</code> (Python) or <code>this</code> (JS/C#) refer to inside a method?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="The class is the blueprint — self/this refers to a specific instance, not the blueprint itself.">A) The class definition</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="self/this is a reference to the specific object that called the method. When fido.bark() runs, self/this points to the fido object, giving the method access to fido's data.">B) The specific object calling the method</button>
+                            <button class="quiz-option" data-correct="false" data-hint="self/this refers to the current object, not the function itself. The function is just code — the object is the data.">C) The function being called</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_15.html" class="prev-lesson">← Previous: Iterating Over Collections</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_17.html" class="next-lesson">Next: Properties, Methods, and Constructors →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

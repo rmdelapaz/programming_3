@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn how Python, JavaScript, and C# store data with variables and constants — and why each does it differently.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 2.1: Variables and Constants - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 2</a></li>
+            <li aria-current="page">Lesson 2.1: Variables and Constants</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>📦 Lesson 2.1: Variables and Constants</h1>
+                <p class="lead">Teach your programs to remember things — how all three languages store, name, and protect data.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Explain what a variable is and why programs need them</li>
+                        <li>Create variables in Python, JavaScript, and C#</li>
+                        <li>Understand the difference between <code>let</code>, <code>const</code>, <code>var</code> in JavaScript</li>
+                        <li>Create constants (values that don't change) in all three languages</li>
+                        <li>Follow naming conventions for each language</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 45 minutes</p>
+                    <p><strong>Project:</strong> A program that stores and displays personal info using variables</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary><h2 style="display: inline; margin: 0;">📑 In This Lesson</h2></summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#what-is-a-variable" class="toc-link">What Is a Variable?</a></li>
+                        <li><a href="#creating-variables" class="toc-link">Creating Variables</a></li>
+                        <li><a href="#changing-values" class="toc-link">Changing Values</a></li>
+                        <li><a href="#constants" class="toc-link">Constants</a></li>
+                        <li><a href="#naming-rules" class="toc-link">Naming Rules and Conventions</a></li>
+                        <li><a href="#dynamic-vs-static" class="toc-link">Dynamic vs. Static Typing</a></li>
+                        <li><a href="#exercises" class="toc-link">Exercises</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- What Is a Variable? -->
+            <section id="what-is-a-variable" class="lesson-section">
+                <h2>What Is a Variable?</h2>
+                <p>A <strong>variable</strong> is a named container for a piece of data. Think of it like a labeled box: you give the box a name, put something inside it, and later you can look at or change what's inside by referring to the name.</p>
+
+                <div class="mermaid">
+                    graph LR
+                    A["age = 25"] --> B["📦 age<br/>Contains: 25"]
+                    C["name = 'Alex'"] --> D["📦 name<br/>Contains: 'Alex'"]
+                    style B fill:#3b82f6,stroke:#1e40af,color:#fff,stroke-width:2px
+                    style D fill:#6366f1,stroke:#4338ca,color:#fff,stroke-width:2px
+                </div>
+
+                <p>Without variables, programs couldn't remember anything between steps. You'd have to hard-code every value, and nothing could change while the program runs.</p>
+
+                <div class="card card-accent">
+                    <h4>📖 Key Term</h4>
+                    <p style="color:#fff;"><strong>Variable:</strong> A named storage location in your program's memory. It has a <strong>name</strong> (how you refer to it), a <strong>value</strong> (what's stored), and a <strong>type</strong> (what kind of data it holds).</p>
+                </div>
+            </section>
+
+            <!-- Creating Variables -->
+            <section id="creating-variables" class="lesson-section">
+                <h2>Creating Variables</h2>
+                <p>Here's how you create (or <strong>declare</strong>) a variable in each language:</p>
+
+                <div class="code-tabs" data-title="Variable Declaration">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python: just assign a value — no keyword needed
+name = "Alex"
+age = 25
+is_student = True
+
+print(name)       # Alex
+print(age)        # 25
+print(is_student) # True</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript: use let or const to declare
+let name = "Alex";
+let age = 25;
+let isStudent = true;
+
+console.log(name);      // Alex
+console.log(age);       // 25
+console.log(isStudent); // true</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C#: declare the type before the name
+string name = "Alex";
+int age = 25;
+bool isStudent = true;
+
+Console.WriteLine(name);      // Alex
+Console.WriteLine(age);       // 25
+Console.WriteLine(isStudent); // True</code></pre>
+                    </div>
+                </div>
+
+                <h3>Key Differences</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Declaration keyword</td>
+                                <td>None — just assign</td>
+                                <td><code>let</code> (or <code>const</code>)</td>
+                                <td>Type name (e.g., <code>int</code>)</td>
+                            </tr>
+                            <tr>
+                                <td>Type specified?</td>
+                                <td>No — Python infers it</td>
+                                <td>No — JavaScript infers it</td>
+                                <td>Yes — you must state it</td>
+                            </tr>
+                            <tr>
+                                <td>Boolean values</td>
+                                <td><code>True</code> / <code>False</code></td>
+                                <td><code>true</code> / <code>false</code></td>
+                                <td><code>true</code> / <code>false</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Python's Capitalized Booleans</h4>
+                    <p>Python uses <code>True</code> and <code>False</code> with capital letters. JavaScript and C# use lowercase <code>true</code> and <code>false</code>. This is a common source of errors when switching between languages!</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>The biggest conceptual leap for true beginners is the idea that <code>=</code> means "assign" not "equals." Use the box/label analogy heavily. Demonstrate in the Python REPL (type <code>python</code> in terminal) — it's the fastest way to show live variable creation. Have students type along in their own REPL before moving to files.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Changing Values -->
+            <section id="changing-values" class="lesson-section">
+                <h2>Changing Values</h2>
+                <p>Variables are called "variables" because their values can <strong>vary</strong> — you can change them after creation:</p>
+
+                <div class="code-tabs" data-title="Reassigning Variables">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python: reassign freely — even change the type!
+score = 0
+print(score)   # 0
+
+score = 100
+print(score)   # 100
+
+# Python even lets you change the type
+score = "one hundred"
+print(score)   # one hundred (now it's a string!)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript with let: reassign freely
+let score = 0;
+console.log(score);  // 0
+
+score = 100;
+console.log(score);  // 100
+
+// JavaScript also lets you change the type
+score = "one hundred";
+console.log(score);  // one hundred</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C#: reassign to same type only
+int score = 0;
+Console.WriteLine(score);  // 0
+
+score = 100;
+Console.WriteLine(score);  // 100
+
+// This would cause an ERROR in C#:
+// score = "one hundred";
+// Cannot convert string to int!</code></pre>
+                    </div>
+                </div>
+
+                <blockquote>
+                    <strong>💡 Key Insight:</strong> Python and JavaScript let you change a variable's type freely. C# <strong>locks the type</strong> at declaration — once an <code>int</code>, always an <code>int</code>. This is the core difference between <strong>dynamic</strong> and <strong>static</strong> typing.
+                </blockquote>
+            </section>
+
+            <!-- Constants -->
+            <section id="constants" class="lesson-section">
+                <h2>Constants</h2>
+                <p>A <strong>constant</strong> is like a variable that you're not allowed to change after it's set. Use constants for values that should stay fixed, like the speed of light or the number of days in a week.</p>
+
+                <div class="code-tabs" data-title="Constants">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python: no true constants — use ALL_CAPS by convention
+# Other programmers know not to change these
+MAX_SPEED = 299792458   # speed of light in m/s
+PI = 3.14159
+DAYS_IN_WEEK = 7
+
+# Nothing stops you from changing it (Python trusts you)
+# MAX_SPEED = 0  # technically works, but DON'T do this
+
+print(f"Speed of light: {MAX_SPEED} m/s")</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript: use const instead of let
+const MAX_SPEED = 299792458;
+const PI = 3.14159;
+const DAYS_IN_WEEK = 7;
+
+// Trying to change a const causes an ERROR:
+// MAX_SPEED = 0;  // TypeError: Assignment to constant variable
+
+console.log(`Speed of light: ${MAX_SPEED} m/s`);</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C#: use the const keyword before the type
+const int MaxSpeed = 299792458;
+const double Pi = 3.14159;
+const int DaysInWeek = 7;
+
+// Trying to change a const causes a COMPILE ERROR:
+// MaxSpeed = 0;  // Error: cannot assign to const
+
+Console.WriteLine($"Speed of light: {MaxSpeed} m/s");</code></pre>
+                    </div>
+                </div>
+
+                <h3>Constants Compared</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Constant keyword</td>
+                                <td>None (convention only)</td>
+                                <td><code>const</code></td>
+                                <td><code>const</code></td>
+                            </tr>
+                            <tr>
+                                <td>Enforced?</td>
+                                <td>No — honor system</td>
+                                <td>Yes — runtime error</td>
+                                <td>Yes — compile error</td>
+                            </tr>
+                            <tr>
+                                <td>Naming convention</td>
+                                <td><code>ALL_CAPS</code></td>
+                                <td><code>ALL_CAPS</code> or <code>camelCase</code></td>
+                                <td><code>PascalCase</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ Best Practice: Use Constants Generously</h4>
+                    <p>If a value shouldn't change, make it a constant. In JavaScript, many developers use <code>const</code> by default and only switch to <code>let</code> when they need to reassign. This makes your code easier to understand and less prone to bugs.</p>
+                </div>
+            </section>
+
+            <!-- Naming Rules -->
+            <section id="naming-rules" class="lesson-section">
+                <h2>Naming Rules and Conventions</h2>
+                <p>Every language has rules about what variable names are <strong>allowed</strong> and conventions about what names are <strong>good practice</strong>.</p>
+
+                <h3>Universal Rules (All Three Languages)</h3>
+                <ul>
+                    <li>Names can contain letters, numbers, and underscores</li>
+                    <li>Names <strong>cannot start with a number</strong> (<code>2fast</code> is invalid; <code>fast2</code> is fine)</li>
+                    <li>Names are <strong>case-sensitive</strong> (<code>age</code>, <code>Age</code>, and <code>AGE</code> are three different variables)</li>
+                    <li>Names cannot be <strong>reserved words</strong> (like <code>if</code>, <code>for</code>, <code>class</code>)</li>
+                </ul>
+
+                <h3>Naming Conventions by Language</h3>
+                <div class="code-tabs" data-title="Naming Conventions">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python uses snake_case for variables and functions
+first_name = "Alex"
+last_name = "Johnson"
+birth_year = 1998
+is_enrolled = True
+
+# Constants use ALL_CAPS
+MAX_RETRIES = 3
+DATABASE_URL = "localhost:5432"
+
+# Classes use PascalCase (you'll learn about these later)
+# class StudentProfile:</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript uses camelCase for variables and functions
+let firstName = "Alex";
+let lastName = "Johnson";
+let birthYear = 1998;
+let isEnrolled = true;
+
+// Constants often use ALL_CAPS (but camelCase is also fine)
+const MAX_RETRIES = 3;
+const databaseUrl = "localhost:5432"; // also acceptable
+
+// Classes use PascalCase
+// class StudentProfile {}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C# uses camelCase for local variables
+string firstName = "Alex";
+string lastName = "Johnson";
+int birthYear = 1998;
+bool isEnrolled = true;
+
+// Constants use PascalCase
+const int MaxRetries = 3;
+const string DatabaseUrl = "localhost:5432";
+
+// Classes and public members use PascalCase
+// class StudentProfile {}</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Good Variable Names</h4>
+                    <p>A good variable name tells you <strong>what the data represents</strong>. Compare:</p>
+                    <ul>
+                        <li><code>x = 25</code> — bad (what is x?)</li>
+                        <li><code>age = 25</code> — good (clearly an age)</li>
+                        <li><code>student_age = 25</code> — even better (whose age?)</li>
+                    </ul>
+                    <p>Spend the extra seconds to choose clear names — you (and your teammates) will thank yourself later.</p>
+                </div>
+            </section>
+
+            <!-- Dynamic vs Static Typing -->
+            <section id="dynamic-vs-static" class="lesson-section">
+                <h2>Dynamic vs. Static Typing</h2>
+                <p>This is one of the <strong>most important differences</strong> between the three languages and one of the main reasons we included C# in this course:</p>
+
+                <div class="card" style="border-left: 4px solid var(--python-color);">
+                    <h4>🐍⚡ Dynamic Typing (Python &amp; JavaScript)</h4>
+                    <p>You <strong>don't declare types</strong>. The language figures out the type from the value. You can change a variable's type at any time. Errors related to wrong types happen <strong>at runtime</strong> (when the program runs).</p>
+                </div>
+
+                <div class="card" style="border-left: 4px solid var(--csharp-color);">
+                    <h4>🔷 Static Typing (C#)</h4>
+                    <p>You <strong>declare the type</strong> of every variable. Once a variable has a type, it keeps it forever. Type errors are caught <strong>at compile time</strong> (before the program runs), which means fewer surprises.</p>
+                </div>
+
+                <div class="code-tabs" data-title="Type Checking">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python: check types at runtime with type()
+value = 42
+print(type(value))   # &lt;class 'int'&gt;
+
+value = "hello"
+print(type(value))   # &lt;class 'str'&gt;
+# No error — Python is fine with this!</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript: check types at runtime with typeof
+let value = 42;
+console.log(typeof value);  // "number"
+
+value = "hello";
+console.log(typeof value);  // "string"
+// No error — JavaScript is fine with this!</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C#: type is fixed at declaration
+int value = 42;
+Console.WriteLine(value.GetType());  // System.Int32
+
+// This would NOT compile:
+// value = "hello";
+// Error: Cannot convert string to int
+
+// C# also has 'var' for type inference:
+var inferred = 42;  // C# figures out it's an int
+// But it's still locked as int after this!</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ C#'s <code>var</code> Keyword</h4>
+                    <p>C# has a <code>var</code> keyword that lets the compiler <strong>infer</strong> the type from the value. But unlike Python/JavaScript, the type is still <strong>locked</strong> once inferred. <code>var x = 42;</code> means <code>x</code> is permanently an <code>int</code>. It's a convenience, not dynamic typing.</p>
+                </div>
+            </section>
+
+            <!-- Exercises -->
+            <section id="exercises" class="lesson-section">
+                <h2>Exercises</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 1: Personal Info Card</h3>
+                    <p><strong>Objective:</strong> Create variables that store your personal info and display them.</p>
+                    <ol>
+                        <li>Create variables for: your name, age, city, and whether you like coffee (boolean)</li>
+                        <li>Print all four values with descriptive labels</li>
+                        <li>Try it in all three languages</li>
+                    </ol>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Personal Info Card">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">name = "Alex"
+age = 25
+city = "Denver"
+likes_coffee = True
+
+print(f"Name: {name}")
+print(f"Age: {age}")
+print(f"City: {city}")
+print(f"Coffee lover: {likes_coffee}")</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">let name = "Alex";
+let age = 25;
+let city = "Denver";
+let likesCoffee = true;
+
+console.log(`Name: ${name}`);
+console.log(`Age: ${age}`);
+console.log(`City: ${city}`);
+console.log(`Coffee lover: ${likesCoffee}`);</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">string name = "Alex";
+int age = 25;
+string city = "Denver";
+bool likesCoffee = true;
+
+Console.WriteLine($"Name: {name}");
+Console.WriteLine($"Age: {age}");
+Console.WriteLine($"City: {city}");
+Console.WriteLine($"Coffee lover: {likesCoffee}");</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 2: Swap Two Variables</h3>
+                    <p><strong>Objective:</strong> Given two variables <code>a</code> and <code>b</code>, swap their values so <code>a</code> has what <code>b</code> had and vice versa.</p>
+                    <ol>
+                        <li>Start with <code>a = 10</code> and <code>b = 20</code></li>
+                        <li>After the swap, <code>a</code> should be 20 and <code>b</code> should be 10</li>
+                        <li>Print both values before and after the swap</li>
+                    </ol>
+
+                    <details>
+                        <summary>💡 Hint</summary>
+                        <p>In most languages, you need a <strong>temporary variable</strong> to hold one value while you swap. Python has a special shortcut!</p>
+                    </details>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Variable Swap">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">a = 10
+b = 20
+print(f"Before: a={a}, b={b}")
+
+# Python shortcut — no temp variable needed!
+a, b = b, a
+
+print(f"After:  a={a}, b={b}")</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">let a = 10;
+let b = 20;
+console.log(`Before: a=${a}, b=${b}`);
+
+// Method 1: Classic swap with temp variable
+let temp = a;
+a = b;
+b = temp;
+
+// Method 2: Destructuring (modern JS)
+// [a, b] = [b, a];
+
+console.log(`After:  a=${a}, b=${b}`);</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">int a = 10;
+int b = 20;
+Console.WriteLine($"Before: a={a}, b={b}");
+
+// Classic swap with temp variable
+int temp = a;
+a = b;
+b = temp;
+
+// C# also supports tuple swap:
+// (a, b) = (b, a);
+
+Console.WriteLine($"After:  a={a}, b={b}");</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Exercise 1 is the must-do. The f-string/template literal syntax (the <code>f""</code> / <code>`${}`</code> / <code>$""</code> patterns) is important — students will use it constantly. Don't over-explain string interpolation here; just show it in action and tell them we'll cover it in depth in the next lesson. Exercise 2 is a classic puzzle that introduces the concept of sequential execution — order matters in code.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong>Variables</strong> are named containers for data — you create them, use them, and change them</li>
+                        <li>Python: just assign (<code>x = 5</code>). JavaScript: use <code>let</code> or <code>const</code>. C#: declare the type (<code>int x = 5;</code>)</li>
+                        <li><strong>Constants</strong> are values that don't change — Python uses naming convention, JS/C# use <code>const</code></li>
+                        <li>Python and JavaScript are <strong>dynamically typed</strong> (flexible types). C# is <strong>statically typed</strong> (fixed types)</li>
+                        <li>Python uses <code>snake_case</code>, JavaScript uses <code>camelCase</code>, C# uses <code>camelCase</code> for locals and <code>PascalCase</code> for constants</li>
+                        <li>Choose <strong>descriptive names</strong> — future you will appreciate it</li>
+                    </ul>
+                </div>
+
+                <h3>🚀 What's Next?</h3>
+                <p>You know how to store data — now let's explore <strong>what kinds of data</strong> you can store. In the next lesson, we'll dive into <strong>data types</strong>: numbers, strings, and booleans.</p>
+
+                <!-- Quiz -->
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Check</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> In JavaScript, what's the difference between <code>let</code> and <code>const</code>?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Both let and const can hold any type — the difference is about reassignment.">A) let is for numbers, const is for strings</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="let creates a variable you can reassign later. const creates a constant that cannot be reassigned after creation.">B) let can be reassigned, const cannot</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Both let and const are modern JavaScript. var is the old way.">C) let is old syntax, const is new syntax</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 2:</strong> What happens if you try to assign a string to an <code>int</code> variable in C#?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Unlike Python and JavaScript, C# enforces types strictly.">A) It works fine — the type changes automatically</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="C# is statically typed. Once a variable is declared as int, you cannot assign a string to it. The compiler catches this before the program runs.">B) You get a compile error — types are locked</button>
+                            <button class="quiz-option" data-correct="false" data-hint="C# catches type mismatches at compile time, not runtime.">C) It crashes when the program runs</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_03.html" class="prev-lesson">← Previous: Hello World in Three Languages</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_05.html" class="next-lesson">Next: Data Types: Numbers, Strings, Booleans →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

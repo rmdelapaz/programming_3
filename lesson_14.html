@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Master key-value collections: Python dictionaries, JavaScript objects and Maps, and C# Dictionary collections.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 5.2: Dictionaries, Objects, and Maps - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 5</a></li>
+            <li aria-current="page">Lesson 5.2: Dictionaries, Objects, and Maps</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🗂️ Lesson 5.2: Dictionaries, Objects, and Maps</h1>
+                <p class="lead">Lists store values by <em>position</em>. But what if you want to look something up by <em>name</em>? That's where <strong>key-value collections</strong> come in — store a value under a meaningful key, then retrieve it instantly without searching.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li><strong>Create</strong> dictionaries, objects, and maps in all three languages</li>
+                        <li><strong>Access, add, update, and delete</strong> key-value pairs</li>
+                        <li>Handle <strong>missing keys</strong> safely</li>
+                        <li><strong>Iterate</strong> over keys, values, and key-value pairs</li>
+                        <li>Understand JavaScript <strong>objects vs. Maps</strong></li>
+                        <li><strong>Nest</strong> dictionaries for complex data structures</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 45 minutes</p>
+                    <p><strong>Project:</strong> Build a contact book with add, search, update, and delete</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary><h2 style="display: inline; margin: 0;">📑 In This Lesson</h2></summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#creating" class="toc-link">Creating Key-Value Collections</a></li>
+                        <li><a href="#accessing" class="toc-link">Accessing Values</a></li>
+                        <li><a href="#adding-updating" class="toc-link">Adding and Updating</a></li>
+                        <li><a href="#removing" class="toc-link">Removing Entries</a></li>
+                        <li><a href="#checking" class="toc-link">Checking for Keys</a></li>
+                        <li><a href="#iterating" class="toc-link">Iterating Over Collections</a></li>
+                        <li><a href="#js-objects-maps" class="toc-link">JavaScript: Objects vs. Maps</a></li>
+                        <li><a href="#nesting" class="toc-link">Nested Structures</a></li>
+                        <li><a href="#exercises" class="toc-link">Exercises</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Creating -->
+            <section id="creating" class="lesson-section">
+                <h2>Creating Key-Value Collections</h2>
+                <p>A key-value collection stores data as <strong>pairs</strong>: each <em>key</em> is a unique label, and each <em>value</em> is the data associated with it. Think of it like a real dictionary — you look up a <em>word</em> (key) to find its <em>definition</em> (value).</p>
+
+                <div class="code-tabs" data-title="Creating Key-Value Collections">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python uses "dictionaries" (dict) — curly braces with key: value
+person = {
+    "name": "Alice",
+    "age": 30,
+    "city": "New York",
+    "is_student": False
+}
+
+# Empty dictionary
+empty = {}
+# or: empty = dict()
+
+# From a list of pairs
+pairs = dict([("a", 1), ("b", 2), ("c", 3)])
+
+# From keyword arguments
+settings = dict(theme="dark", font_size=16, language="en")
+
+print(person)
+print(type(person))   # &lt;class 'dict'&gt;
+print(len(person))    # 4 (number of key-value pairs)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript uses "objects" — curly braces with key: value
+let person = {
+    name: "Alice",          // Keys don't need quotes (if valid identifiers)
+    age: 30,
+    city: "New York",
+    isStudent: false
+};
+
+// Empty object
+let empty = {};
+
+// Keys with special characters need quotes:
+let config = {
+    "font-size": 16,       // Hyphens need quotes
+    "max retries": 3       // Spaces need quotes
+};
+
+console.log(person);
+console.log(typeof person);          // 'object'
+console.log(Object.keys(person).length);  // 4</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C# uses Dictionary&lt;TKey, TValue&gt; — strongly typed
+Dictionary&lt;string, object&gt; person = new Dictionary&lt;string, object&gt;
+{
+    { "name", "Alice" },
+    { "age", 30 },
+    { "city", "New York" },
+    { "isStudent", false }
+};
+
+// More commonly, use a specific value type:
+Dictionary&lt;string, string&gt; capitals = new Dictionary&lt;string, string&gt;
+{
+    { "France", "Paris" },
+    { "Japan", "Tokyo" },
+    { "Brazil", "Brasilia" }
+};
+
+// Empty dictionary
+Dictionary&lt;string, int&gt; empty = new Dictionary&lt;string, int&gt;();
+
+Console.WriteLine(capitals.Count);  // 3</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Lists vs. Dictionaries</h4>
+                    <p><strong>Lists/arrays</strong> are like numbered lockers — you access item #0, #1, #2. <strong>Dictionaries</strong> are like labeled mailboxes — you access the one labeled "name" or "age." Use lists when order and position matter; use dictionaries when you want to look things up by a meaningful key.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>The mailbox analogy resonates well. Draw a visual: a row of labeled slots ("name" → "Alice", "age" → 30). Emphasize that keys must be unique — you can't have two "name" entries. Also note that Python dicts and JS objects use nearly identical syntax (<code>{ }</code> with key-value pairs), which is a nice symmetry for students learning both. C#'s syntax is more verbose but the concept is identical.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Accessing Values -->
+            <section id="accessing" class="lesson-section">
+                <h2>Accessing Values</h2>
+                <p>Use the <strong>key</strong> to retrieve its associated value — like looking up a word in a dictionary.</p>
+
+                <div class="code-tabs" data-title="Accessing Values">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">person = {"name": "Alice", "age": 30, "city": "New York"}
+
+# Bracket notation
+print(person["name"])   # "Alice"
+print(person["age"])    # 30
+
+# ❌ Missing key = KeyError
+# print(person["email"])  # KeyError: 'email'
+
+# Safe access with .get() — returns None (or a default) if missing
+print(person.get("email"))           # None
+print(person.get("email", "N/A"))    # "N/A" (custom default)
+print(person.get("name", "N/A"))     # "Alice" (key exists, returns value)
+
+# .get() is the preferred way to access when key might not exist</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">let person = { name: "Alice", age: 30, city: "New York" };
+
+// Dot notation (most common)
+console.log(person.name);    // "Alice"
+console.log(person.age);     // 30
+
+// Bracket notation (required for special keys or variables)
+console.log(person["city"]); // "New York"
+
+let key = "name";
+console.log(person[key]);    // "Alice" (dynamic key lookup)
+
+// Missing key = undefined (not an error!)
+console.log(person.email);           // undefined
+console.log(person.email ?? "N/A");  // "N/A" (nullish coalescing)
+
+// Optional chaining for nested access (safe)
+console.log(person.address?.street);  // undefined (no error)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">Dictionary&lt;string, string&gt; person = new Dictionary&lt;string, string&gt;
+{
+    { "name", "Alice" },
+    { "age", "30" },
+    { "city", "New York" }
+};
+
+// Bracket notation
+Console.WriteLine(person["name"]);   // "Alice"
+Console.WriteLine(person["age"]);    // "30"
+
+// ❌ Missing key = KeyNotFoundException
+// Console.WriteLine(person["email"]);
+
+// Safe access with TryGetValue
+if (person.TryGetValue("email", out string? email))
+{
+    Console.WriteLine(email);
+}
+else
+{
+    Console.WriteLine("N/A");  // "N/A"
+}
+
+// Or use GetValueOrDefault (with newer C#):
+string city = person.GetValueOrDefault("city", "Unknown");
+Console.WriteLine(city);  // "New York"</code></pre>
+                    </div>
+                </div>
+
+                <h3>Access Patterns Quick Reference</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Pattern</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Direct access</td>
+                                <td><code>d["key"]</code></td>
+                                <td><code>obj.key</code> or <code>obj["key"]</code></td>
+                                <td><code>d["key"]</code></td>
+                            </tr>
+                            <tr>
+                                <td>Safe access</td>
+                                <td><code>d.get("key", default)</code></td>
+                                <td><code>obj.key ?? default</code></td>
+                                <td><code>TryGetValue()</code></td>
+                            </tr>
+                            <tr>
+                                <td>Missing key</td>
+                                <td><code>KeyError</code></td>
+                                <td><code>undefined</code></td>
+                                <td><code>KeyNotFoundException</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ JavaScript's Quiet <code>undefined</code></h4>
+                    <p>JavaScript returns <code>undefined</code> for missing keys instead of throwing an error. This can hide bugs — your code keeps running with <code>undefined</code> values instead of failing loudly. Always use <code>??</code> (nullish coalescing) or check explicitly when a key might be absent.</p>
+                </div>
+            </section>
+
+            <!-- Adding and Updating -->
+            <section id="adding-updating" class="lesson-section">
+                <h2>Adding and Updating</h2>
+                <p>Adding a new key and updating an existing key use the <strong>same syntax</strong> — just assign to the key.</p>
+
+                <div class="code-tabs" data-title="Adding and Updating Entries">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">person = {"name": "Alice", "age": 30}
+
+# Add a new key
+person["email"] = "alice@example.com"
+print(person)
+# {'name': 'Alice', 'age': 30, 'email': 'alice@example.com'}
+
+# Update an existing key
+person["age"] = 31
+print(person["age"])  # 31
+
+# Add/update multiple keys at once
+person.update({
+    "city": "Boston",
+    "age": 32,           # Updates existing
+    "job": "developer"   # Adds new
+})
+print(person)
+
+# Merge two dicts (Python 3.9+)
+defaults = {"theme": "light", "language": "en"}
+overrides = {"theme": "dark", "font_size": 16}
+merged = defaults | overrides
+print(merged)  # {'theme': 'dark', 'language': 'en', 'font_size': 16}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">let person = { name: "Alice", age: 30 };
+
+// Add a new key
+person.email = "alice@example.com";
+// or: person["email"] = "alice@example.com";
+console.log(person);
+
+// Update an existing key
+person.age = 31;
+console.log(person.age);  // 31
+
+// Add/update multiple keys (spread operator)
+person = {
+    ...person,
+    city: "Boston",
+    age: 32,
+    job: "developer"
+};
+
+// Merge two objects
+let defaults = { theme: "light", language: "en" };
+let overrides = { theme: "dark", fontSize: 16 };
+let merged = { ...defaults, ...overrides };
+console.log(merged);  // {theme: 'dark', language: 'en', fontSize: 16}
+
+// Object.assign also works:
+// let merged = Object.assign({}, defaults, overrides);</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">Dictionary&lt;string, string&gt; person = new Dictionary&lt;string, string&gt;
+{
+    { "name", "Alice" },
+    { "age", "30" }
+};
+
+// Add a new key
+person["email"] = "alice@example.com";
+// or: person.Add("email", "alice@example.com");
+// ⚠️ .Add() throws if key already exists; [] overwrites silently
+
+// Update an existing key
+person["age"] = "31";
+
+// Add/update multiple — no built-in merge, use a loop:
+var updates = new Dictionary&lt;string, string&gt;
+{
+    { "city", "Boston" },
+    { "age", "32" },
+    { "job", "developer" }
+};
+
+foreach (var kvp in updates)
+{
+    person[kvp.Key] = kvp.Value;  // Adds or updates
+}
+
+Console.WriteLine(string.Join(", ",
+    person.Select(kvp =&gt; $"{kvp.Key}: {kvp.Value}")));</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Same Syntax, Two Operations</h4>
+                    <p>In all three languages, <code>collection["key"] = value</code> does double duty: if the key exists, it <strong>updates</strong> the value; if it doesn't, it <strong>creates</strong> a new entry. This makes dictionaries very convenient — you don't need separate "add" and "update" operations.</p>
+                </div>
+            </section>
+
+            <!-- Removing -->
+            <section id="removing" class="lesson-section">
+                <h2>Removing Entries</h2>
+
+                <div class="code-tabs" data-title="Removing Key-Value Pairs">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">person = {"name": "Alice", "age": 30, "city": "NYC", "email": "a@b.com"}
+
+# Remove by key and get the value
+removed = person.pop("email")
+print(removed)  # "a@b.com"
+print(person)   # No more 'email' key
+
+# Safe removal (returns default if key missing)
+missing = person.pop("phone", "not found")
+print(missing)  # "not found" (no error)
+
+# Remove by key (no return value)
+del person["city"]
+print(person)   # {'name': 'Alice', 'age': 30}
+
+# Remove and get the last inserted pair
+last_key, last_val = person.popitem()
+print(f"Removed: {last_key} = {last_val}")
+
+# Clear everything
+person.clear()
+print(person)   # {}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">let person = { name: "Alice", age: 30, city: "NYC", email: "a@b.com" };
+
+// Remove by key
+delete person.email;
+console.log(person);  // No more 'email'
+
+// delete returns true/false (but doesn't give you the value)
+let existed = delete person.city;
+console.log(existed);  // true
+
+// To get the value before deleting:
+let { age, ...rest } = person;  // Destructure: age gets the value, rest is the remainder
+console.log(age);    // 30
+console.log(rest);   // { name: "Alice" }
+
+// Clear everything (reassign)
+person = {};
+// or: Object.keys(person).forEach(k =&gt; delete person[k]);</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">Dictionary&lt;string, string&gt; person = new Dictionary&lt;string, string&gt;
+{
+    { "name", "Alice" },
+    { "age", "30" },
+    { "city", "NYC" },
+    { "email", "a@b.com" }
+};
+
+// Remove by key (returns true if found, false if not)
+bool removed = person.Remove("email");
+Console.WriteLine(removed);  // True
+
+// Remove and get the value
+if (person.Remove("city", out string? cityValue))
+{
+    Console.WriteLine($"Removed city: {cityValue}");  // "NYC"
+}
+
+// Remove missing key — no error, just returns false
+bool notFound = person.Remove("phone");
+Console.WriteLine(notFound);  // False
+
+// Clear everything
+person.Clear();
+Console.WriteLine(person.Count);  // 0</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Checking for Keys -->
+            <section id="checking" class="lesson-section">
+                <h2>Checking for Keys</h2>
+                <p>Before accessing a key, you often want to check if it exists first.</p>
+
+                <div class="code-tabs" data-title="Checking for Keys">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">person = {"name": "Alice", "age": 30, "city": "NYC"}
+
+# Check if key exists
+print("name" in person)     # True
+print("email" in person)    # False
+print("email" not in person)  # True
+
+# Common pattern: check then access
+if "email" in person:
+    print(person["email"])
+else:
+    print("No email on file")
+
+# Or just use .get() (usually simpler)
+email = person.get("email", "No email on file")
+print(email)
+
+# Get all keys, values, or pairs
+print(list(person.keys()))    # ['name', 'age', 'city']
+print(list(person.values()))  # ['Alice', 30, 'NYC']
+print(list(person.items()))   # [('name','Alice'), ('age',30), ('city','NYC')]</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">let person = { name: "Alice", age: 30, city: "NYC" };
+
+// Check if key exists
+console.log("name" in person);                // true
+console.log("email" in person);               // false
+console.log(person.hasOwnProperty("name"));   // true
+
+// Check then access
+if ("email" in person) {
+    console.log(person.email);
+} else {
+    console.log("No email on file");
+}
+
+// Or use nullish coalescing
+let email = person.email ?? "No email on file";
+
+// Get all keys, values, or pairs
+console.log(Object.keys(person));    // ['name', 'age', 'city']
+console.log(Object.values(person));  // ['Alice', 30, 'NYC']
+console.log(Object.entries(person)); // [['name','Alice'], ['age',30], ...]</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">Dictionary&lt;string, string&gt; person = new Dictionary&lt;string, string&gt;
+{
+    { "name", "Alice" },
+    { "age", "30" },
+    { "city", "NYC" }
+};
+
+// Check if key exists
+Console.WriteLine(person.ContainsKey("name"));    // True
+Console.WriteLine(person.ContainsKey("email"));   // False
+
+// Check if value exists
+Console.WriteLine(person.ContainsValue("Alice")); // True
+
+// Check then access
+if (person.ContainsKey("email"))
+    Console.WriteLine(person["email"]);
+else
+    Console.WriteLine("No email on file");
+
+// Or use TryGetValue (more efficient — single lookup)
+if (person.TryGetValue("email", out string? val))
+    Console.WriteLine(val);
+else
+    Console.WriteLine("No email on file");
+
+// Get all keys, values, or pairs
+Console.WriteLine(string.Join(", ", person.Keys));    // name, age, city
+Console.WriteLine(string.Join(", ", person.Values));  // Alice, 30, NYC</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Iterating -->
+            <section id="iterating" class="lesson-section">
+                <h2>Iterating Over Collections</h2>
+                <p>Looping through key-value pairs is something you'll do constantly — displaying settings, processing records, transforming data.</p>
+
+                <div class="code-tabs" data-title="Iterating Over Key-Value Pairs">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">scores = {"Alice": 95, "Bob": 87, "Charlie": 92}
+
+# Iterate over keys (default)
+for name in scores:
+    print(name)  # Alice, Bob, Charlie
+
+# Iterate over values
+for score in scores.values():
+    print(score)  # 95, 87, 92
+
+# Iterate over key-value pairs (most common)
+for name, score in scores.items():
+    print(f"{name}: {score}")
+# Alice: 95
+# Bob: 87
+# Charlie: 92
+
+# Dict comprehension (like list comprehension!)
+doubled = {name: score * 2 for name, score in scores.items()}
+print(doubled)  # {'Alice': 190, 'Bob': 174, 'Charlie': 184}
+
+# Filter with dict comprehension
+honor_roll = {name: score for name, score in scores.items() if score &gt;= 90}
+print(honor_roll)  # {'Alice': 95, 'Charlie': 92}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">let scores = { Alice: 95, Bob: 87, Charlie: 92 };
+
+// for...in loop (iterates over keys)
+for (let name in scores) {
+    console.log(`${name}: ${scores[name]}`);
+}
+
+// Object.entries() with for...of (cleaner)
+for (let [name, score] of Object.entries(scores)) {
+    console.log(`${name}: ${score}`);
+}
+
+// Object.keys() and Object.values()
+Object.keys(scores).forEach(name =&gt; console.log(name));
+Object.values(scores).forEach(score =&gt; console.log(score));
+
+// Transform into a new object (no built-in comprehension)
+let doubled = Object.fromEntries(
+    Object.entries(scores).map(([name, score]) =&gt; [name, score * 2])
+);
+console.log(doubled);  // {Alice: 190, Bob: 174, Charlie: 184}
+
+// Filter
+let honorRoll = Object.fromEntries(
+    Object.entries(scores).filter(([_, score]) =&gt; score &gt;= 90)
+);
+console.log(honorRoll);  // {Alice: 95, Charlie: 92}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">Dictionary&lt;string, int&gt; scores = new Dictionary&lt;string, int&gt;
+{
+    { "Alice", 95 },
+    { "Bob", 87 },
+    { "Charlie", 92 }
+};
+
+// foreach over key-value pairs
+foreach (KeyValuePair&lt;string, int&gt; kvp in scores)
+{
+    Console.WriteLine($"{kvp.Key}: {kvp.Value}");
+}
+
+// Shorthand with var
+foreach (var (name, score) in scores)
+{
+    Console.WriteLine($"{name}: {score}");
+}
+
+// Iterate keys or values
+foreach (string name in scores.Keys)
+    Console.WriteLine(name);
+
+foreach (int score in scores.Values)
+    Console.WriteLine(score);
+
+// Transform with LINQ
+var doubled = scores.ToDictionary(
+    kvp =&gt; kvp.Key,
+    kvp =&gt; kvp.Value * 2
+);
+
+// Filter with LINQ
+var honorRoll = scores
+    .Where(kvp =&gt; kvp.Value &gt;= 90)
+    .ToDictionary(kvp =&gt; kvp.Key, kvp =&gt; kvp.Value);
+Console.WriteLine(string.Join(", ",
+    honorRoll.Select(kvp =&gt; $"{kvp.Key}: {kvp.Value}")));</code></pre>
+                    </div>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>The <code>for name, score in scores.items()</code> pattern (Python) and <code>for (let [name, score] of Object.entries(scores))</code> (JS) are the patterns students will use most. Emphasize destructuring — pulling both key and value out in one step. Dict/object comprehensions are a "level up" feature; show them but don't expect beginners to master them immediately. C#'s <code>KeyValuePair</code> is verbose, so show the <code>var (name, score)</code> shorthand.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- JS Objects vs Maps -->
+            <section id="js-objects-maps" class="lesson-section">
+                <h2>JavaScript: Objects vs. Maps</h2>
+                <p>JavaScript has two key-value types. Plain <strong>objects</strong> are the default. <strong>Maps</strong> are a newer, more powerful alternative for certain use cases.</p>
+
+                <div class="code-tabs" data-title="Objects vs. Maps">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python only has dict — it handles everything
+# No need to choose between two types
+
+scores = {}
+scores["Alice"] = 95
+scores[42] = "numeric key"   # Any hashable type as key
+scores[(1, 2)] = "tuple key" # Even tuples work!
+
+print(len(scores))  # 3
+
+# Python dicts are already ordered (insertion order, since 3.7)
+# Python dicts already support any hashable key
+# Python dicts already have a clean iteration API
+
+# So Python's dict = best of both JS objects and Maps</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// OBJECTS: Great for structured data (like a person or config)
+let person = { name: "Alice", age: 30 };
+person.email = "alice@example.com";
+
+// MAP: Great for dynamic key-value storage
+let scores = new Map();
+scores.set("Alice", 95);
+scores.set("Bob", 87);
+scores.set(42, "numeric key!");    // Non-string keys work!
+scores.set(true, "boolean key!");  // Any type as key!
+
+console.log(scores.get("Alice"));  // 95
+console.log(scores.size);          // 4
+console.log(scores.has("Bob"));    // true
+
+scores.delete("Bob");
+console.log(scores.size);          // 3
+
+// Iterating a Map
+for (let [key, value] of scores) {
+    console.log(`${key} =&gt; ${value}`);
+}
+
+// WHEN TO USE WHICH:
+// Object: structured data with known string keys (person, config, API response)
+// Map: dynamic lookups, non-string keys, frequent add/delete, need .size</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C# Dictionary&lt;TKey, TValue&gt; handles both use cases
+// Keys can be any type (like JS Maps)
+
+Dictionary&lt;string, int&gt; stringKeys = new Dictionary&lt;string, int&gt;
+{
+    { "Alice", 95 },
+    { "Bob", 87 }
+};
+
+Dictionary&lt;int, string&gt; intKeys = new Dictionary&lt;int, string&gt;
+{
+    { 1, "first" },
+    { 42, "answer" }
+};
+
+// C# also has SortedDictionary (keeps keys sorted)
+SortedDictionary&lt;string, int&gt; sorted = new SortedDictionary&lt;string, int&gt;
+{
+    { "Charlie", 92 },
+    { "Alice", 95 },
+    { "Bob", 87 }
+};
+
+foreach (var kvp in sorted)
+    Console.WriteLine($"{kvp.Key}: {kvp.Value}");
+// Alice: 95, Bob: 87, Charlie: 92 (alphabetical!)</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Object vs. Map Quick Decision</h4>
+                    <p>In JavaScript, use <strong>objects</strong> when your keys are strings and you're modeling a "thing" (person, config, API response). Use <strong>Maps</strong> when you need non-string keys, when keys are dynamic/unknown, when you frequently add and delete entries, or when you need to know the <code>.size</code>. When in doubt, start with an object.</p>
+                </div>
+            </section>
+
+            <!-- Nesting -->
+            <section id="nesting" class="lesson-section">
+                <h2>Nested Structures</h2>
+                <p>Values can be <em>anything</em> — including other dictionaries or lists. This lets you model complex, real-world data.</p>
+
+                <div class="code-tabs" data-title="Nested Structures">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># A student record with nested data
+student = {
+    "name": "Alice",
+    "grades": {
+        "math": 95,
+        "english": 88,
+        "science": 92
+    },
+    "hobbies": ["reading", "chess", "hiking"],
+    "address": {
+        "street": "123 Main St",
+        "city": "Boston",
+        "state": "MA"
+    }
+}
+
+# Access nested values by chaining keys
+print(student["grades"]["math"])      # 95
+print(student["hobbies"][0])          # "reading"
+print(student["address"]["city"])     # "Boston"
+
+# Modify nested values
+student["grades"]["english"] = 91
+student["hobbies"].append("coding")
+
+# Safe nested access
+phone = student.get("contact", {}).get("phone", "N/A")
+print(phone)  # "N/A"</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">let student = {
+    name: "Alice",
+    grades: {
+        math: 95,
+        english: 88,
+        science: 92
+    },
+    hobbies: ["reading", "chess", "hiking"],
+    address: {
+        street: "123 Main St",
+        city: "Boston",
+        state: "MA"
+    }
+};
+
+// Access nested values
+console.log(student.grades.math);       // 95
+console.log(student.hobbies[0]);        // "reading"
+console.log(student.address.city);      // "Boston"
+
+// Modify nested values
+student.grades.english = 91;
+student.hobbies.push("coding");
+
+// Safe nested access with optional chaining
+let phone = student.contact?.phone ?? "N/A";
+console.log(phone);  // "N/A"
+
+// Destructure nested objects
+let { name, grades: { math }, address: { city } } = student;
+console.log(`${name} got ${math} in math, lives in ${city}`);</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C# typically models complex data with classes (Module 6),
+// but nested dictionaries work too:
+
+var student = new Dictionary&lt;string, object&gt;
+{
+    { "name", "Alice" },
+    { "grades", new Dictionary&lt;string, int&gt;
+        {
+            { "math", 95 },
+            { "english", 88 },
+            { "science", 92 }
+        }
+    },
+    { "hobbies", new List&lt;string&gt; { "reading", "chess", "hiking" } },
+    { "address", new Dictionary&lt;string, string&gt;
+        {
+            { "street", "123 Main St" },
+            { "city", "Boston" },
+            { "state", "MA" }
+        }
+    }
+};
+
+// Access nested values (requires casting)
+var grades = (Dictionary&lt;string, int&gt;)student["grades"];
+Console.WriteLine(grades["math"]);  // 95
+
+var hobbies = (List&lt;string&gt;)student["hobbies"];
+Console.WriteLine(hobbies[0]);  // "reading"
+
+// This casting is clunky — it's why C# prefers classes for nested data.
+// We'll learn a much cleaner approach in Module 6!</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 This Is How Real Data Looks</h4>
+                    <p>API responses, configuration files, database records, game save files — they're almost always nested structures like this. When you work with JSON data (Lesson 23), you'll see this exact pattern everywhere. Getting comfortable with nested access now will pay off enormously.</p>
+                </div>
+            </section>
+
+            <!-- Exercises -->
+            <section id="exercises" class="lesson-section">
+                <h2>Exercises</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 1: Word Frequency Counter</h3>
+                    <p><strong>Objective:</strong> Given a sentence, count how many times each word appears. Store the results in a dictionary/object. Make it case-insensitive.</p>
+                    <p>Input: <code>"the cat sat on the mat the cat"</code></p>
+                    <p>Expected output: <code>{"the": 3, "cat": 2, "sat": 1, "on": 1, "mat": 1}</code></p>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Word Counter">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">sentence = "the cat sat on the mat the cat"
+words = sentence.lower().split()
+
+# Method 1: Manual counting
+counts = {}
+for word in words:
+    counts[word] = counts.get(word, 0) + 1
+print(counts)
+
+# Method 2: collections.Counter (built-in!)
+from collections import Counter
+counts2 = Counter(words)
+print(dict(counts2))</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">let sentence = "the cat sat on the mat the cat";
+let words = sentence.toLowerCase().split(" ");
+
+let counts = {};
+for (let word of words) {
+    counts[word] = (counts[word] ?? 0) + 1;
+}
+console.log(counts);
+
+// Or with reduce:
+let counts2 = words.reduce((acc, word) =&gt; {
+    acc[word] = (acc[word] ?? 0) + 1;
+    return acc;
+}, {});
+console.log(counts2);</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">string sentence = "the cat sat on the mat the cat";
+string[] words = sentence.ToLower().Split(' ');
+
+Dictionary&lt;string, int&gt; counts = new Dictionary&lt;string, int&gt;();
+foreach (string word in words)
+{
+    if (counts.ContainsKey(word))
+        counts[word]++;
+    else
+        counts[word] = 1;
+}
+
+foreach (var kvp in counts)
+    Console.WriteLine($"{kvp.Key}: {kvp.Value}");
+
+// Or with LINQ GroupBy:
+var counts2 = words.GroupBy(w =&gt; w)
+    .ToDictionary(g =&gt; g.Key, g =&gt; g.Count());
+</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 2: Inventory Tracker</h3>
+                    <p><strong>Objective:</strong> Create functions to manage a store inventory:</p>
+                    <ul>
+                        <li><code>add_item(inventory, item, quantity)</code> — add quantity (or increase if exists)</li>
+                        <li><code>sell_item(inventory, item, quantity)</code> — reduce quantity (can't go below 0, error if not in stock)</li>
+                        <li><code>check_stock(inventory, item)</code> — return the quantity (0 if not found)</li>
+                        <li><code>low_stock(inventory, threshold)</code> — return all items at or below the threshold</li>
+                    </ul>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Inventory Tracker">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">def add_item(inventory, item, quantity):
+    inventory[item] = inventory.get(item, 0) + quantity
+    print(f"Added {quantity} {item}(s). Stock: {inventory[item]}")
+
+def sell_item(inventory, item, quantity):
+    stock = inventory.get(item, 0)
+    if stock == 0:
+        print(f"'{item}' not in stock!")
+        return
+    if quantity &gt; stock:
+        print(f"Only {stock} {item}(s) available!")
+        return
+    inventory[item] -= quantity
+    print(f"Sold {quantity} {item}(s). Remaining: {inventory[item]}")
+
+def check_stock(inventory, item):
+    return inventory.get(item, 0)
+
+def low_stock(inventory, threshold):
+    return {item: qty for item, qty in inventory.items() if qty &lt;= threshold}
+
+# Test
+inv = {}
+add_item(inv, "apples", 50)
+add_item(inv, "bananas", 10)
+add_item(inv, "apples", 20)     # Now 70
+sell_item(inv, "apples", 15)    # Now 55
+sell_item(inv, "oranges", 5)    # Not in stock!
+print(f"Apple stock: {check_stock(inv, 'apples')}")
+print(f"Low stock: {low_stock(inv, 15)}")</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">function addItem(inventory, item, quantity) {
+    inventory[item] = (inventory[item] ?? 0) + quantity;
+    console.log(`Added ${quantity} ${item}(s). Stock: ${inventory[item]}`);
+}
+
+function sellItem(inventory, item, quantity) {
+    let stock = inventory[item] ?? 0;
+    if (stock === 0) { console.log(`'${item}' not in stock!`); return; }
+    if (quantity &gt; stock) { console.log(`Only ${stock} ${item}(s) available!`); return; }
+    inventory[item] -= quantity;
+    console.log(`Sold ${quantity} ${item}(s). Remaining: ${inventory[item]}`);
+}
+
+function checkStock(inventory, item) {
+    return inventory[item] ?? 0;
+}
+
+function lowStock(inventory, threshold) {
+    return Object.fromEntries(
+        Object.entries(inventory).filter(([_, qty]) =&gt; qty &lt;= threshold)
+    );
+}
+
+let inv = {};
+addItem(inv, "apples", 50);
+addItem(inv, "bananas", 10);
+addItem(inv, "apples", 20);
+sellItem(inv, "apples", 15);
+console.log(`Low stock:`, lowStock(inv, 15));</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">static void AddItem(Dictionary&lt;string, int&gt; inv, string item, int qty)
+{
+    inv[item] = inv.GetValueOrDefault(item, 0) + qty;
+    Console.WriteLine($"Added {qty} {item}(s). Stock: {inv[item]}");
+}
+
+static void SellItem(Dictionary&lt;string, int&gt; inv, string item, int qty)
+{
+    int stock = inv.GetValueOrDefault(item, 0);
+    if (stock == 0) { Console.WriteLine($"'{item}' not in stock!"); return; }
+    if (qty &gt; stock) { Console.WriteLine($"Only {stock} {item}(s) available!"); return; }
+    inv[item] -= qty;
+    Console.WriteLine($"Sold {qty} {item}(s). Remaining: {inv[item]}");
+}
+
+static int CheckStock(Dictionary&lt;string, int&gt; inv, string item)
+    =&gt; inv.GetValueOrDefault(item, 0);
+
+static Dictionary&lt;string, int&gt; LowStock(Dictionary&lt;string, int&gt; inv, int threshold)
+    =&gt; inv.Where(kvp =&gt; kvp.Value &lt;= threshold)
+        .ToDictionary(kvp =&gt; kvp.Key, kvp =&gt; kvp.Value);
+
+// Test
+var inv = new Dictionary&lt;string, int&gt;();
+AddItem(inv, "apples", 50);
+AddItem(inv, "bananas", 10);
+AddItem(inv, "apples", 20);
+SellItem(inv, "apples", 15);</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 3: Contact Book</h3>
+                    <p><strong>Objective:</strong> Build a contact book where each contact has a name (key) and details (nested dict/object with phone, email, city). Implement:</p>
+                    <ul>
+                        <li><code>add_contact(book, name, details)</code> — add or update a contact</li>
+                        <li><code>find_contact(book, name)</code> — look up a contact</li>
+                        <li><code>search_by_city(book, city)</code> — find all contacts in a city</li>
+                        <li><code>list_all(book)</code> — display all contacts formatted nicely</li>
+                    </ul>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Contact Book">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">def add_contact(book, name, details):
+    book[name] = details
+    print(f"{'Updated' if name in book else 'Added'}: {name}")
+
+def find_contact(book, name):
+    contact = book.get(name)
+    if contact is None:
+        print(f"'{name}' not found.")
+        return None
+    print(f"{name}:")
+    for key, val in contact.items():
+        print(f"  {key}: {val}")
+    return contact
+
+def search_by_city(book, city):
+    city_lower = city.lower()
+    matches = {name: info for name, info in book.items()
+               if info.get("city", "").lower() == city_lower}
+    print(f"Contacts in {city}: {list(matches.keys())}")
+    return matches
+
+def list_all(book):
+    if not book:
+        print("Contact book is empty.")
+        return
+    for name, info in book.items():
+        print(f"\n{name}")
+        for key, val in info.items():
+            print(f"  {key}: {val}")
+
+# Test
+contacts = {}
+add_contact(contacts, "Alice", {"phone": "555-0101", "email": "alice@test.com", "city": "Boston"})
+add_contact(contacts, "Bob", {"phone": "555-0202", "email": "bob@test.com", "city": "NYC"})
+add_contact(contacts, "Charlie", {"phone": "555-0303", "email": "charlie@test.com", "city": "Boston"})
+
+find_contact(contacts, "Alice")
+search_by_city(contacts, "Boston")
+list_all(contacts)</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">function addContact(book, name, details) {
+    let action = name in book ? "Updated" : "Added";
+    book[name] = details;
+    console.log(`${action}: ${name}`);
+}
+
+function findContact(book, name) {
+    let contact = book[name];
+    if (!contact) { console.log(`'${name}' not found.`); return null; }
+    console.log(`${name}:`);
+    for (let [key, val] of Object.entries(contact)) {
+        console.log(`  ${key}: ${val}`);
+    }
+    return contact;
+}
+
+function searchByCity(book, city) {
+    let cl = city.toLowerCase();
+    let matches = Object.fromEntries(
+        Object.entries(book).filter(([_, info]) =&gt;
+            (info.city ?? "").toLowerCase() === cl)
+    );
+    console.log(`Contacts in ${city}:`, Object.keys(matches));
+    return matches;
+}
+
+function listAll(book) {
+    if (Object.keys(book).length === 0) { console.log("Empty."); return; }
+    for (let [name, info] of Object.entries(book)) {
+        console.log(`\n${name}`);
+        for (let [key, val] of Object.entries(info))
+            console.log(`  ${key}: ${val}`);
+    }
+}
+
+let contacts = {};
+addContact(contacts, "Alice", { phone: "555-0101", email: "alice@test.com", city: "Boston" });
+addContact(contacts, "Bob", { phone: "555-0202", email: "bob@test.com", city: "NYC" });
+addContact(contacts, "Charlie", { phone: "555-0303", email: "charlie@test.com", city: "Boston" });
+searchByCity(contacts, "Boston");
+listAll(contacts);</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">// Using Dictionary&lt;string, Dictionary&lt;string, string&gt;&gt;
+var contacts = new Dictionary&lt;string, Dictionary&lt;string, string&gt;&gt;();
+
+static void AddContact(Dictionary&lt;string, Dictionary&lt;string, string&gt;&gt; book,
+    string name, Dictionary&lt;string, string&gt; details)
+{
+    string action = book.ContainsKey(name) ? "Updated" : "Added";
+    book[name] = details;
+    Console.WriteLine($"{action}: {name}");
+}
+
+static void FindContact(Dictionary&lt;string, Dictionary&lt;string, string&gt;&gt; book,
+    string name)
+{
+    if (!book.TryGetValue(name, out var contact))
+    { Console.WriteLine($"'{name}' not found."); return; }
+    Console.WriteLine($"{name}:");
+    foreach (var kvp in contact)
+        Console.WriteLine($"  {kvp.Key}: {kvp.Value}");
+}
+
+static void SearchByCity(Dictionary&lt;string, Dictionary&lt;string, string&gt;&gt; book,
+    string city)
+{
+    string cl = city.ToLower();
+    var matches = book.Where(kvp =&gt;
+        kvp.Value.GetValueOrDefault("city", "").ToLower() == cl)
+        .Select(kvp =&gt; kvp.Key);
+    Console.WriteLine($"Contacts in {city}: {string.Join(", ", matches)}");
+}
+
+// Test
+AddContact(contacts, "Alice",
+    new() { {"phone","555-0101"}, {"email","alice@test.com"}, {"city","Boston"} });
+AddContact(contacts, "Bob",
+    new() { {"phone","555-0202"}, {"email","bob@test.com"}, {"city","NYC"} });
+FindContact(contacts, "Alice");
+SearchByCity(contacts, "Boston");</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Exercise 1 (word counter) is a classic dict exercise — the <code>.get(word, 0) + 1</code> pattern is so important it deserves extra attention. Walk through the first few iterations by hand on a whiteboard. Exercise 2 combines dicts with validation logic from Module 3. Exercise 3 introduces nested dicts in a practical context and previews Module 6 (OOP) — the contacts "want" to be objects. Point that out as motivation for what's coming next. Challenge fast students: add a "delete contact" and "export as formatted string" function.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong>Key-value collections</strong> store data by name instead of position: Python <code>dict</code>, JS <code>object</code>, C# <code>Dictionary&lt;K,V&gt;</code></li>
+                        <li><strong>Access:</strong> Python <code>d["key"]</code> or <code>.get()</code>, JS <code>obj.key</code> or <code>obj["key"]</code>, C# <code>d["key"]</code> or <code>TryGetValue()</code></li>
+                        <li><strong>Same syntax adds and updates:</strong> <code>d["key"] = value</code> works whether the key exists or not</li>
+                        <li><strong>Safe access</strong> is important — Python's <code>.get()</code>, JS's <code>??</code> and <code>?.</code>, C#'s <code>TryGetValue()</code></li>
+                        <li>JavaScript has both <strong>objects</strong> (string keys, structured data) and <strong>Maps</strong> (any key type, dynamic lookups)</li>
+                        <li><strong>Nested structures</strong> model complex real-world data — and they're the foundation for working with JSON</li>
+                        <li><strong>Iteration:</strong> Python <code>.items()</code>, JS <code>Object.entries()</code>, C# <code>foreach</code> with <code>KeyValuePair</code></li>
+                    </ul>
+                </div>
+
+                <h3>🚀 What's Next?</h3>
+                <p>You've now seen both major collection types: ordered lists (Lesson 13) and keyed dictionaries (this lesson). Next up: <strong>iterating over collections</strong> — the patterns, methods, and techniques for processing every element in a collection efficiently.</p>
+
+                <!-- Quiz -->
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Check</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What happens in Python when you access a dictionary key that doesn't exist using bracket notation?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="That's JavaScript's behavior — Python is stricter about missing keys.">A) Returns None</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Python raises a KeyError when you try to access a missing key with brackets. Use .get() for safe access that returns None (or a default) instead of raising an error.">B) Raises a KeyError</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The key must exist for bracket access to work. Python won't create it automatically.">C) Creates the key with a default value</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 2:</strong> In JavaScript, what's the difference between an object and a Map?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Both can store key-value pairs. The difference is in what kinds of keys they support and how they behave.">A) They're the same thing</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Objects only support string (and Symbol) keys, while Maps support any type as a key (numbers, objects, booleans, etc). Maps also have a .size property and maintain insertion order reliably.">B) Maps support any key type; objects only support string keys</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Objects hold any value type too. The key difference is about *key* types, not value types.">C) Maps can hold any value type; objects can only hold strings</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_13.html" class="prev-lesson">← Previous: Arrays and Lists</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_15.html" class="next-lesson">Next: Iterating Over Collections →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn to create, access, modify, and manipulate arrays and lists in Python, JavaScript, and C#.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 5.1: Arrays and Lists - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 5</a></li>
+            <li aria-current="page">Lesson 5.1: Arrays and Lists</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>📋 Lesson 5.1: Arrays and Lists</h1>
+                <p class="lead">So far, every variable has held a single value. But real programs work with <strong>collections</strong> — lists of names, arrays of scores, queues of tasks. This lesson introduces the most fundamental collection type: the ordered list.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li><strong>Create</strong> arrays and lists in all three languages</li>
+                        <li><strong>Access</strong> elements by index, including negative indexing</li>
+                        <li><strong>Add, remove, and modify</strong> elements using common methods</li>
+                        <li>Use <strong>slicing</strong> to extract portions of a list</li>
+                        <li>Understand the difference between C# <strong>arrays</strong> and <code>List&lt;T&gt;</code></li>
+                        <li>Write <strong>list comprehensions</strong> in Python</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 45 minutes</p>
+                    <p><strong>Project:</strong> Build a to-do list manager with add, remove, and search operations</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary><h2 style="display: inline; margin: 0;">📑 In This Lesson</h2></summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#creating" class="toc-link">Creating Arrays and Lists</a></li>
+                        <li><a href="#accessing" class="toc-link">Accessing Elements</a></li>
+                        <li><a href="#modifying" class="toc-link">Modifying Elements</a></li>
+                        <li><a href="#adding-removing" class="toc-link">Adding and Removing Elements</a></li>
+                        <li><a href="#slicing" class="toc-link">Slicing</a></li>
+                        <li><a href="#searching" class="toc-link">Searching and Checking</a></li>
+                        <li><a href="#csharp-arrays" class="toc-link">C# Arrays vs. List&lt;T&gt;</a></li>
+                        <li><a href="#comprehensions" class="toc-link">List Comprehensions (Python)</a></li>
+                        <li><a href="#exercises" class="toc-link">Exercises</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Creating Arrays and Lists -->
+            <section id="creating" class="lesson-section">
+                <h2>Creating Arrays and Lists</h2>
+                <p>An array (or list) is an <strong>ordered collection</strong> of values stored under a single name. Each value has a numbered position called an <strong>index</strong>, starting at 0.</p>
+
+                <div class="code-tabs" data-title="Creating Lists and Arrays">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python uses "lists" — created with square brackets
+fruits = ["apple", "banana", "cherry"]
+numbers = [10, 20, 30, 40, 50]
+mixed = ["hello", 42, True, 3.14]  # Python lists can mix types
+
+# Empty list
+empty = []
+
+# List from a range
+one_to_ten = list(range(1, 11))  # [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+# Repeated values
+zeros = [0] * 5  # [0, 0, 0, 0, 0]
+
+print(fruits)        # ['apple', 'banana', 'cherry']
+print(len(fruits))   # 3
+print(type(fruits))  # &lt;class 'list'&gt;</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript uses "arrays" — created with square brackets
+let fruits = ["apple", "banana", "cherry"];
+let numbers = [10, 20, 30, 40, 50];
+let mixed = ["hello", 42, true, 3.14];  // JS arrays can mix types
+
+// Empty array
+let empty = [];
+
+// Array from a range (no built-in range, use Array.from)
+let oneToTen = Array.from({length: 10}, (_, i) =&gt; i + 1);
+
+// Repeated values
+let zeros = new Array(5).fill(0);  // [0, 0, 0, 0, 0]
+
+console.log(fruits);         // ['apple', 'banana', 'cherry']
+console.log(fruits.length);  // 3
+console.log(typeof fruits);  // 'object' (arrays are objects in JS)
+console.log(Array.isArray(fruits));  // true</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C# has two main options: arrays (fixed size) and List&lt;T&gt; (resizable)
+
+// Arrays — fixed size, declared with type[]
+string[] fruits = { "apple", "banana", "cherry" };
+int[] numbers = { 10, 20, 30, 40, 50 };
+
+// List&lt;T&gt; — resizable, more flexible (like Python/JS)
+List&lt;string&gt; fruitList = new List&lt;string&gt; { "apple", "banana", "cherry" };
+List&lt;int&gt; numberList = new List&lt;int&gt; { 10, 20, 30, 40, 50 };
+
+// Empty list
+List&lt;string&gt; empty = new List&lt;string&gt;();
+
+// Array from a range
+int[] oneToTen = Enumerable.Range(1, 10).ToArray();
+
+// Repeated values
+int[] zeros = new int[5];  // All zeros by default
+
+Console.WriteLine(string.Join(", ", fruits));  // apple, banana, cherry
+Console.WriteLine(fruits.Length);               // 3 (array)
+Console.WriteLine(fruitList.Count);             // 3 (List&lt;T&gt;)
+
+// ⚠️ C# collections are strongly typed — no mixing types!</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Terminology</h4>
+                    <p>Python calls them <strong>lists</strong>, JavaScript calls them <strong>arrays</strong>, and C# has both <strong>arrays</strong> (fixed-size) and <strong>Lists</strong> (resizable). They all serve the same purpose: storing an ordered sequence of items. In this lesson, we'll use "list" and "array" interchangeably when talking about the concept.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>This is the beginning of Module 5, so it's a natural reset point. Students who were comfortable with functions might find collections initially more intuitive — it's a concrete, visual concept. Draw a list as a row of boxes with index numbers above them. Emphasize zero-based indexing early: "The first item is at index 0, not index 1." This trips up almost every beginner at least once. For C#, stick primarily to <code>List&lt;T&gt;</code> for now — it behaves most like Python lists and JS arrays. Cover arrays briefly but note that <code>List&lt;T&gt;</code> is what they'll use most.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Accessing Elements -->
+            <section id="accessing" class="lesson-section">
+                <h2>Accessing Elements</h2>
+                <p>Every element has a numeric <strong>index</strong>. The first element is at index <code>0</code>, the second at <code>1</code>, and so on.</p>
+
+                <div class="code-tabs" data-title="Accessing by Index">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">colors = ["red", "green", "blue", "yellow", "purple"]
+#  Index:   0       1       2        3         4
+
+# Access by index
+print(colors[0])    # "red"     (first element)
+print(colors[2])    # "blue"    (third element)
+print(colors[4])    # "purple"  (last element)
+
+# Negative indexing — count from the end!
+print(colors[-1])   # "purple"  (last)
+print(colors[-2])   # "yellow"  (second to last)
+print(colors[-3])   # "blue"
+
+# Out of range = error
+# print(colors[10])  # ❌ IndexError: list index out of range
+
+# Get the length
+print(len(colors))           # 5
+print(colors[len(colors)-1]) # "purple" (last, the hard way)
+print(colors[-1])            # "purple" (last, the easy way)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">let colors = ["red", "green", "blue", "yellow", "purple"];
+//  Index:      0       1       2        3         4
+
+// Access by index
+console.log(colors[0]);    // "red"
+console.log(colors[2]);    // "blue"
+console.log(colors[4]);    // "purple"
+
+// Negative indexing with .at() (modern JS)
+console.log(colors.at(-1));   // "purple"
+console.log(colors.at(-2));   // "yellow"
+
+// Out of range = undefined (not an error!)
+console.log(colors[10]);   // undefined
+console.log(colors[-1]);   // undefined (use .at() instead!)
+
+// Get the length
+console.log(colors.length);                  // 5
+console.log(colors[colors.length - 1]);      // "purple" (classic way)
+console.log(colors.at(-1));                  // "purple" (modern way)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">List&lt;string&gt; colors = new List&lt;string&gt;
+    { "red", "green", "blue", "yellow", "purple" };
+//    Index: 0       1       2        3         4
+
+// Access by index
+Console.WriteLine(colors[0]);    // "red"
+Console.WriteLine(colors[2]);    // "blue"
+Console.WriteLine(colors[4]);    // "purple"
+
+// Negative indexing with ^ (Index from End operator)
+Console.WriteLine(colors[^1]);   // "purple" (last)
+Console.WriteLine(colors[^2]);   // "yellow" (second to last)
+
+// Out of range = exception
+// Console.WriteLine(colors[10]);  // ❌ ArgumentOutOfRangeException
+
+// Get the length
+Console.WriteLine(colors.Count);               // 5
+Console.WriteLine(colors[colors.Count - 1]);   // "purple" (classic)
+Console.WriteLine(colors[^1]);                 // "purple" (modern)</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Zero-Based Indexing</h4>
+                    <p>All three languages start counting at <strong>0</strong>, not 1. In a list of 5 items, valid indices are 0 through 4. This is one of the most common beginner mistakes — always remember that the last valid index is <code>length - 1</code>.</p>
+                </div>
+
+                <h3>Negative Indexing Quick Reference</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Access Pattern</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Last element</td>
+                                <td><code>list[-1]</code></td>
+                                <td><code>arr.at(-1)</code></td>
+                                <td><code>list[^1]</code></td>
+                            </tr>
+                            <tr>
+                                <td>Second to last</td>
+                                <td><code>list[-2]</code></td>
+                                <td><code>arr.at(-2)</code></td>
+                                <td><code>list[^2]</code></td>
+                            </tr>
+                            <tr>
+                                <td>Out of bounds</td>
+                                <td><code>IndexError</code></td>
+                                <td><code>undefined</code></td>
+                                <td><code>Exception</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Modifying Elements -->
+            <section id="modifying" class="lesson-section">
+                <h2>Modifying Elements</h2>
+                <p>You can change any element by assigning a new value to its index.</p>
+
+                <div class="code-tabs" data-title="Modifying Elements">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">scores = [85, 92, 78, 90, 88]
+
+# Change a single element
+scores[2] = 95
+print(scores)  # [85, 92, 95, 90, 88]
+
+# Change the last element
+scores[-1] = 100
+print(scores)  # [85, 92, 95, 90, 100]
+
+# Swap two elements
+scores[0], scores[1] = scores[1], scores[0]
+print(scores)  # [92, 85, 95, 90, 100]</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">let scores = [85, 92, 78, 90, 88];
+
+// Change a single element
+scores[2] = 95;
+console.log(scores);  // [85, 92, 95, 90, 88]
+
+// Change the last element
+scores[scores.length - 1] = 100;
+console.log(scores);  // [85, 92, 95, 90, 100]
+
+// Swap two elements (destructuring)
+[scores[0], scores[1]] = [scores[1], scores[0]];
+console.log(scores);  // [92, 85, 95, 90, 100]</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">List&lt;int&gt; scores = new List&lt;int&gt; { 85, 92, 78, 90, 88 };
+
+// Change a single element
+scores[2] = 95;
+Console.WriteLine(string.Join(", ", scores));  // 85, 92, 95, 90, 88
+
+// Change the last element
+scores[^1] = 100;
+Console.WriteLine(string.Join(", ", scores));  // 85, 92, 95, 90, 100
+
+// Swap two elements
+(scores[0], scores[1]) = (scores[1], scores[0]);
+Console.WriteLine(string.Join(", ", scores));  // 92, 85, 95, 90, 100</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Adding and Removing -->
+            <section id="adding-removing" class="lesson-section">
+                <h2>Adding and Removing Elements</h2>
+                <p>This is where lists really shine — you can grow and shrink them dynamically.</p>
+
+                <h3>Adding Elements</h3>
+                <div class="code-tabs" data-title="Adding Elements">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">fruits = ["apple", "banana"]
+
+# Add to the end
+fruits.append("cherry")
+print(fruits)  # ['apple', 'banana', 'cherry']
+
+# Add multiple items to the end
+fruits.extend(["date", "elderberry"])
+print(fruits)  # ['apple', 'banana', 'cherry', 'date', 'elderberry']
+
+# Insert at a specific index
+fruits.insert(1, "blueberry")  # Insert at index 1
+print(fruits)  # ['apple', 'blueberry', 'banana', 'cherry', 'date', 'elderberry']
+
+# Concatenate lists (creates a new list)
+more = fruits + ["fig", "grape"]
+print(more)  # [..., 'fig', 'grape']</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">let fruits = ["apple", "banana"];
+
+// Add to the end
+fruits.push("cherry");
+console.log(fruits);  // ['apple', 'banana', 'cherry']
+
+// Add multiple items to the end
+fruits.push("date", "elderberry");
+console.log(fruits);  // ['apple', 'banana', 'cherry', 'date', 'elderberry']
+
+// Add to the beginning
+fruits.unshift("apricot");
+console.log(fruits);  // ['apricot', 'apple', 'banana', ...]
+
+// Insert at a specific index (splice)
+fruits.splice(2, 0, "blueberry");  // At index 2, delete 0, insert "blueberry"
+console.log(fruits);
+
+// Concatenate arrays (creates a new array)
+let more = [...fruits, "fig", "grape"];  // Spread operator
+// or: let more = fruits.concat(["fig", "grape"]);</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">List&lt;string&gt; fruits = new List&lt;string&gt; { "apple", "banana" };
+
+// Add to the end
+fruits.Add("cherry");
+Console.WriteLine(string.Join(", ", fruits));  // apple, banana, cherry
+
+// Add multiple items to the end
+fruits.AddRange(new[] { "date", "elderberry" });
+
+// Insert at a specific index
+fruits.Insert(1, "blueberry");  // Insert at index 1
+
+// Concatenate lists (creates a new list)
+List&lt;string&gt; more = new List&lt;string&gt;(fruits);
+more.AddRange(new[] { "fig", "grape" });</code></pre>
+                    </div>
+                </div>
+
+                <h3>Removing Elements</h3>
+                <div class="code-tabs" data-title="Removing Elements">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">items = ["a", "b", "c", "d", "e"]
+
+# Remove by value (first occurrence)
+items.remove("c")
+print(items)  # ['a', 'b', 'd', 'e']
+
+# Remove by index and get the value back
+removed = items.pop(1)    # Remove index 1
+print(removed)            # 'b'
+print(items)              # ['a', 'd', 'e']
+
+# Remove last element
+last = items.pop()        # No index = last item
+print(last)               # 'e'
+print(items)              # ['a', 'd']
+
+# Remove by index (without getting value back)
+del items[0]
+print(items)              # ['d']
+
+# Clear all elements
+items.clear()
+print(items)              # []</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">let items = ["a", "b", "c", "d", "e"];
+
+// Remove last element
+let last = items.pop();
+console.log(last);    // 'e'
+console.log(items);   // ['a', 'b', 'c', 'd']
+
+// Remove first element
+let first = items.shift();
+console.log(first);   // 'a'
+console.log(items);   // ['b', 'c', 'd']
+
+// Remove by index (splice)
+let removed = items.splice(1, 1);  // At index 1, remove 1 element
+console.log(removed); // ['c']
+console.log(items);   // ['b', 'd']
+
+// Remove by value (find index first)
+let colors = ["red", "green", "blue"];
+let idx = colors.indexOf("green");
+if (idx !== -1) colors.splice(idx, 1);
+console.log(colors);  // ['red', 'blue']
+
+// Clear all elements
+items.length = 0;  // or items = [];</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">List&lt;string&gt; items = new List&lt;string&gt; { "a", "b", "c", "d", "e" };
+
+// Remove by value (first occurrence)
+items.Remove("c");
+Console.WriteLine(string.Join(", ", items));  // a, b, d, e
+
+// Remove by index
+items.RemoveAt(1);  // Remove index 1 ("b")
+Console.WriteLine(string.Join(", ", items));  // a, d, e
+
+// Remove last element
+items.RemoveAt(items.Count - 1);
+Console.WriteLine(string.Join(", ", items));  // a, d
+
+// Clear all elements
+items.Clear();
+Console.WriteLine(items.Count);  // 0</code></pre>
+                    </div>
+                </div>
+
+                <h3>Adding &amp; Removing Quick Reference</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Operation</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Add to end</td>
+                                <td><code>.append(x)</code></td>
+                                <td><code>.push(x)</code></td>
+                                <td><code>.Add(x)</code></td>
+                            </tr>
+                            <tr>
+                                <td>Add to beginning</td>
+                                <td><code>.insert(0, x)</code></td>
+                                <td><code>.unshift(x)</code></td>
+                                <td><code>.Insert(0, x)</code></td>
+                            </tr>
+                            <tr>
+                                <td>Insert at index</td>
+                                <td><code>.insert(i, x)</code></td>
+                                <td><code>.splice(i, 0, x)</code></td>
+                                <td><code>.Insert(i, x)</code></td>
+                            </tr>
+                            <tr>
+                                <td>Remove last</td>
+                                <td><code>.pop()</code></td>
+                                <td><code>.pop()</code></td>
+                                <td><code>.RemoveAt(Count-1)</code></td>
+                            </tr>
+                            <tr>
+                                <td>Remove first</td>
+                                <td><code>.pop(0)</code></td>
+                                <td><code>.shift()</code></td>
+                                <td><code>.RemoveAt(0)</code></td>
+                            </tr>
+                            <tr>
+                                <td>Remove by value</td>
+                                <td><code>.remove(x)</code></td>
+                                <td><code>.splice(indexOf(x), 1)</code></td>
+                                <td><code>.Remove(x)</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>JavaScript's <code>splice</code> is the trickiest method here — it does insertion, deletion, and replacement depending on arguments. Walk through the three-argument form: <code>splice(startIndex, deleteCount, ...itemsToInsert)</code>. Python's methods are the most intuitive by name. Call out the pattern that Python and C# have <code>remove</code> by value, while JS requires a two-step <code>indexOf</code> + <code>splice</code> — a common source of frustration. The reference table is great for students to bookmark.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Slicing -->
+            <section id="slicing" class="lesson-section">
+                <h2>Slicing</h2>
+                <p><strong>Slicing</strong> extracts a portion of a list into a new list. It's one of the most useful operations for working with collections.</p>
+
+                <div class="code-tabs" data-title="Slicing Lists">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">letters = ["a", "b", "c", "d", "e", "f"]
+#  Index:    0     1     2     3     4     5
+
+# slice[start:end] — start is included, end is excluded
+print(letters[1:4])    # ['b', 'c', 'd']  (index 1, 2, 3)
+print(letters[0:3])    # ['a', 'b', 'c']  (index 0, 1, 2)
+
+# Omit start = from beginning
+print(letters[:3])     # ['a', 'b', 'c']
+
+# Omit end = to the end
+print(letters[3:])     # ['d', 'e', 'f']
+
+# Negative indices in slices
+print(letters[-3:])    # ['d', 'e', 'f']  (last 3)
+print(letters[:-2])    # ['a', 'b', 'c', 'd']  (all but last 2)
+
+# Step: slice[start:end:step]
+print(letters[::2])    # ['a', 'c', 'e']  (every other)
+print(letters[::-1])   # ['f', 'e', 'd', 'c', 'b', 'a']  (reversed!)
+
+# Slicing creates a COPY (safe to modify)
+first_three = letters[:3]
+first_three[0] = "Z"
+print(letters[0])      # 'a' — original unchanged</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">let letters = ["a", "b", "c", "d", "e", "f"];
+
+// .slice(start, end) — start included, end excluded
+console.log(letters.slice(1, 4));    // ['b', 'c', 'd']
+console.log(letters.slice(0, 3));    // ['a', 'b', 'c']
+
+// Omit end = to the end
+console.log(letters.slice(3));       // ['d', 'e', 'f']
+
+// Negative indices
+console.log(letters.slice(-3));      // ['d', 'e', 'f'] (last 3)
+console.log(letters.slice(0, -2));   // ['a', 'b', 'c', 'd'] (all but last 2)
+
+// No built-in step — use filter for every-other:
+let everyOther = letters.filter((_, i) =&gt; i % 2 === 0);
+console.log(everyOther);  // ['a', 'c', 'e']
+
+// Reverse (modifies in place!)
+let reversed = [...letters].reverse();  // Spread first to avoid mutating
+console.log(reversed);  // ['f', 'e', 'd', 'c', 'b', 'a']
+
+// slice() creates a COPY
+let firstThree = letters.slice(0, 3);
+firstThree[0] = "Z";
+console.log(letters[0]);  // 'a' — original unchanged
+
+// ⚠️ slice() copies, splice() mutates — don't confuse them!</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">List&lt;string&gt; letters = new List&lt;string&gt;
+    { "a", "b", "c", "d", "e", "f" };
+
+// GetRange(startIndex, count) — note: count, not end index!
+List&lt;string&gt; middle = letters.GetRange(1, 3);  // 3 items from index 1
+Console.WriteLine(string.Join(", ", middle));    // b, c, d
+
+// Range operator with arrays: [start..end]
+string[] arr = { "a", "b", "c", "d", "e", "f" };
+string[] slice = arr[1..4];  // index 1, 2, 3
+Console.WriteLine(string.Join(", ", slice));  // b, c, d
+
+// From end
+string[] lastThree = arr[3..];    // ['d', 'e', 'f']
+string[] firstThree = arr[..3];   // ['a', 'b', 'c']
+string[] skipLast2 = arr[..^2];   // ['a', 'b', 'c', 'd']
+
+// Reverse
+List&lt;string&gt; reversed = new List&lt;string&gt;(letters);
+reversed.Reverse();
+Console.WriteLine(string.Join(", ", reversed));  // f, e, d, c, b, a
+
+// GetRange creates a copy
+List&lt;string&gt; copy = letters.GetRange(0, 3);
+copy[0] = "Z";
+Console.WriteLine(letters[0]);  // 'a' — original unchanged</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ JavaScript: <code>slice()</code> vs. <code>splice()</code></h4>
+                    <p><code>slice()</code> <strong>copies</strong> a portion — the original array is unchanged. <code>splice()</code> <strong>modifies</strong> the original array (adds/removes elements). One letter difference, completely different behavior. This is a classic JavaScript gotcha.</p>
+                </div>
+            </section>
+
+            <!-- Searching and Checking -->
+            <section id="searching" class="lesson-section">
+                <h2>Searching and Checking</h2>
+                <p>Common tasks: check if an item exists, find its position, or count occurrences.</p>
+
+                <div class="code-tabs" data-title="Searching Lists">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">colors = ["red", "green", "blue", "green", "yellow"]
+
+# Check if item exists
+print("green" in colors)      # True
+print("purple" in colors)     # False
+print("purple" not in colors) # True
+
+# Find index of first occurrence
+print(colors.index("green"))  # 1
+# colors.index("purple")      # ❌ ValueError if not found!
+
+# Safe search
+if "purple" in colors:
+    print(colors.index("purple"))
+else:
+    print("Not found")
+
+# Count occurrences
+print(colors.count("green"))  # 2
+print(colors.count("red"))    # 1
+
+# Sort
+numbers = [3, 1, 4, 1, 5, 9, 2, 6]
+numbers.sort()                     # In-place sort
+print(numbers)                     # [1, 1, 2, 3, 4, 5, 6, 9]
+
+sorted_copy = sorted([3, 1, 4])   # New sorted list
+print(sorted_copy)                 # [1, 3, 4]</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">let colors = ["red", "green", "blue", "green", "yellow"];
+
+// Check if item exists
+console.log(colors.includes("green"));   // true
+console.log(colors.includes("purple"));  // false
+
+// Find index of first occurrence
+console.log(colors.indexOf("green"));    // 1
+console.log(colors.indexOf("purple"));   // -1 (not found)
+
+// Find with a condition
+let found = colors.find(c =&gt; c.startsWith("g"));
+console.log(found);  // "green" (first match)
+
+let foundIndex = colors.findIndex(c =&gt; c.startsWith("y"));
+console.log(foundIndex);  // 4
+
+// Count occurrences (no built-in — use filter)
+let greenCount = colors.filter(c =&gt; c === "green").length;
+console.log(greenCount);  // 2
+
+// Sort
+let numbers = [3, 1, 4, 1, 5, 9, 2, 6];
+numbers.sort((a, b) =&gt; a - b);  // ⚠️ Must provide comparator for numbers!
+console.log(numbers);            // [1, 1, 2, 3, 4, 5, 6, 9]
+
+// Without comparator, sort is alphabetical:
+// [3, 1, 4, 11].sort() → [1, 11, 3, 4]  ← WRONG for numbers!</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">List&lt;string&gt; colors = new List&lt;string&gt;
+    { "red", "green", "blue", "green", "yellow" };
+
+// Check if item exists
+Console.WriteLine(colors.Contains("green"));   // True
+Console.WriteLine(colors.Contains("purple"));  // False
+
+// Find index of first occurrence
+Console.WriteLine(colors.IndexOf("green"));    // 1
+Console.WriteLine(colors.IndexOf("purple"));   // -1
+
+// Find with a condition
+string? found = colors.Find(c =&gt; c.StartsWith("g"));
+Console.WriteLine(found);  // "green"
+
+int foundIndex = colors.FindIndex(c =&gt; c.StartsWith("y"));
+Console.WriteLine(foundIndex);  // 4
+
+// Count occurrences
+int greenCount = colors.Count(c =&gt; c == "green");  // LINQ
+Console.WriteLine(greenCount);  // 2
+
+// Sort
+List&lt;int&gt; numbers = new List&lt;int&gt; { 3, 1, 4, 1, 5, 9, 2, 6 };
+numbers.Sort();
+Console.WriteLine(string.Join(", ", numbers));  // 1, 1, 2, 3, 4, 5, 6, 9</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ JavaScript's Sort Gotcha</h4>
+                    <p>JavaScript's default <code>.sort()</code> converts elements to strings and sorts alphabetically. This means <code>[3, 1, 11].sort()</code> gives <code>[1, 11, 3]</code> — not what you want for numbers! Always pass a comparator: <code>.sort((a, b) =&gt; a - b)</code> for ascending numeric sort.</p>
+                </div>
+            </section>
+
+            <!-- C# Arrays vs List<T> -->
+            <section id="csharp-arrays" class="lesson-section">
+                <h2>C# Arrays vs. List&lt;T&gt;</h2>
+                <p>C# gives you two main collection types. Understanding when to use each is important.</p>
+
+                <div class="code-tabs" data-title="C# Arrays vs. List&lt;T&gt;">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python only has lists — they're always resizable
+# No need to choose between fixed and dynamic
+
+numbers = [1, 2, 3]
+numbers.append(4)    # Always works — lists grow automatically
+numbers.pop()        # Always works — lists shrink automatically
+
+# Python's list IS the dynamic array
+# (Closest to C#'s List&lt;T&gt;)
+
+# If you need a fixed-size array (rare), use a tuple:
+fixed = (1, 2, 3)   # Immutable — can't add, remove, or change elements
+# fixed[0] = 99     # ❌ TypeError: 'tuple' object does not support assignment</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript only has arrays — they're always resizable
+// No need to choose between fixed and dynamic
+
+let numbers = [1, 2, 3];
+numbers.push(4);    // Always works
+numbers.pop();      // Always works
+
+// JavaScript arrays are like Python lists / C#'s List&lt;T&gt;
+
+// If you need a fixed-size collection (rare), you can freeze:
+const fixed = Object.freeze([1, 2, 3]);
+// fixed.push(4);   // ❌ TypeError in strict mode
+// fixed[0] = 99;   // ❌ TypeError in strict mode</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// ARRAYS: Fixed size, slightly faster, use when size won't change
+int[] scores = new int[5];       // 5 slots, all start at 0
+scores[0] = 95;
+scores[1] = 87;
+// scores[5] = 100;             // ❌ IndexOutOfRangeException
+// Can't add or remove — size is locked at creation
+
+// LIST&lt;T&gt;: Resizable, more methods, use for most things
+List&lt;int&gt; scoreList = new List&lt;int&gt;();
+scoreList.Add(95);
+scoreList.Add(87);
+scoreList.Add(100);   // Grows automatically!
+scoreList.Remove(87); // Shrinks automatically!
+
+// Convert between them:
+int[] fromList = scoreList.ToArray();
+List&lt;int&gt; fromArray = new List&lt;int&gt;(scores);
+
+// WHEN TO USE WHICH:
+// Array:  Fixed-size data (days of week, RGB values, game board)
+//         Performance-critical inner loops
+// List&lt;T&gt;: Everything else (user input, dynamic data, most cases)
+
+// Rule of thumb: Start with List&lt;T&gt;. Use arrays only when
+// you know the size won't change and you need the performance.</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 The Bottom Line</h4>
+                    <p>Python and JavaScript each have one list/array type that handles everything. C# gives you the choice between arrays (fixed, fast) and <code>List&lt;T&gt;</code> (flexible, feature-rich). <strong>For beginners: use <code>List&lt;T&gt;</code> in C#</strong> — it works like Python lists and JS arrays. You can always switch to arrays later for performance-critical code.</p>
+                </div>
+            </section>
+
+            <!-- List Comprehensions -->
+            <section id="comprehensions" class="lesson-section">
+                <h2>List Comprehensions (Python)</h2>
+                <p>Python has a powerful shorthand for creating new lists by transforming or filtering existing ones. It's called a <strong>list comprehension</strong>, and once you learn it, you'll use it everywhere.</p>
+
+                <div class="code-tabs" data-title="List Comprehensions">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Basic: [expression for item in iterable]
+numbers = [1, 2, 3, 4, 5]
+
+# Double each number
+doubled = [n * 2 for n in numbers]
+print(doubled)  # [2, 4, 6, 8, 10]
+
+# Square each number
+squares = [n ** 2 for n in numbers]
+print(squares)  # [1, 4, 9, 16, 25]
+
+# With filter: [expression for item in iterable if condition]
+evens = [n for n in numbers if n % 2 == 0]
+print(evens)  # [2, 4]
+
+# Transform strings
+names = ["alice", "bob", "charlie"]
+upper = [name.upper() for name in names]
+print(upper)  # ['ALICE', 'BOB', 'CHARLIE']
+
+# Filter and transform
+long_upper = [name.upper() for name in names if len(name) &gt; 3]
+print(long_upper)  # ['ALICE', 'CHARLIE']
+
+# Equivalent loop (comprehension is more concise):
+result = []
+for name in names:
+    if len(name) &gt; 3:
+        result.append(name.upper())
+# Same as: [name.upper() for name in names if len(name) &gt; 3]</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript doesn't have list comprehensions
+// Instead, use .map() and .filter() (very common!)
+
+let numbers = [1, 2, 3, 4, 5];
+
+// Double each number (.map transforms each element)
+let doubled = numbers.map(n =&gt; n * 2);
+console.log(doubled);  // [2, 4, 6, 8, 10]
+
+// Square each number
+let squares = numbers.map(n =&gt; n ** 2);
+console.log(squares);  // [1, 4, 9, 16, 25]
+
+// Filter (.filter keeps elements that pass a test)
+let evens = numbers.filter(n =&gt; n % 2 === 0);
+console.log(evens);  // [2, 4]
+
+// Transform strings
+let names = ["alice", "bob", "charlie"];
+let upper = names.map(name =&gt; name.toUpperCase());
+console.log(upper);  // ['ALICE', 'BOB', 'CHARLIE']
+
+// Filter and transform (chain them!)
+let longUpper = names
+    .filter(name =&gt; name.length &gt; 3)
+    .map(name =&gt; name.toUpperCase());
+console.log(longUpper);  // ['ALICE', 'CHARLIE']</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C# uses LINQ (Language Integrated Query) for similar operations
+using System.Linq;
+
+List&lt;int&gt; numbers = new List&lt;int&gt; { 1, 2, 3, 4, 5 };
+
+// Double each number (.Select = map)
+List&lt;int&gt; doubled = numbers.Select(n =&gt; n * 2).ToList();
+Console.WriteLine(string.Join(", ", doubled));  // 2, 4, 6, 8, 10
+
+// Square each number
+List&lt;int&gt; squares = numbers.Select(n =&gt; n * n).ToList();
+
+// Filter (.Where = filter)
+List&lt;int&gt; evens = numbers.Where(n =&gt; n % 2 == 0).ToList();
+Console.WriteLine(string.Join(", ", evens));  // 2, 4
+
+// Transform strings
+List&lt;string&gt; names = new List&lt;string&gt; { "alice", "bob", "charlie" };
+List&lt;string&gt; upper = names.Select(n =&gt; n.ToUpper()).ToList();
+
+// Filter and transform (chain them!)
+List&lt;string&gt; longUpper = names
+    .Where(name =&gt; name.Length &gt; 3)
+    .Select(name =&gt; name.ToUpper())
+    .ToList();
+Console.WriteLine(string.Join(", ", longUpper));  // ALICE, CHARLIE</code></pre>
+                    </div>
+                </div>
+
+                <h3>Transform &amp; Filter Quick Reference</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Operation</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Transform each</td>
+                                <td><code>[expr for x in list]</code></td>
+                                <td><code>.map(x =&gt; expr)</code></td>
+                                <td><code>.Select(x =&gt; expr)</code></td>
+                            </tr>
+                            <tr>
+                                <td>Filter</td>
+                                <td><code>[x for x in list if cond]</code></td>
+                                <td><code>.filter(x =&gt; cond)</code></td>
+                                <td><code>.Where(x =&gt; cond)</code></td>
+                            </tr>
+                            <tr>
+                                <td>Filter + transform</td>
+                                <td><code>[expr for x in list if cond]</code></td>
+                                <td><code>.filter().map()</code></td>
+                                <td><code>.Where().Select()</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>List comprehensions are a Python superpower, but they can look intimidating. Start with the simplest form: <code>[n * 2 for n in numbers]</code> and read it aloud: "for each n in numbers, give me n times 2." Then add the filter. The equivalence table is key — students should see that Python's <code>[...]</code>, JavaScript's <code>.map()/.filter()</code>, and C#'s LINQ <code>.Select()/.Where()</code> all do the same thing with different syntax. We'll revisit iteration methods in Lesson 15.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Exercises -->
+            <section id="exercises" class="lesson-section">
+                <h2>Exercises</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 1: Basic List Operations</h3>
+                    <p><strong>Objective:</strong> Create a list of 5 favorite movies. Then:</p>
+                    <ul>
+                        <li>Print the first and last movie</li>
+                        <li>Add a 6th movie to the end</li>
+                        <li>Insert a movie at position 2</li>
+                        <li>Remove a movie by name</li>
+                        <li>Print the final list and its length</li>
+                    </ul>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Basic Operations">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">movies = ["Inception", "The Matrix", "Interstellar", "Dune", "Arrival"]
+
+print(movies[0])     # Inception
+print(movies[-1])    # Arrival
+
+movies.append("Blade Runner 2049")
+movies.insert(2, "Tenet")
+movies.remove("Dune")
+
+print(movies)        # ['Inception', 'The Matrix', 'Tenet', 'Interstellar', 'Arrival', 'Blade Runner 2049']
+print(len(movies))   # 6</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">let movies = ["Inception", "The Matrix", "Interstellar", "Dune", "Arrival"];
+
+console.log(movies[0]);       // Inception
+console.log(movies.at(-1));   // Arrival
+
+movies.push("Blade Runner 2049");
+movies.splice(2, 0, "Tenet");
+let idx = movies.indexOf("Dune");
+if (idx !== -1) movies.splice(idx, 1);
+
+console.log(movies);
+console.log(movies.length);  // 6</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">List&lt;string&gt; movies = new List&lt;string&gt;
+    { "Inception", "The Matrix", "Interstellar", "Dune", "Arrival" };
+
+Console.WriteLine(movies[0]);    // Inception
+Console.WriteLine(movies[^1]);   // Arrival
+
+movies.Add("Blade Runner 2049");
+movies.Insert(2, "Tenet");
+movies.Remove("Dune");
+
+Console.WriteLine(string.Join(", ", movies));
+Console.WriteLine(movies.Count);  // 6</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 2: List Statistics</h3>
+                    <p><strong>Objective:</strong> Given a list of test scores, write code to find:</p>
+                    <ul>
+                        <li>The highest and lowest score</li>
+                        <li>The average score</li>
+                        <li>How many scores are above the average</li>
+                        <li>A sorted copy of the scores (don't modify the original)</li>
+                    </ul>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="List Statistics">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">scores = [88, 72, 95, 64, 83, 91, 76, 98, 70, 85]
+
+highest = max(scores)
+lowest = min(scores)
+average = sum(scores) / len(scores)
+above_avg = len([s for s in scores if s &gt; average])
+sorted_scores = sorted(scores)
+
+print(f"Highest: {highest}")          # 98
+print(f"Lowest: {lowest}")            # 64
+print(f"Average: {average:.1f}")      # 82.2
+print(f"Above average: {above_avg}")  # 5
+print(f"Sorted: {sorted_scores}")
+print(f"Original: {scores}")          # Unchanged!</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">let scores = [88, 72, 95, 64, 83, 91, 76, 98, 70, 85];
+
+let highest = Math.max(...scores);
+let lowest = Math.min(...scores);
+let average = scores.reduce((sum, s) =&gt; sum + s, 0) / scores.length;
+let aboveAvg = scores.filter(s =&gt; s &gt; average).length;
+let sortedScores = [...scores].sort((a, b) =&gt; a - b);
+
+console.log(`Highest: ${highest}`);          // 98
+console.log(`Lowest: ${lowest}`);            // 64
+console.log(`Average: ${average.toFixed(1)}`); // 82.2
+console.log(`Above average: ${aboveAvg}`);   // 5
+console.log(`Sorted: ${sortedScores}`);
+console.log(`Original: ${scores}`);           // Unchanged!</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">List&lt;int&gt; scores = new List&lt;int&gt;
+    { 88, 72, 95, 64, 83, 91, 76, 98, 70, 85 };
+
+int highest = scores.Max();
+int lowest = scores.Min();
+double average = scores.Average();
+int aboveAvg = scores.Count(s =&gt; s &gt; average);
+List&lt;int&gt; sortedScores = scores.OrderBy(s =&gt; s).ToList();
+
+Console.WriteLine($"Highest: {highest}");          // 98
+Console.WriteLine($"Lowest: {lowest}");            // 64
+Console.WriteLine($"Average: {average:F1}");       // 82.2
+Console.WriteLine($"Above average: {aboveAvg}");   // 5
+Console.WriteLine($"Sorted: {string.Join(", ", sortedScores)}");
+Console.WriteLine($"Original: {string.Join(", ", scores)}");</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 3: To-Do List Manager</h3>
+                    <p><strong>Objective:</strong> Build functions for a to-do list that can:</p>
+                    <ul>
+                        <li><code>add_task(tasks, task)</code> — add a task (reject duplicates)</li>
+                        <li><code>remove_task(tasks, task)</code> — remove a task (handle "not found" gracefully)</li>
+                        <li><code>search_tasks(tasks, keyword)</code> — return all tasks containing the keyword (case-insensitive)</li>
+                        <li><code>show_tasks(tasks)</code> — display all tasks numbered 1, 2, 3…</li>
+                    </ul>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="To-Do Manager">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">def add_task(tasks, task):
+    if task in tasks:
+        print(f"'{task}' already exists!")
+        return
+    tasks.append(task)
+    print(f"Added: '{task}'")
+
+def remove_task(tasks, task):
+    if task not in tasks:
+        print(f"'{task}' not found!")
+        return
+    tasks.remove(task)
+    print(f"Removed: '{task}'")
+
+def search_tasks(tasks, keyword):
+    keyword_lower = keyword.lower()
+    return [t for t in tasks if keyword_lower in t.lower()]
+
+def show_tasks(tasks):
+    if not tasks:
+        print("No tasks!")
+        return
+    for i, task in enumerate(tasks, 1):
+        print(f"  {i}. {task}")
+
+# Test it out
+todo = []
+add_task(todo, "Buy groceries")
+add_task(todo, "Finish Python lesson")
+add_task(todo, "Buy birthday gift")
+add_task(todo, "Buy groceries")  # Duplicate!
+
+show_tasks(todo)
+# 1. Buy groceries
+# 2. Finish Python lesson
+# 3. Buy birthday gift
+
+results = search_tasks(todo, "buy")
+print(f"Search 'buy': {results}")  # ['Buy groceries', 'Buy birthday gift']
+
+remove_task(todo, "Finish Python lesson")
+show_tasks(todo)</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">function addTask(tasks, task) {
+    if (tasks.includes(task)) {
+        console.log(`'${task}' already exists!`);
+        return;
+    }
+    tasks.push(task);
+    console.log(`Added: '${task}'`);
+}
+
+function removeTask(tasks, task) {
+    let idx = tasks.indexOf(task);
+    if (idx === -1) {
+        console.log(`'${task}' not found!`);
+        return;
+    }
+    tasks.splice(idx, 1);
+    console.log(`Removed: '${task}'`);
+}
+
+function searchTasks(tasks, keyword) {
+    let kw = keyword.toLowerCase();
+    return tasks.filter(t =&gt; t.toLowerCase().includes(kw));
+}
+
+function showTasks(tasks) {
+    if (tasks.length === 0) { console.log("No tasks!"); return; }
+    tasks.forEach((task, i) =&gt; console.log(`  ${i + 1}. ${task}`));
+}
+
+let todo = [];
+addTask(todo, "Buy groceries");
+addTask(todo, "Finish JS lesson");
+addTask(todo, "Buy birthday gift");
+addTask(todo, "Buy groceries");  // Duplicate!
+
+showTasks(todo);
+console.log("Search 'buy':", searchTasks(todo, "buy"));
+removeTask(todo, "Finish JS lesson");
+showTasks(todo);</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">static void AddTask(List&lt;string&gt; tasks, string task)
+{
+    if (tasks.Contains(task))
+    {
+        Console.WriteLine($"'{task}' already exists!");
+        return;
+    }
+    tasks.Add(task);
+    Console.WriteLine($"Added: '{task}'");
+}
+
+static void RemoveTask(List&lt;string&gt; tasks, string task)
+{
+    if (!tasks.Remove(task))  // Remove returns false if not found
+    {
+        Console.WriteLine($"'{task}' not found!");
+        return;
+    }
+    Console.WriteLine($"Removed: '{task}'");
+}
+
+static List&lt;string&gt; SearchTasks(List&lt;string&gt; tasks, string keyword)
+{
+    string kw = keyword.ToLower();
+    return tasks.Where(t =&gt; t.ToLower().Contains(kw)).ToList();
+}
+
+static void ShowTasks(List&lt;string&gt; tasks)
+{
+    if (tasks.Count == 0) { Console.WriteLine("No tasks!"); return; }
+    for (int i = 0; i &lt; tasks.Count; i++)
+        Console.WriteLine($"  {i + 1}. {tasks[i]}");
+}
+
+// Test
+List&lt;string&gt; todo = new List&lt;string&gt;();
+AddTask(todo, "Buy groceries");
+AddTask(todo, "Finish C# lesson");
+AddTask(todo, "Buy birthday gift");
+ShowTasks(todo);
+
+var results = SearchTasks(todo, "buy");
+Console.WriteLine($"Search 'buy': {string.Join(", ", results)}");
+RemoveTask(todo, "Finish C# lesson");
+ShowTasks(todo);</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Exercise 1 is a warm-up to practice basic CRUD operations. Exercise 2 introduces aggregation — it's a natural way to combine what students learned about loops (Module 3) with lists. Note how Python's built-in <code>max/min/sum</code>, JS's <code>Math.max(...spread)</code> + <code>.reduce()</code>, and C#'s LINQ methods each handle statistics differently. Exercise 3 is the capstone — a realistic mini-project that combines add/remove/search/display. Challenge fast students to add a "mark complete" feature or priority levels.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong>Lists/arrays</strong> are ordered collections accessed by zero-based index</li>
+                        <li><strong>Negative indexing</strong> counts from the end: Python <code>[-1]</code>, JS <code>.at(-1)</code>, C# <code>[^1]</code></li>
+                        <li><strong>Adding:</strong> Python <code>.append()</code>, JS <code>.push()</code>, C# <code>.Add()</code></li>
+                        <li><strong>Removing:</strong> Python <code>.remove()</code>/<code>.pop()</code>, JS <code>.splice()</code>/<code>.pop()</code>, C# <code>.Remove()</code>/<code>.RemoveAt()</code></li>
+                        <li><strong>Slicing</strong> creates copies: Python <code>[1:4]</code>, JS <code>.slice(1,4)</code>, C# <code>[1..4]</code></li>
+                        <li>JavaScript's <code>.sort()</code> needs a comparator for numbers — <code>.sort((a,b)&nbsp;=&gt;&nbsp;a-b)</code></li>
+                        <li>C# has fixed-size <strong>arrays</strong> and resizable <code>List&lt;T&gt;</code> — prefer <code>List&lt;T&gt;</code> for most tasks</li>
+                        <li>Python <strong>list comprehensions</strong> = JS <code>.map()/.filter()</code> = C# LINQ <code>.Select()/.Where()</code></li>
+                    </ul>
+                </div>
+
+                <h3>🚀 What's Next?</h3>
+                <p>Lists store values by position. But what if you want to look things up by <strong>name</strong>? Next up: <strong>dictionaries, objects, and maps</strong> — collections that store key-value pairs for lightning-fast lookups.</p>
+
+                <!-- Quiz -->
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Check</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What is the index of the first element in a list/array?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="All three languages use zero-based indexing. The first element is at index 0, the second at index 1, and so on.">A) 0</button>
+                            <button class="quiz-option" data-correct="false" data-hint="That would be 1-based indexing, which some languages use, but not Python, JavaScript, or C#.">B) 1</button>
+                            <button class="quiz-option" data-correct="false" data-hint="That typically refers to the last element using negative indexing.">C) -1</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 2:</strong> In JavaScript, what's the difference between <code>.slice()</code> and <code>.splice()</code>?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="They're both array methods — the difference is in what they do to the original array.">A) They're the same thing</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="slice() creates a copy of a portion without changing the original. splice() modifies the original array by adding or removing elements. One letter, very different behavior!">B) slice() copies without changing the original; splice() modifies the original</button>
+                            <button class="quiz-option" data-correct="false" data-hint="It's actually the other way around — slice copies, splice mutates.">C) slice() modifies the original; splice() creates a copy</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 3:</strong> What does <code>[n * 2 for n in [1, 2, 3]]</code> produce in Python?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="The comprehension multiplies each element by 2 — the values themselves are even.">A) [1, 2, 3]</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="The list comprehension takes each number n from [1, 2, 3] and produces n * 2, giving [2, 4, 6].">B) [2, 4, 6]</button>
+                            <button class="quiz-option" data-correct="false" data-hint="That would be n ** 2 (squaring), not n * 2 (doubling).">C) [1, 4, 9]</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_12.html" class="prev-lesson">← Previous: Scope and Closures</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_14.html" class="next-lesson">Next: Dictionaries, Objects, and Maps →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

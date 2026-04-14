@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Explore numbers, strings, and booleans in Python, JavaScript, and C# — and learn how each language handles data differently.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 2.2: Data Types — Numbers, Strings, Booleans - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 2</a></li>
+            <li aria-current="page">Lesson 2.2: Data Types — Numbers, Strings, Booleans</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🔢 Lesson 2.2: Data Types — Numbers, Strings, Booleans</h1>
+                <p class="lead">Every piece of data has a type. Understanding types is the key to understanding why code works — or why it breaks.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Identify the three fundamental data types: numbers, strings, and booleans</li>
+                        <li>Explain how number types differ across Python, JavaScript, and C#</li>
+                        <li>Perform common string operations: concatenation, length, and indexing</li>
+                        <li>Use string interpolation (<code>f""</code>, <code>`${}`</code>, <code>$""</code>) to build dynamic text</li>
+                        <li>Use booleans for true/false decisions</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 45 minutes</p>
+                    <p><strong>Project:</strong> A "Character Stats Card" that formats and displays mixed data types</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary><h2 style="display: inline; margin: 0;">📑 In This Lesson</h2></summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#why-types-matter" class="toc-link">Why Types Matter</a></li>
+                        <li><a href="#numbers" class="toc-link">Numbers</a></li>
+                        <li><a href="#strings" class="toc-link">Strings</a></li>
+                        <li><a href="#string-interpolation" class="toc-link">String Interpolation</a></li>
+                        <li><a href="#booleans" class="toc-link">Booleans</a></li>
+                        <li><a href="#checking-types" class="toc-link">Checking Types at Runtime</a></li>
+                        <li><a href="#exercises" class="toc-link">Exercises</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Why Types Matter -->
+            <section id="why-types-matter" class="lesson-section">
+                <h2>Why Types Matter</h2>
+                <p>In the previous lesson, you stored data in variables. But not all data is the same — a number like <code>42</code> behaves very differently from a string like <code>"42"</code>. The <strong>type</strong> of a piece of data determines what you can do with it.</p>
+
+                <div class="mermaid">
+                    graph TD
+                    A["Data Types"] --> B["Numbers<br/>42, 3.14, -7"]
+                    A --> C["Strings<br/>'hello', 'Alex'"]
+                    A --> D["Booleans<br/>true / false"]
+                    B --> E["Math operations<br/>+, -, *, /"]
+                    C --> F["Text operations<br/>join, slice, search"]
+                    D --> G["Logic &amp; decisions<br/>if / else"]
+                    style A fill:#3b82f6,stroke:#1e40af,color:#fff,stroke-width:2px
+                    style B fill:#f59e0b,stroke:#d97706,color:#fff,stroke-width:2px
+                    style C fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px
+                    style D fill:#8b5cf6,stroke:#6d28d9,color:#fff,stroke-width:2px
+                </div>
+
+                <p>Consider this puzzle: what does <code>5 + 3</code> produce? If both are numbers, you get <code>8</code>. But if they're strings, <code>"5" + "3"</code> gives you <code>"53"</code> — the strings are glued together, not added mathematically. Types determine the rules.</p>
+
+                <div class="card card-accent">
+                    <h4>📖 Key Term</h4>
+                    <p style="color:#fff;"><strong>Data Type:</strong> A classification that tells the language what kind of value a variable holds and what operations are valid for it. The three most fundamental types in nearly every language are <strong>numbers</strong>, <strong>strings</strong> (text), and <strong>booleans</strong> (true/false).</p>
+                </div>
+            </section>
+
+            <!-- Numbers -->
+            <section id="numbers" class="lesson-section">
+                <h2>Numbers</h2>
+                <p>All three languages can do math, but they handle numbers quite differently under the hood.</p>
+
+                <h3>Integers and Decimals</h3>
+
+                <div class="code-tabs" data-title="Number Types">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python has two number types: int and float
+whole = 42          # int (integer — no decimal point)
+decimal = 3.14      # float (floating-point — has a decimal)
+negative = -7       # int (integers can be negative)
+
+print(type(whole))    # &lt;class 'int'&gt;
+print(type(decimal))  # &lt;class 'float'&gt;
+
+# Python integers can be HUGE — no size limit
+big = 99999999999999999999999999999
+print(big)  # works perfectly!</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript has ONE number type: number
+let whole = 42;         // number
+let decimal = 3.14;     // number (same type!)
+let negative = -7;      // number
+
+console.log(typeof whole);    // "number"
+console.log(typeof decimal);  // "number"
+// Both are just "number" — JS doesn't distinguish!
+
+// For very large integers, JS has BigInt
+let big = 99999999999999999999999999999n;  // note the 'n'
+console.log(typeof big);  // "bigint"</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C# has MANY number types — here are the most common
+int whole = 42;           // 32-bit integer
+double decimal2 = 3.14;  // 64-bit floating-point (most common)
+float precise = 3.14f;   // 32-bit floating-point (note the 'f')
+decimal money = 19.99m;  // 128-bit (precise — great for money)
+long bigNum = 9999999999L;  // 64-bit integer
+
+Console.WriteLine(whole.GetType());    // System.Int32
+Console.WriteLine(decimal2.GetType()); // System.Double</code></pre>
+                    </div>
+                </div>
+
+                <h3>Number Types Compared</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Concept</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Whole numbers</td>
+                                <td><code>int</code></td>
+                                <td><code>number</code></td>
+                                <td><code>int</code>, <code>long</code></td>
+                            </tr>
+                            <tr>
+                                <td>Decimals</td>
+                                <td><code>float</code></td>
+                                <td><code>number</code> (same!)</td>
+                                <td><code>double</code>, <code>float</code>, <code>decimal</code></td>
+                            </tr>
+                            <tr>
+                                <td>Integer size limit</td>
+                                <td>Unlimited</td>
+                                <td>±2⁵³ (then use <code>BigInt</code>)</td>
+                                <td><code>int</code>: ±2 billion</td>
+                            </tr>
+                            <tr>
+                                <td>Best for money</td>
+                                <td><code>Decimal</code> module</td>
+                                <td>Use cents (integers)</td>
+                                <td><code>decimal</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Basic Math Operations</h3>
+                <div class="code-tabs" data-title="Arithmetic">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">a = 17
+b = 5
+
+print(a + b)   # 22   Addition
+print(a - b)   # 12   Subtraction
+print(a * b)   # 85   Multiplication
+print(a / b)   # 3.4  Division (always returns float!)
+print(a // b)  # 3    Floor division (rounds down)
+print(a % b)   # 2    Modulo (remainder)
+print(a ** b)  # 1419857  Exponent (17 to the 5th)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">let a = 17;
+let b = 5;
+
+console.log(a + b);   // 22   Addition
+console.log(a - b);   // 12   Subtraction
+console.log(a * b);   // 85   Multiplication
+console.log(a / b);   // 3.4  Division
+console.log(Math.floor(a / b));  // 3  Floor division
+console.log(a % b);   // 2    Modulo (remainder)
+console.log(a ** b);  // 1419857  Exponent</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">int a = 17;
+int b = 5;
+
+Console.WriteLine(a + b);   // 22   Addition
+Console.WriteLine(a - b);   // 12   Subtraction
+Console.WriteLine(a * b);   // 85   Multiplication
+Console.WriteLine(a / b);   // 3    Integer division! (truncates)
+Console.WriteLine(17.0 / 5);  // 3.4  Use a double for decimal result
+Console.WriteLine(a % b);   // 2    Modulo (remainder)
+Console.WriteLine(Math.Pow(a, b));  // 1419857  Exponent</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Watch Out: Integer Division in C#</h4>
+                    <p>In C#, dividing two <code>int</code> values gives an <code>int</code> result — the decimal part is <strong>thrown away</strong>, not rounded. <code>17 / 5</code> gives <code>3</code>, not <code>3.4</code>. To get a decimal result, at least one operand must be a <code>double</code>: <code>17.0 / 5</code> gives <code>3.4</code>.</p>
+                    <p>Python's <code>/</code> always gives a float. JavaScript's <code>/</code> always gives a decimal. C# is the surprise here.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>The C# integer division gotcha is one of the most important things to demo live. Write <code>Console.WriteLine(7 / 2);</code> and ask students to predict the output. Most will say 3.5. When they see 3, that's the teachable moment. Also emphasize that Python's <code>/</code> always returning a float (even <code>10 / 2</code> gives <code>5.0</code>) is different from many other languages.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Strings -->
+            <section id="strings" class="lesson-section">
+                <h2>Strings</h2>
+                <p>A <strong>string</strong> is a sequence of characters — text data. It can hold letters, numbers, symbols, spaces, even emoji. Strings are always enclosed in quotes.</p>
+
+                <h3>Creating Strings</h3>
+                <div class="code-tabs" data-title="String Creation">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python: single or double quotes — both work
+greeting = "Hello, world!"
+name = 'Alex'
+
+# Triple quotes for multi-line strings
+poem = """Roses are red,
+Violets are blue,
+Python is great,
+And so are you."""
+
+# Strings with special characters
+path = "C:\\Users\\Alex"    # backslash needs escaping
+tab = "Column1\tColumn2"   # \t = tab
+newline = "Line1\nLine2"   # \n = new line</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript: single, double, or backtick quotes
+let greeting = "Hello, world!";
+let name = 'Alex';
+
+// Backticks for multi-line and template literals
+let poem = `Roses are red,
+Violets are blue,
+JavaScript is great,
+And so are you.`;
+
+// Special characters work the same way
+let path = "C:\\Users\\Alex";
+let tab = "Column1\tColumn2";
+let newline = "Line1\nLine2";</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C#: double quotes only (single quotes are for single chars)
+string greeting = "Hello, world!";
+string name = "Alex";
+
+// Verbatim strings with @ (no escaping needed)
+string path = @"C:\Users\Alex";
+
+// Raw string literals (C# 11+) for multi-line
+string poem = """
+    Roses are red,
+    Violets are blue,
+    C# is great,
+    And so are you.
+    """;
+
+// char type: a single character (uses single quotes)
+char grade = 'A';
+char initial = 'R';</code></pre>
+                    </div>
+                </div>
+
+                <h3>Common String Operations</h3>
+                <div class="code-tabs" data-title="String Operations">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">name = "Alex Johnson"
+
+# Length
+print(len(name))       # 12
+
+# Indexing (0-based — first character is index 0)
+print(name[0])         # A
+print(name[5])         # J
+print(name[-1])        # n (last character)
+
+# Slicing
+print(name[0:4])       # Alex (characters 0,1,2,3)
+print(name[5:])        # Johnson (from index 5 to end)
+
+# Case changes
+print(name.upper())    # ALEX JOHNSON
+print(name.lower())    # alex johnson
+
+# Searching
+print("John" in name)         # True
+print(name.find("John"))      # 5 (index where it starts)
+
+# Concatenation (joining strings)
+first = "Alex"
+last = "Johnson"
+full = first + " " + last     # "Alex Johnson"</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">let name = "Alex Johnson";
+
+// Length (it's a property, not a function)
+console.log(name.length);       // 12
+
+// Indexing (0-based)
+console.log(name[0]);           // A
+console.log(name[5]);           // J
+console.log(name[name.length - 1]); // n (last character)
+
+// Slicing
+console.log(name.slice(0, 4));  // Alex
+console.log(name.slice(5));     // Johnson
+
+// Case changes
+console.log(name.toUpperCase()); // ALEX JOHNSON
+console.log(name.toLowerCase()); // alex johnson
+
+// Searching
+console.log(name.includes("John"));  // true
+console.log(name.indexOf("John"));   // 5
+
+// Concatenation
+let first = "Alex";
+let last = "Johnson";
+let full = first + " " + last;      // "Alex Johnson"</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">string name = "Alex Johnson";
+
+// Length (property)
+Console.WriteLine(name.Length);       // 12
+
+// Indexing (0-based)
+Console.WriteLine(name[0]);          // A
+Console.WriteLine(name[5]);          // J
+Console.WriteLine(name[^1]);         // n (last — C# index-from-end)
+
+// Slicing (Substring or range)
+Console.WriteLine(name.Substring(0, 4));  // Alex
+Console.WriteLine(name[5..]);             // Johnson (range syntax)
+
+// Case changes
+Console.WriteLine(name.ToUpper());   // ALEX JOHNSON
+Console.WriteLine(name.ToLower());   // alex johnson
+
+// Searching
+Console.WriteLine(name.Contains("John"));  // True
+Console.WriteLine(name.IndexOf("John"));   // 5
+
+// Concatenation
+string first = "Alex";
+string last = "Johnson";
+string full = first + " " + last;         // "Alex Johnson"</code></pre>
+                    </div>
+                </div>
+
+                <h3>String Operations Compared</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Operation</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Length</td>
+                                <td><code>len(s)</code></td>
+                                <td><code>s.length</code></td>
+                                <td><code>s.Length</code></td>
+                            </tr>
+                            <tr>
+                                <td>Uppercase</td>
+                                <td><code>s.upper()</code></td>
+                                <td><code>s.toUpperCase()</code></td>
+                                <td><code>s.ToUpper()</code></td>
+                            </tr>
+                            <tr>
+                                <td>Contains</td>
+                                <td><code>"x" in s</code></td>
+                                <td><code>s.includes("x")</code></td>
+                                <td><code>s.Contains("x")</code></td>
+                            </tr>
+                            <tr>
+                                <td>Slice</td>
+                                <td><code>s[0:4]</code></td>
+                                <td><code>s.slice(0, 4)</code></td>
+                                <td><code>s.Substring(0, 4)</code></td>
+                            </tr>
+                            <tr>
+                                <td>Last character</td>
+                                <td><code>s[-1]</code></td>
+                                <td><code>s[s.length - 1]</code></td>
+                                <td><code>s[^1]</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ Python's Negative Indexing</h4>
+                    <p>Python lets you count from the end using negative indices: <code>s[-1]</code> is the last character, <code>s[-2]</code> is second to last, and so on. JavaScript and C# don't support this natively (though C# has the <code>^</code> operator for a similar effect).</p>
+                </div>
+            </section>
+
+            <!-- String Interpolation -->
+            <section id="string-interpolation" class="lesson-section">
+                <h2>String Interpolation</h2>
+                <p><strong>String interpolation</strong> lets you embed variables and expressions directly inside a string. It's more readable than concatenation and you'll use it <em>constantly</em>.</p>
+
+                <div class="code-tabs" data-title="String Interpolation">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">name = "Alex"
+age = 25
+gpa = 3.847
+
+# f-strings (Python 3.6+) — prefix the string with f
+print(f"Hi, I'm {name} and I'm {age} years old.")
+# Hi, I'm Alex and I'm 25 years old.
+
+# You can put expressions inside the braces
+print(f"Next year I'll be {age + 1}.")
+# Next year I'll be 26.
+
+# Formatting numbers
+print(f"GPA: {gpa:.2f}")   # GPA: 3.85 (2 decimal places)
+print(f"{'Score':>10}: {95}")  # Right-align "Score" in 10 chars
+
+# The old way (don't use these for new code):
+# "Hi, I'm %s" % name          # % formatting
+# "Hi, I'm {}".format(name)    # .format() method</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">let name = "Alex";
+let age = 25;
+let gpa = 3.847;
+
+// Template literals — use backticks ` and ${...}
+console.log(`Hi, I'm ${name} and I'm ${age} years old.`);
+// Hi, I'm Alex and I'm 25 years old.
+
+// Expressions inside the braces
+console.log(`Next year I'll be ${age + 1}.`);
+// Next year I'll be 26.
+
+// Formatting numbers (use .toFixed())
+console.log(`GPA: ${gpa.toFixed(2)}`);  // GPA: 3.85
+
+// IMPORTANT: must use backticks ` not regular quotes!
+// "Hi ${name}" → literally prints ${name}  (WRONG)
+// `Hi ${name}` → prints Hi Alex            (RIGHT)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">string name = "Alex";
+int age = 25;
+double gpa = 3.847;
+
+// Interpolated strings — prefix with $ and use {…}
+Console.WriteLine($"Hi, I'm {name} and I'm {age} years old.");
+// Hi, I'm Alex and I'm 25 years old.
+
+// Expressions inside the braces
+Console.WriteLine($"Next year I'll be {age + 1}.");
+// Next year I'll be 26.
+
+// Formatting numbers
+Console.WriteLine($"GPA: {gpa:F2}");    // GPA: 3.85
+Console.WriteLine($"Price: {19.5:C}");  // Price: $19.50 (currency)
+
+// The old way (still seen in older code):
+// Console.WriteLine("Hi, I'm {0}", name);  // composite formatting</code></pre>
+                    </div>
+                </div>
+
+                <h3>Interpolation Syntax Cheat Sheet</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Prefix</td>
+                                <td><code>f</code> before the quote</td>
+                                <td>Use backticks <code>`</code></td>
+                                <td><code>$</code> before the quote</td>
+                            </tr>
+                            <tr>
+                                <td>Variable placeholder</td>
+                                <td><code>{name}</code></td>
+                                <td><code>${name}</code></td>
+                                <td><code>{name}</code></td>
+                            </tr>
+                            <tr>
+                                <td>Expression support</td>
+                                <td><code>{age + 1}</code></td>
+                                <td><code>${age + 1}</code></td>
+                                <td><code>{age + 1}</code></td>
+                            </tr>
+                            <tr>
+                                <td>2 decimal places</td>
+                                <td><code>{val:.2f}</code></td>
+                                <td><code>${val.toFixed(2)}</code></td>
+                                <td><code>{val:F2}</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Common Mistakes with Interpolation</h4>
+                    <ul>
+                        <li><strong>Python:</strong> Forgetting the <code>f</code> prefix → <code>"{name}"</code> prints literally <code>{name}</code></li>
+                        <li><strong>JavaScript:</strong> Using regular quotes instead of backticks → <code>"${name}"</code> prints literally <code>${name}</code></li>
+                        <li><strong>C#:</strong> Forgetting the <code>$</code> prefix → <code>"{name}"</code> prints literally <code>{name}</code></li>
+                    </ul>
+                    <p>The pattern is the same across all three: <strong>you need a special marker</strong> to activate interpolation.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>String interpolation is arguably the most practical skill in this lesson. Students will use it in every single exercise going forward. Spend extra time here. Have students type the "wrong" version first (without the prefix) so they see the literal output, then add the prefix and see it come alive. This muscle memory of "f-string, backtick, dollar-sign" needs to be drilled.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Booleans -->
+            <section id="booleans" class="lesson-section">
+                <h2>Booleans</h2>
+                <p>A <strong>boolean</strong> is the simplest type — it can only be one of two values: <strong>true</strong> or <strong>false</strong>. Booleans are the foundation of decision-making in code.</p>
+
+                <div class="code-tabs" data-title="Boolean Values">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python: True and False (MUST be capitalized!)
+is_active = True
+has_permission = False
+
+# Comparison operators produce booleans
+age = 25
+print(age > 18)     # True
+print(age == 30)    # False
+print(age != 30)    # True
+print(age >= 25)    # True
+
+# Booleans are actually numbers in disguise!
+print(True + True)    # 2
+print(False + True)   # 1
+print(int(True))      # 1
+print(int(False))     # 0</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript: true and false (always lowercase!)
+let isActive = true;
+let hasPermission = false;
+
+// Comparison operators produce booleans
+let age = 25;
+console.log(age > 18);     // true
+console.log(age === 30);   // false (use === not ==)
+console.log(age !== 30);   // true
+console.log(age >= 25);    // true
+
+// Booleans are numbers under the hood
+console.log(true + true);    // 2
+console.log(false + true);   // 1
+console.log(Number(true));   // 1
+console.log(Number(false));  // 0</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C#: true and false (always lowercase)
+bool isActive = true;
+bool hasPermission = false;
+
+// Comparison operators produce booleans
+int age = 25;
+Console.WriteLine(age > 18);     // True
+Console.WriteLine(age == 30);    // False
+Console.WriteLine(age != 30);    // True
+Console.WriteLine(age >= 25);    // True
+
+// C# does NOT let you treat booleans as numbers
+// Console.WriteLine(true + true);  // ERROR!
+// You must convert explicitly:
+Console.WriteLine(Convert.ToInt32(true));   // 1
+Console.WriteLine(Convert.ToInt32(false));  // 0</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ JavaScript: Use <code>===</code> Not <code>==</code></h4>
+                    <p>JavaScript has two equality operators:</p>
+                    <ul>
+                        <li><code>==</code> (loose equality) — converts types before comparing: <code>"5" == 5</code> is <code>true</code></li>
+                        <li><code>===</code> (strict equality) — no conversion: <code>"5" === 5</code> is <code>false</code></li>
+                    </ul>
+                    <p>Always use <code>===</code> and <code>!==</code> in JavaScript to avoid surprising type coercion bugs. Python and C# don't have this quirk.</p>
+                </div>
+            </section>
+
+            <!-- Checking Types -->
+            <section id="checking-types" class="lesson-section">
+                <h2>Checking Types at Runtime</h2>
+                <p>Sometimes you need to find out what type a value is. Each language has its own way:</p>
+
+                <div class="code-tabs" data-title="Type Checking">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python: use type() to see the type
+print(type(42))         # &lt;class 'int'&gt;
+print(type(3.14))       # &lt;class 'float'&gt;
+print(type("hello"))    # &lt;class 'str'&gt;
+print(type(True))       # &lt;class 'bool'&gt;
+
+# Check if something IS a certain type
+print(isinstance(42, int))       # True
+print(isinstance("hi", str))    # True
+print(isinstance(True, bool))   # True
+
+# Fun fact: bool is a subtype of int in Python
+print(isinstance(True, int))    # True!</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript: use typeof
+console.log(typeof 42);         // "number"
+console.log(typeof 3.14);       // "number"
+console.log(typeof "hello");    // "string"
+console.log(typeof true);       // "boolean"
+
+// typeof has some quirks:
+console.log(typeof null);       // "object" (a famous JS bug!)
+console.log(typeof undefined);  // "undefined"
+console.log(typeof [1,2,3]);    // "object" (arrays are objects)
+
+// To check arrays specifically:
+console.log(Array.isArray([1,2,3]));  // true</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C#: use .GetType() or the 'is' keyword
+Console.WriteLine(42.GetType());       // System.Int32
+Console.WriteLine(3.14.GetType());     // System.Double
+Console.WriteLine("hello".GetType());  // System.String
+Console.WriteLine(true.GetType());     // System.Boolean
+
+// Check with 'is' keyword
+object value = 42;
+Console.WriteLine(value is int);       // True
+Console.WriteLine(value is string);    // False
+
+// C# rarely needs runtime type checks — the compiler
+// catches most type issues at compile time!</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 When Do You Check Types?</h4>
+                    <p>In practice, you check types most often in <strong>Python</strong> and <strong>JavaScript</strong> because they're dynamically typed — a variable could hold anything. In <strong>C#</strong>, the compiler already knows every type, so runtime checks are less common.</p>
+                </div>
+            </section>
+
+            <!-- Exercises -->
+            <section id="exercises" class="lesson-section">
+                <h2>Exercises</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 1: Character Stats Card</h3>
+                    <p><strong>Objective:</strong> Create a program that builds and displays a formatted character stats card using all three data types.</p>
+                    <ol>
+                        <li>Create variables for a character: name (string), level (int), health (float/decimal), and is_alive (boolean)</li>
+                        <li>Use string interpolation to display a formatted stats card</li>
+                        <li>Include at least one math operation (e.g., calculate a damage bonus from the level)</li>
+                    </ol>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Character Stats Card">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">name = "Aria Shadowmend"
+level = 12
+health = 87.5
+is_alive = True
+damage_bonus = level * 1.5
+
+print("╔══════════════════════════╗")
+print("║    CHARACTER STATS       ║")
+print("╠══════════════════════════╣")
+print(f"║  Name:   {name}")
+print(f"║  Level:  {level}")
+print(f"║  Health: {health:.1f} HP")
+print(f"║  Status: {'ALIVE' if is_alive else 'DEAD'}")
+print(f"║  Damage: +{damage_bonus:.1f}")
+print("╚══════════════════════════╝")</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">let name = "Aria Shadowmend";
+let level = 12;
+let health = 87.5;
+let isAlive = true;
+let damageBonus = level * 1.5;
+
+console.log("╔══════════════════════════╗");
+console.log("║    CHARACTER STATS       ║");
+console.log("╠══════════════════════════╣");
+console.log(`║  Name:   ${name}`);
+console.log(`║  Level:  ${level}`);
+console.log(`║  Health: ${health.toFixed(1)} HP`);
+console.log(`║  Status: ${isAlive ? "ALIVE" : "DEAD"}`);
+console.log(`║  Damage: +${damageBonus.toFixed(1)}`);
+console.log("╚══════════════════════════╝");</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">string name = "Aria Shadowmend";
+int level = 12;
+double health = 87.5;
+bool isAlive = true;
+double damageBonus = level * 1.5;
+
+Console.WriteLine("╔══════════════════════════╗");
+Console.WriteLine("║    CHARACTER STATS       ║");
+Console.WriteLine("╠══════════════════════════╣");
+Console.WriteLine($"║  Name:   {name}");
+Console.WriteLine($"║  Level:  {level}");
+Console.WriteLine($"║  Health: {health:F1} HP");
+Console.WriteLine($"║  Status: {(isAlive ? "ALIVE" : "DEAD")}");
+Console.WriteLine($"║  Damage: +{damageBonus:F1}");
+Console.WriteLine("╚══════════════════════════╝");</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 2: String Detective</h3>
+                    <p><strong>Objective:</strong> Practice string operations by analyzing a sentence.</p>
+                    <ol>
+                        <li>Store the sentence <code>"The quick brown fox jumps over the lazy dog"</code> in a variable</li>
+                        <li>Print the total number of characters</li>
+                        <li>Print the first word and the last word</li>
+                        <li>Print the sentence in all uppercase</li>
+                        <li>Check whether the sentence contains the word <code>"cat"</code> and print the result</li>
+                    </ol>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="String Detective">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">sentence = "The quick brown fox jumps over the lazy dog"
+
+print(f"Length: {len(sentence)}")
+print(f"First word: {sentence[0:3]}")
+print(f"Last word: {sentence[-3:]}")
+print(f"Uppercase: {sentence.upper()}")
+print(f"Contains 'cat': {'cat' in sentence}")</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">let sentence = "The quick brown fox jumps over the lazy dog";
+
+console.log(`Length: ${sentence.length}`);
+console.log(`First word: ${sentence.slice(0, 3)}`);
+console.log(`Last word: ${sentence.slice(-3)}`);
+console.log(`Uppercase: ${sentence.toUpperCase()}`);
+console.log(`Contains 'cat': ${sentence.includes("cat")}`);</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">string sentence = "The quick brown fox jumps over the lazy dog";
+
+Console.WriteLine($"Length: {sentence.Length}");
+Console.WriteLine($"First word: {sentence.Substring(0, 3)}");
+Console.WriteLine($"Last word: {sentence[^3..]}");
+Console.WriteLine($"Uppercase: {sentence.ToUpper()}");
+Console.WriteLine($"Contains 'cat': {sentence.Contains("cat")}");</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 3: Type Explorer</h3>
+                    <p><strong>Objective:</strong> Experiment with types and see what happens.</p>
+                    <ol>
+                        <li>Create a variable with the value <code>10</code> and print its type</li>
+                        <li>Create a variable with the value <code>10.0</code> and print its type</li>
+                        <li>Create a variable with the value <code>"10"</code> and print its type</li>
+                        <li>Try adding a number and a string — what happens in each language?</li>
+                    </ol>
+
+                    <details>
+                        <summary>💡 Hint</summary>
+                        <p>Python will throw an error if you try to add a number and a string. JavaScript will silently convert one to match the other. C# will give a compile error. These behaviors preview next lesson's topic: <strong>type conversion</strong>!</p>
+                    </details>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Type Explorer">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">a = 10
+b = 10.0
+c = "10"
+
+print(type(a))  # &lt;class 'int'&gt;
+print(type(b))  # &lt;class 'float'&gt;
+print(type(c))  # &lt;class 'str'&gt;
+
+# Adding number + string:
+# print(a + c)  # TypeError: unsupported operand type(s)
+# Python refuses — you must convert explicitly:
+print(a + int(c))   # 20
+print(str(a) + c)   # "1010"</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">let a = 10;
+let b = 10.0;
+let c = "10";
+
+console.log(typeof a);  // "number"
+console.log(typeof b);  // "number" (same as a!)
+console.log(typeof c);  // "string"
+
+// Adding number + string:
+console.log(a + c);     // "1010" (JS converts number to string!)
+// JavaScript chose string concatenation — surprise!
+// Use Number() or parseInt() to force numeric addition:
+console.log(a + Number(c));  // 20</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">int a = 10;
+double b = 10.0;
+string c = "10";
+
+Console.WriteLine(a.GetType());  // System.Int32
+Console.WriteLine(b.GetType());  // System.Double
+Console.WriteLine(c.GetType());  // System.String
+
+// Adding number + string:
+Console.WriteLine(a + c);  // "1010" (C# converts to string)
+// To get numeric addition, convert first:
+Console.WriteLine(a + int.Parse(c));  // 20</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Exercise 3 is the most important pedagogically because it naturally sets up the next lesson on type conversion and coercion. Let students struggle with the <code>number + string</code> problem — the three different behaviors (Python: crash, JS: concatenate, C#: concatenate) are a great discussion point about language design philosophy. Python says "explicit is better than implicit," JavaScript tries to be helpful (sometimes too helpful), and C# splits the difference.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong>Numbers:</strong> Python has <code>int</code>/<code>float</code>, JavaScript has just <code>number</code>, C# has <code>int</code>/<code>double</code>/<code>decimal</code> and more</li>
+                        <li><strong>Strings:</strong> Text data enclosed in quotes — all three languages support concatenation, indexing, slicing, searching, and case changes</li>
+                        <li><strong>String Interpolation:</strong> Python: <code>f"..."</code>, JavaScript: <code>`...${}`</code>, C#: <code>$"...{}"</code> — learn these and use them everywhere</li>
+                        <li><strong>Booleans:</strong> True/false values used for decisions — Python capitalizes them (<code>True</code>/<code>False</code>), JS/C# don't</li>
+                        <li><strong>Type matters:</strong> <code>5 + 3</code> = 8, but <code>"5" + "3"</code> = "53" — the type determines the behavior</li>
+                        <li>Watch out for <strong>C# integer division</strong> and <strong>JavaScript's <code>==</code> vs <code>===</code></strong></li>
+                    </ul>
+                </div>
+
+                <h3>🚀 What's Next?</h3>
+                <p>Now that you know the types, what happens when you need to convert between them? In the next lesson, we tackle <strong>type conversion and coercion</strong> — including JavaScript's famously surprising behavior.</p>
+
+                <!-- Quiz -->
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Check</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What does <code>17 / 5</code> produce in C# when both values are <code>int</code>?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="That's what Python would give you, but C# truncates integer division.">A) 3.4</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="In C#, dividing two integers produces an integer. The decimal part is dropped (not rounded), giving 3.">B) 3</button>
+                            <button class="quiz-option" data-correct="false" data-hint="C# truncates toward zero, it doesn't round up.">C) 4</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 2:</strong> Which is the correct way to use string interpolation in JavaScript?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="The f prefix is Python syntax — and those are regular quotes, not backticks.">A) <code>f"Hello {name}"</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="Regular double quotes don't support interpolation in JavaScript — you need backticks.">B) <code>"Hello ${name}"</code></button>
+                            <button class="quiz-option" data-correct="true" data-explanation="JavaScript template literals use backtick characters (`) and ${...} for embedded expressions.">C) <code>`Hello ${name}`</code></button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 3:</strong> In Python, what does <code>"5" + 3</code> produce?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="That's what JavaScript would do, but Python is stricter about types.">A) "53"</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Python won't silently convert types for you.">B) 8</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Python refuses to add a string and a number — it raises a TypeError. You must convert explicitly: int('5') + 3 or '5' + str(3).">C) TypeError</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_04.html" class="prev-lesson">← Previous: Variables and Constants</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_06.html" class="next-lesson">Next: Type Conversion and Coercion →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

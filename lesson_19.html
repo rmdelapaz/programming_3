@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn error handling with try, catch, and finally: how to gracefully handle runtime errors instead of crashing, in Python, JavaScript, and C#.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 7.1: Try, Catch, and Finally - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 7</a></li>
+            <li aria-current="page">Lesson 7.1: Try, Catch, and Finally</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🛡️ Lesson 7.1: Try, Catch, and Finally</h1>
+                <p class="lead">Your program asks the user to type a number, and they type "banana." Your code tries to open a file that doesn't exist. You divide by zero. Without error handling, your program <strong>crashes</strong> — game over. With error handling, you catch the problem, respond gracefully, and keep running. This is one of the most practical skills in all of programming.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Explain <strong>what errors are</strong> and why they happen at runtime</li>
+                        <li>Use <strong>try/catch</strong> (or try/except) to handle errors gracefully</li>
+                        <li>Use <strong>finally</strong> to run cleanup code no matter what happens</li>
+                        <li>Catch <strong>specific error types</strong> instead of catching everything</li>
+                        <li>Access <strong>error information</strong> (message, type, stack trace)</li>
+                        <li>Avoid common error-handling <strong>anti-patterns</strong></li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 50 minutes</p>
+                    <p><strong>Project:</strong> Build a safe user input system that never crashes</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary><h2 style="display: inline; margin: 0;">📑 In This Lesson</h2></summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#what-are-errors" class="toc-link">What Are Errors?</a></li>
+                        <li><a href="#try-catch" class="toc-link">Try/Catch: Your Safety Net</a></li>
+                        <li><a href="#finally" class="toc-link">Finally: Always Runs</a></li>
+                        <li><a href="#specific-errors" class="toc-link">Catching Specific Errors</a></li>
+                        <li><a href="#error-info" class="toc-link">Accessing Error Information</a></li>
+                        <li><a href="#anti-patterns" class="toc-link">Anti-Patterns to Avoid</a></li>
+                        <li><a href="#real-world" class="toc-link">Real-World Pattern: Retry Logic</a></li>
+                        <li><a href="#exercises" class="toc-link">Exercises</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- What Are Errors -->
+            <section id="what-are-errors" class="lesson-section">
+                <h2>What Are Errors?</h2>
+                <p>There are two broad categories of problems in code:</p>
+
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>When It Happens</th>
+                                <th>Example</th>
+                                <th>Can You Catch It?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Syntax Error</strong></td>
+                                <td>Before the program runs</td>
+                                <td>Missing parenthesis, typo in keyword</td>
+                                <td>No — fix your code</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Runtime Error</strong></td>
+                                <td>While the program is running</td>
+                                <td>Divide by zero, file not found, bad user input</td>
+                                <td><strong>Yes — with try/catch!</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p>Runtime errors are also called <strong>exceptions</strong> — they're <em>exceptional</em> situations that interrupt normal program flow. When an exception happens and you don't handle it, your program crashes with an error message.</p>
+
+                <div class="code-tabs" data-title="Common Runtime Errors">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Division by zero
+result = 10 / 0       # ZeroDivisionError: division by zero
+
+# Bad type conversion
+number = int("banana")  # ValueError: invalid literal for int()
+
+# Accessing a missing key
+data = {"name": "Alice"}
+print(data["age"])     # KeyError: 'age'
+
+# Accessing a missing index
+items = [1, 2, 3]
+print(items[10])       # IndexError: list index out of range
+
+# Using an undefined variable
+print(unknown_var)     # NameError: name 'unknown_var' is not defined
+
+# Opening a file that doesn't exist
+f = open("nope.txt")  # FileNotFoundError: No such file or directory</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// Accessing a property on null/undefined
+let user = null;
+console.log(user.name);    // TypeError: Cannot read properties of null
+
+// Bad JSON parsing
+JSON.parse("not json");    // SyntaxError: Unexpected token
+
+// Calling a non-function
+let x = 42;
+x();                       // TypeError: x is not a function
+
+// Using an undeclared variable (in strict mode)
+"use strict";
+console.log(unknownVar);   // ReferenceError: unknownVar is not defined
+
+// Stack overflow (infinite recursion)
+function loop() { loop(); }
+loop();                    // RangeError: Maximum call stack size exceeded
+
+// Note: JS division by zero gives Infinity, NOT an error
+console.log(10 / 0);      // Infinity (no error thrown!)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// Division by zero (integers only — doubles give Infinity)
+int result = 10 / 0;        // DivideByZeroException
+
+// Bad type conversion
+int number = int.Parse("banana");  // FormatException
+
+// Null reference
+string name = null;
+Console.WriteLine(name.Length);    // NullReferenceException
+
+// Index out of range
+int[] items = { 1, 2, 3 };
+Console.WriteLine(items[10]);      // IndexOutOfRangeException
+
+// File not found
+string text = File.ReadAllText("nope.txt");  // FileNotFoundException
+
+// Invalid cast
+object obj = "hello";
+int bad = (int)obj;                // InvalidCastException</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ JavaScript Quirk: Division by Zero</h4>
+                    <p>JavaScript does <strong>not</strong> throw an error when you divide by zero — it returns <code>Infinity</code> (or <code>-Infinity</code> or <code>NaN</code> for <code>0/0</code>). Python and C# both throw exceptions. This is a fundamental difference in language design philosophy.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Run the "Common Runtime Errors" examples live and let students see the crash messages. The goal is to normalize error messages — they're not scary, they're <em>helpful</em>. Each one tells you exactly what went wrong and where. Point out that every error has a <em>type</em> (ZeroDivisionError, TypeError, etc.) — this becomes critical when we catch specific errors later. The JS division-by-zero quirk always gets a reaction; use it to reinforce that languages make different design choices.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Try/Catch -->
+            <section id="try-catch" class="lesson-section">
+                <h2>Try/Catch: Your Safety Net</h2>
+                <p>The <strong>try/catch</strong> pattern wraps risky code in a protective block. If an error occurs inside <code>try</code>, execution jumps immediately to the <code>catch</code> block instead of crashing the program.</p>
+
+                <div class="mermaid">
+                    flowchart TD
+                        A["Enter try block"] --> B{"Error occurs?"}
+                        B -->|No| C["Continue after try/catch"]
+                        B -->|Yes| D["Jump to catch block"]
+                        D --> E["Handle the error"]
+                        E --> C
+                        style A fill:#3b82f6,color:#fff
+                        style D fill:#ef4444,color:#fff
+                        style C fill:#22c55e,color:#fff
+                </div>
+
+                <div class="code-tabs" data-title="Basic Try/Catch">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python uses try/except (not try/catch!)
+try:
+    number = int(input("Enter a number: "))
+    result = 100 / number
+    print(f"100 / {number} = {result}")
+except:
+    print("Something went wrong!")
+
+print("Program continues running!")  # This ALWAYS runs
+
+# --- Example run with "banana" ---
+# Enter a number: banana
+# Something went wrong!
+# Program continues running!
+
+# --- Example run with 0 ---
+# Enter a number: 0
+# Something went wrong!
+# Program continues running!
+
+# --- Example run with 5 ---
+# Enter a number: 5
+# 100 / 5 = 20.0
+# Program continues running!</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript uses try/catch
+try {
+    let input = "banana";  // Simulating bad user input
+    let number = Number(input);
+    if (isNaN(number)) {
+        throw new Error("Not a valid number!");
+    }
+    let result = 100 / number;
+    console.log(`100 / ${number} = ${result}`);
+} catch (error) {
+    console.log("Something went wrong!");
+}
+
+console.log("Program continues running!");
+
+// Note: JS needs manual validation for number conversion.
+// Number("banana") returns NaN instead of throwing an error.
+// We use 'throw' to create our own error — more on this in Lesson 20.
+
+// --- Output ---
+// Something went wrong!
+// Program continues running!</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C# uses try/catch
+try
+{
+    Console.Write("Enter a number: ");
+    int number = int.Parse(Console.ReadLine()!);
+    int result = 100 / number;
+    Console.WriteLine($"100 / {number} = {result}");
+}
+catch (Exception e)
+{
+    Console.WriteLine("Something went wrong!");
+}
+
+Console.WriteLine("Program continues running!");
+
+// --- Example run with "banana" ---
+// Enter a number: banana
+// Something went wrong!
+// Program continues running!</code></pre>
+                    </div>
+                </div>
+
+                <h3>Terminology Comparison</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Concept</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Try block</td>
+                                <td><code>try:</code></td>
+                                <td><code>try { }</code></td>
+                                <td><code>try { }</code></td>
+                            </tr>
+                            <tr>
+                                <td>Catch block</td>
+                                <td><code>except:</code></td>
+                                <td><code>catch (error) { }</code></td>
+                                <td><code>catch (Exception e) { }</code></td>
+                            </tr>
+                            <tr>
+                                <td>Error object name</td>
+                                <td><code>except Exception as e:</code></td>
+                                <td><code>catch (error)</code></td>
+                                <td><code>catch (Exception e)</code></td>
+                            </tr>
+                            <tr>
+                                <td>Keyword for catch</td>
+                                <td><code>except</code></td>
+                                <td><code>catch</code></td>
+                                <td><code>catch</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Python Says "except," Not "catch"</h4>
+                    <p>Python is the odd one out here — it uses <code>try/except</code> instead of <code>try/catch</code>. JavaScript and C# both use <code>catch</code>. This is a common gotcha when switching between languages. If you write <code>catch</code> in Python, you'll get a syntax error!</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Run the basic example three times with different inputs: a valid number, zero, and "banana." Students see that the program <em>never crashes</em> — the catch/except block handles every problem. Emphasize the flow: if the error happens on line 2, lines 3-4 of the try block are <em>skipped</em> — execution jumps directly to the catch block. For JavaScript, note that <code>Number("banana")</code> doesn't throw; it returns <code>NaN</code>. This is why JS often needs explicit validation and <code>throw</code> — preview for Lesson 20.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Finally -->
+            <section id="finally" class="lesson-section">
+                <h2>Finally: Always Runs</h2>
+                <p>The <code>finally</code> block runs <strong>no matter what</strong> — whether the try block succeeds, fails, or even if you return early. It's the perfect place for <strong>cleanup</strong> code: closing files, releasing connections, or resetting state.</p>
+
+                <div class="mermaid">
+                    flowchart TD
+                        A["Enter try block"] --> B{"Error occurs?"}
+                        B -->|No| C["finally block runs"]
+                        B -->|Yes| D["catch/except block"]
+                        D --> C
+                        C --> E["Continue program"]
+                        style A fill:#3b82f6,color:#fff
+                        style D fill:#ef4444,color:#fff
+                        style C fill:#f59e0b,color:#fff
+                        style E fill:#22c55e,color:#fff
+                </div>
+
+                <div class="code-tabs" data-title="Try / Catch / Finally">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># finally always runs — perfect for cleanup
+def read_config(filename):
+    file = None
+    try:
+        file = open(filename, "r")
+        data = file.read()
+        print(f"Read {len(data)} characters")
+        return data
+    except FileNotFoundError:
+        print(f"File '{filename}' not found!")
+        return None
+    finally:
+        # This runs even after a return statement!
+        if file:
+            file.close()
+            print("File closed.")
+        print("Cleanup complete.")
+
+# Test with a missing file
+result = read_config("settings.txt")
+# File 'settings.txt' not found!
+# Cleanup complete.
+
+# --- With try/except/else/finally ---
+try:
+    number = int("42")
+except ValueError:
+    print("Not a number!")
+else:
+    # Only runs if NO exception occurred
+    print(f"Converted successfully: {number}")
+finally:
+    # Always runs
+    print("Done!")
+
+# Output:
+# Converted successfully: 42
+# Done!</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// finally always runs — perfect for cleanup
+function readConfig(filename) {
+    let connection = null;
+    try {
+        // Simulate opening a resource
+        connection = { name: filename, open: true };
+        console.log(`Reading ${filename}...`);
+
+        // Simulate an error for missing files
+        if (filename === "missing.txt") {
+            throw new Error(`File '${filename}' not found!`);
+        }
+
+        console.log("File read successfully!");
+        return "file contents";
+
+    } catch (error) {
+        console.log(`Error: ${error.message}`);
+        return null;
+
+    } finally {
+        // This runs even after a return!
+        if (connection) {
+            connection.open = false;
+            console.log("Connection closed.");
+        }
+        console.log("Cleanup complete.");
+    }
+}
+
+readConfig("missing.txt");
+// Reading missing.txt...
+// Error: File 'missing.txt' not found!
+// Connection closed.
+// Cleanup complete.
+
+readConfig("settings.txt");
+// Reading settings.txt...
+// File read successfully!
+// Connection closed.
+// Cleanup complete.</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// finally always runs — perfect for cleanup
+static string? ReadConfig(string filename)
+{
+    StreamReader? reader = null;
+    try
+    {
+        reader = new StreamReader(filename);
+        string data = reader.ReadToEnd();
+        Console.WriteLine($"Read {data.Length} characters");
+        return data;
+    }
+    catch (FileNotFoundException)
+    {
+        Console.WriteLine($"File '{filename}' not found!");
+        return null;
+    }
+    finally
+    {
+        // This runs even after a return!
+        reader?.Close();
+        Console.WriteLine("Cleanup complete.");
+    }
+}
+
+ReadConfig("settings.txt");
+// File 'settings.txt' not found!
+// Cleanup complete.
+
+// --- try/catch/finally together ---
+try
+{
+    int number = int.Parse("42");
+    Console.WriteLine($"Converted: {number}");
+}
+catch (FormatException)
+{
+    Console.WriteLine("Not a number!");
+}
+finally
+{
+    Console.WriteLine("Done!");
+}
+// Converted: 42
+// Done!</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ When to Use finally</h4>
+                    <ul>
+                        <li><strong>Closing files</strong> or database connections</li>
+                        <li><strong>Releasing locks</strong> or resources</li>
+                        <li><strong>Resetting UI state</strong> (hiding a loading spinner)</li>
+                        <li><strong>Logging</strong> that an operation completed (success or failure)</li>
+                    </ul>
+                    <p><code>finally</code> runs even if you <code>return</code> from inside the <code>try</code> or <code>catch</code> blocks — it's truly guaranteed.</p>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Python Bonus: <code>else</code></h4>
+                    <p>Python has an extra clause — <code>else</code> — that runs only when <strong>no exception</strong> occurred. JavaScript and C# don't have this; you'd put that code at the end of the <code>try</code> block instead. The Python pattern is: <code>try</code> → <code>except</code> → <code>else</code> → <code>finally</code>.</p>
+                </div>
+            </section>
+
+            <!-- Catching Specific Errors -->
+            <section id="specific-errors" class="lesson-section">
+                <h2>Catching Specific Errors</h2>
+                <p>Catching <em>all</em> errors with a bare <code>except</code> or <code>catch</code> is like wearing a blindfold — you know <em>something</em> went wrong, but not what. Catching <strong>specific error types</strong> lets you respond appropriately to each situation.</p>
+
+                <div class="code-tabs" data-title="Catching Specific Error Types">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">def safe_divide(a, b):
+    try:
+        result = a / b
+        return result
+    except ZeroDivisionError:
+        print("Can't divide by zero!")
+        return None
+    except TypeError:
+        print(f"Can't divide {type(a).__name__} by {type(b).__name__}!")
+        return None
+
+print(safe_divide(10, 3))      # 3.333...
+print(safe_divide(10, 0))      # Can't divide by zero! → None
+print(safe_divide("10", 3))    # Can't divide str by int! → None
+
+# --- Multiple except blocks: order matters ---
+def get_value(data, key, index):
+    try:
+        return data[key][index]
+    except KeyError:
+        print(f"Key '{key}' not found in data")
+    except IndexError:
+        print(f"Index {index} is out of range")
+    except TypeError:
+        print(f"Wrong type — can't index into this")
+
+scores = {"math": [95, 87, 92], "english": [88, 91]}
+
+get_value(scores, "math", 1)      # Returns 87
+get_value(scores, "science", 0)   # Key 'science' not found in data
+get_value(scores, "math", 10)     # Index 10 is out of range
+
+# --- Catching multiple types in one block ---
+try:
+    value = int("banana")
+except (ValueError, TypeError) as e:
+    print(f"Conversion error: {e}")
+# Conversion error: invalid literal for int() with base 10: 'banana'</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JS catch gets ONE block — use instanceof to differentiate
+function safeParse(jsonString) {
+    try {
+        return JSON.parse(jsonString);
+    } catch (error) {
+        if (error instanceof SyntaxError) {
+            console.log("Invalid JSON format!");
+        } else if (error instanceof TypeError) {
+            console.log("Wrong input type!");
+        } else {
+            console.log(`Unexpected error: ${error.message}`);
+        }
+        return null;
+    }
+}
+
+safeParse('{"name": "Alice"}');  // Returns { name: "Alice" }
+safeParse("not json at all");    // Invalid JSON format! → null
+safeParse(undefined);            // Wrong input type! → null
+
+// --- Common pattern: validate then throw ---
+function getElement(arr, index) {
+    try {
+        if (!Array.isArray(arr)) {
+            throw new TypeError("Expected an array");
+        }
+        if (index &lt; 0 || index &gt;= arr.length) {
+            throw new RangeError(`Index ${index} out of bounds (0-${arr.length - 1})`);
+        }
+        return arr[index];
+    } catch (error) {
+        if (error instanceof TypeError) {
+            console.log(`Type error: ${error.message}`);
+        } else if (error instanceof RangeError) {
+            console.log(`Range error: ${error.message}`);
+        }
+        return undefined;
+    }
+}
+
+getElement([10, 20, 30], 1);    // Returns 20
+getElement("not array", 0);     // Type error: Expected an array
+getElement([10, 20], 5);        // Range error: Index 5 out of bounds (0-1)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C# supports multiple catch blocks with specific types
+static int? SafeConvert(string input)
+{
+    try
+    {
+        return int.Parse(input);
+    }
+    catch (FormatException)
+    {
+        Console.WriteLine($"'{input}' is not a valid number!");
+        return null;
+    }
+    catch (OverflowException)
+    {
+        Console.WriteLine($"'{input}' is too large or too small!");
+        return null;
+    }
+    catch (ArgumentNullException)
+    {
+        Console.WriteLine("Input cannot be null!");
+        return null;
+    }
+}
+
+SafeConvert("42");                // Returns 42
+SafeConvert("banana");            // 'banana' is not a valid number!
+SafeConvert("99999999999999");    // Too large or too small!
+
+// --- Order matters: most specific FIRST ---
+try
+{
+    int[] items = { 1, 2, 3 };
+    Console.WriteLine(items[10]);
+}
+catch (IndexOutOfRangeException e)
+{
+    // Specific catch — handles this exact error type
+    Console.WriteLine($"Bad index: {e.Message}");
+}
+catch (Exception e)
+{
+    // General catch — catches anything else
+    Console.WriteLine($"Something else went wrong: {e.Message}");
+}
+// C# enforces order: specific exceptions before general ones.
+// Putting catch(Exception) first would be a compile error!</code></pre>
+                    </div>
+                </div>
+
+                <h3>Error Type Reference</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Situation</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Bad number conversion</td>
+                                <td><code>ValueError</code></td>
+                                <td>Returns <code>NaN</code> (no error)</td>
+                                <td><code>FormatException</code></td>
+                            </tr>
+                            <tr>
+                                <td>Divide by zero</td>
+                                <td><code>ZeroDivisionError</code></td>
+                                <td>Returns <code>Infinity</code></td>
+                                <td><code>DivideByZeroException</code></td>
+                            </tr>
+                            <tr>
+                                <td>Null/None access</td>
+                                <td><code>AttributeError</code></td>
+                                <td><code>TypeError</code></td>
+                                <td><code>NullReferenceException</code></td>
+                            </tr>
+                            <tr>
+                                <td>Index out of range</td>
+                                <td><code>IndexError</code></td>
+                                <td>Returns <code>undefined</code></td>
+                                <td><code>IndexOutOfRangeException</code></td>
+                            </tr>
+                            <tr>
+                                <td>Missing key/property</td>
+                                <td><code>KeyError</code></td>
+                                <td>Returns <code>undefined</code></td>
+                                <td><code>KeyNotFoundException</code></td>
+                            </tr>
+                            <tr>
+                                <td>File not found</td>
+                                <td><code>FileNotFoundError</code></td>
+                                <td>Depends on API</td>
+                                <td><code>FileNotFoundException</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ JavaScript Is the Lenient One</h4>
+                    <p>Notice how many situations in JavaScript return <code>undefined</code>, <code>NaN</code>, or <code>Infinity</code> instead of throwing errors. JavaScript was designed to "keep going" rather than crash — but this means bugs can hide silently. Python and C# are stricter: they throw immediately so you know exactly where the problem is.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>The error type reference table is a key resource — encourage students to bookmark this lesson. Walk through the JavaScript column and point out how many things silently return <code>undefined</code> or <code>NaN</code> instead of throwing. This is why JS developers rely heavily on manual validation and <code>throw</code>. For C#, emphasize that the compiler enforces catch order: specific exceptions must come before general ones. Python allows any order but best practice matches C#'s approach.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Accessing Error Information -->
+            <section id="error-info" class="lesson-section">
+                <h2>Accessing Error Information</h2>
+                <p>When you catch an error, you get an <strong>error object</strong> with details about what went wrong. This is invaluable for logging, debugging, and showing useful messages to users.</p>
+
+                <div class="code-tabs" data-title="Error Object Properties">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">try:
+    result = 10 / 0
+except ZeroDivisionError as e:
+    # The error object
+    print(f"Type:    {type(e).__name__}")   # ZeroDivisionError
+    print(f"Message: {e}")                  # division by zero
+    print(f"Args:    {e.args}")             # ('division by zero',)
+
+print()
+
+# Get the full traceback (stack trace)
+import traceback
+
+try:
+    data = {"a": [1, 2, 3]}
+    value = data["b"][0]
+except KeyError as e:
+    print(f"Error: Key {e} not found")
+    print("--- Stack Trace ---")
+    traceback.print_exc()
+
+# --- Output ---
+# Error: Key 'b' not found
+# --- Stack Trace ---
+# Traceback (most recent call last):
+#   File "example.py", line 13, in &lt;module&gt;
+#     value = data["b"][0]
+# KeyError: 'b'</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">try {
+    JSON.parse("not valid json");
+} catch (error) {
+    // The error object
+    console.log(`Name:    ${error.name}`);     // SyntaxError
+    console.log(`Message: ${error.message}`);  // Unexpected token...
+    console.log(`Stack:   ${error.stack}`);    // Full stack trace
+
+    // error.stack includes the name, message, AND call locations
+}
+
+// --- All JS error types have: name, message, stack ---
+
+try {
+    null.toString();
+} catch (error) {
+    console.log(error.name);     // TypeError
+    console.log(error.message);  // Cannot read properties of null
+}
+
+try {
+    undeclaredVar;
+} catch (error) {
+    console.log(error.name);     // ReferenceError
+    console.log(error.message);  // undeclaredVar is not defined
+}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">try
+{
+    int result = int.Parse("banana");
+}
+catch (FormatException e)
+{
+    // The exception object
+    Console.WriteLine($"Type:    {e.GetType().Name}");   // FormatException
+    Console.WriteLine($"Message: {e.Message}");          // Input string was...
+    Console.WriteLine($"Source:  {e.Source}");            // System.Private.CoreLib
+    Console.WriteLine($"Stack:\n{e.StackTrace}");        // Full stack trace
+}
+
+// --- InnerException: errors caused by other errors ---
+try
+{
+    try
+    {
+        int.Parse("banana");
+    }
+    catch (FormatException inner)
+    {
+        // Wrap the original error with more context
+        throw new InvalidOperationException("Config parsing failed", inner);
+    }
+}
+catch (InvalidOperationException e)
+{
+    Console.WriteLine($"Outer: {e.Message}");  // Config parsing failed
+    Console.WriteLine($"Inner: {e.InnerException?.Message}");
+    // Inner: The input string 'banana' was not in a correct format.
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Property</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Error type/name</td>
+                                <td><code>type(e).__name__</code></td>
+                                <td><code>error.name</code></td>
+                                <td><code>e.GetType().Name</code></td>
+                            </tr>
+                            <tr>
+                                <td>Error message</td>
+                                <td><code>str(e)</code></td>
+                                <td><code>error.message</code></td>
+                                <td><code>e.Message</code></td>
+                            </tr>
+                            <tr>
+                                <td>Stack trace</td>
+                                <td><code>traceback.print_exc()</code></td>
+                                <td><code>error.stack</code></td>
+                                <td><code>e.StackTrace</code></td>
+                            </tr>
+                            <tr>
+                                <td>Wrapped inner error</td>
+                                <td><code>e.__cause__</code></td>
+                                <td><code>error.cause</code></td>
+                                <td><code>e.InnerException</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Anti-Patterns -->
+            <section id="anti-patterns" class="lesson-section">
+                <h2>Anti-Patterns to Avoid</h2>
+                <p>Error handling can go wrong in subtle ways. Here are the most common mistakes beginners make — and what to do instead.</p>
+
+                <div class="code-tabs" data-title="❌ Anti-Pattern 1: The Empty Catch (Swallowing Errors)">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># ❌ BAD: Silently swallowing errors
+try:
+    result = dangerous_operation()
+except:
+    pass  # Errors vanish — bugs become invisible!
+
+# ✅ GOOD: At minimum, log the error
+try:
+    result = dangerous_operation()
+except Exception as e:
+    print(f"Error: {e}")  # Now you know something went wrong
+    # Or: logging.error(f"Operation failed: {e}")</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// ❌ BAD: Silently swallowing errors
+try {
+    result = dangerousOperation();
+} catch (error) {
+    // Nothing here — bugs become invisible!
+}
+
+// ✅ GOOD: At minimum, log the error
+try {
+    result = dangerousOperation();
+} catch (error) {
+    console.error("Operation failed:", error.message);
+}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// ❌ BAD: Silently swallowing errors
+try
+{
+    DangerousOperation();
+}
+catch { }  // Errors vanish!
+
+// ✅ GOOD: At minimum, log the error
+try
+{
+    DangerousOperation();
+}
+catch (Exception e)
+{
+    Console.Error.WriteLine($"Operation failed: {e.Message}");
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="code-tabs" data-title="❌ Anti-Pattern 2: Catching Too Broadly">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># ❌ BAD: Catching everything hides real bugs
+try:
+    users = load_users()      # Might raise FileNotFoundError
+    first = users[0]          # Might raise IndexError
+    name = first.name         # Might raise AttributeError
+    print(greet(name))        # Might raise TypeError
+except:
+    print("Something went wrong")  # But WHAT went wrong?!
+
+# ✅ GOOD: Catch only what you expect
+try:
+    users = load_users()
+except FileNotFoundError:
+    print("Users file not found — using defaults")
+    users = []
+
+# Let unexpected errors (IndexError, AttributeError) crash
+# so you can find and fix the real bug!</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// ❌ BAD: Catching everything hides bugs
+try {
+    let users = loadUsers();
+    let first = users[0];
+    let name = first.name;
+    console.log(greet(name));
+} catch (error) {
+    console.log("Something went wrong");  // But WHAT?!
+}
+
+// ✅ GOOD: Wrap only the risky part, handle specifically
+let users;
+try {
+    users = loadUsers();  // Only wrap the part that might fail
+} catch (error) {
+    console.log("Could not load users — using defaults");
+    users = [];
+}
+
+// Other bugs will throw naturally and you'll see them</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// ❌ BAD: Catching the base Exception hides bugs
+try
+{
+    var users = LoadUsers();
+    var first = users[0];
+    Console.WriteLine(Greet(first.Name));
+}
+catch (Exception)
+{
+    Console.WriteLine("Something went wrong");  // WHAT?!
+}
+
+// ✅ GOOD: Catch only what you expect
+List&lt;User&gt; users;
+try
+{
+    users = LoadUsers();
+}
+catch (FileNotFoundException)
+{
+    Console.WriteLine("Users file not found — using defaults");
+    users = new List&lt;User&gt;();
+}
+// IndexOutOfRangeException, NullReferenceException etc. 
+// will still crash — and that's GOOD because those are bugs!</code></pre>
+                    </div>
+                </div>
+
+                <div class="code-tabs" data-title="❌ Anti-Pattern 3: Using Exceptions for Control Flow">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># ❌ BAD: Using exceptions like if/else
+def find_user(users, name):
+    try:
+        for user in users:
+            if user.name == name:
+                return user
+        raise ValueError("Not found")  # Don't do this!
+    except ValueError:
+        return None
+
+# ✅ GOOD: Just use normal control flow
+def find_user(users, name):
+    for user in users:
+        if user.name == name:
+            return user
+    return None  # Simple and clear</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// ❌ BAD: Using exceptions like if/else
+function findUser(users, name) {
+    try {
+        for (let user of users) {
+            if (user.name === name) return user;
+        }
+        throw new Error("Not found");
+    } catch (error) {
+        return null;
+    }
+}
+
+// ✅ GOOD: Just use normal control flow
+function findUser(users, name) {
+    return users.find(u =&gt; u.name === name) || null;
+}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// ❌ BAD: Using exceptions like if/else
+static User? FindUser(List&lt;User&gt; users, string name)
+{
+    try
+    {
+        foreach (var user in users)
+            if (user.Name == name) return user;
+        throw new Exception("Not found");
+    }
+    catch { return null; }
+}
+
+// ✅ GOOD: Just use normal control flow
+static User? FindUser(List&lt;User&gt; users, string name)
+{
+    return users.FirstOrDefault(u =&gt; u.Name == name);
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 The Golden Rule of Error Handling</h4>
+                    <p>Use exceptions for <strong>exceptional</strong> situations — things that shouldn't normally happen (file missing, network down, corrupt data). Don't use them as a substitute for <code>if/else</code>. Exceptions are slower than conditionals and make code harder to follow when used for normal logic.</p>
+                </div>
+            </section>
+
+            <!-- Real-World Pattern -->
+            <section id="real-world" class="lesson-section">
+                <h2>Real-World Pattern: Retry Logic</h2>
+                <p>One of the most useful patterns you'll use in real applications: <strong>retrying</strong> an operation that might fail temporarily (like a network request or database connection).</p>
+
+                <div class="code-tabs" data-title="Retry Pattern">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">import random
+import time
+
+def unreliable_service():
+    """Simulates a service that fails 60% of the time"""
+    if random.random() &lt; 0.6:
+        raise ConnectionError("Server unavailable")
+    return {"status": "ok", "data": [1, 2, 3]}
+
+def fetch_with_retry(max_attempts=3, delay=1):
+    for attempt in range(1, max_attempts + 1):
+        try:
+            result = unreliable_service()
+            print(f"✅ Success on attempt {attempt}!")
+            return result
+        except ConnectionError as e:
+            print(f"❌ Attempt {attempt} failed: {e}")
+            if attempt &lt; max_attempts:
+                print(f"   Retrying in {delay} second(s)...")
+                time.sleep(delay)
+            else:
+                print("💀 All attempts failed!")
+                return None
+
+# Run it
+data = fetch_with_retry()
+if data:
+    print(f"Got data: {data}")
+else:
+    print("Could not reach the service")</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">function unreliableService() {
+    if (Math.random() &lt; 0.6) {
+        throw new Error("Server unavailable");
+    }
+    return { status: "ok", data: [1, 2, 3] };
+}
+
+function fetchWithRetry(maxAttempts = 3, delay = 1000) {
+    for (let attempt = 1; attempt &lt;= maxAttempts; attempt++) {
+        try {
+            let result = unreliableService();
+            console.log(`✅ Success on attempt ${attempt}!`);
+            return result;
+        } catch (error) {
+            console.log(`❌ Attempt ${attempt} failed: ${error.message}`);
+            if (attempt &lt; maxAttempts) {
+                console.log(`   Retrying...`);
+                // In real code, you'd use async/await with a delay
+            } else {
+                console.log("💀 All attempts failed!");
+                return null;
+            }
+        }
+    }
+}
+
+let data = fetchWithRetry();
+if (data) {
+    console.log("Got data:", data);
+} else {
+    console.log("Could not reach the service");
+}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">static Random rng = new();
+
+static Dictionary&lt;string, object&gt; UnreliableService()
+{
+    if (rng.NextDouble() &lt; 0.6)
+        throw new HttpRequestException("Server unavailable");
+    return new() { ["status"] = "ok", ["data"] = new[] { 1, 2, 3 } };
+}
+
+static Dictionary&lt;string, object&gt;? FetchWithRetry(int maxAttempts = 3, int delayMs = 1000)
+{
+    for (int attempt = 1; attempt &lt;= maxAttempts; attempt++)
+    {
+        try
+        {
+            var result = UnreliableService();
+            Console.WriteLine($"✅ Success on attempt {attempt}!");
+            return result;
+        }
+        catch (HttpRequestException e)
+        {
+            Console.WriteLine($"❌ Attempt {attempt} failed: {e.Message}");
+            if (attempt &lt; maxAttempts)
+            {
+                Console.WriteLine($"   Retrying in {delayMs}ms...");
+                Thread.Sleep(delayMs);
+            }
+            else
+            {
+                Console.WriteLine("💀 All attempts failed!");
+                return null;
+            }
+        }
+    }
+    return null;
+}
+
+var data = FetchWithRetry();
+Console.WriteLine(data != null ? "Got data!" : "Could not reach the service");</code></pre>
+                    </div>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>The retry pattern is a great way to end the lesson because it ties everything together: try/catch, specific error types, loops, and real-world relevance. Run it multiple times to show different outcomes — sometimes it succeeds on attempt 1, sometimes attempt 3, sometimes all attempts fail. Students see that error handling isn't just about preventing crashes, it's about building <em>resilient</em> software. For advanced students, mention exponential backoff (doubling the delay each retry) as a common production pattern.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Exercises -->
+            <section id="exercises" class="lesson-section">
+                <h2>Exercises</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 1: Safe Calculator</h3>
+                    <p><strong>Objective:</strong> Build a calculator function that handles every possible error:</p>
+                    <ul>
+                        <li>Takes two values and an operator (<code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>)</li>
+                        <li>Handles invalid numbers (non-numeric input)</li>
+                        <li>Handles division by zero</li>
+                        <li>Handles invalid operators</li>
+                        <li>Returns the result on success or an error message on failure</li>
+                        <li>Wrap it in a loop that keeps asking for input until the user types "quit"</li>
+                    </ul>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Safe Calculator">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">def safe_calculate(a_str, op, b_str):
+    """Calculate with full error handling."""
+    # Validate numbers
+    try:
+        a = float(a_str)
+    except ValueError:
+        return f"Error: '{a_str}' is not a valid number"
+
+    try:
+        b = float(b_str)
+    except ValueError:
+        return f"Error: '{b_str}' is not a valid number"
+
+    # Perform operation
+    try:
+        if op == "+":
+            return f"{a} + {b} = {a + b}"
+        elif op == "-":
+            return f"{a} - {b} = {a - b}"
+        elif op == "*":
+            return f"{a} * {b} = {a * b}"
+        elif op == "/":
+            return f"{a} / {b} = {a / b}"
+        else:
+            return f"Error: Unknown operator '{op}'"
+    except ZeroDivisionError:
+        return "Error: Cannot divide by zero!"
+
+# Interactive loop
+print("=== Safe Calculator ===")
+print("Type 'quit' to exit\n")
+
+while True:
+    expression = input("Enter calculation (e.g., 5 + 3): ").strip()
+    if expression.lower() == "quit":
+        print("Goodbye!")
+        break
+
+    parts = expression.split()
+    if len(parts) != 3:
+        print("Error: Use format 'number operator number' (e.g., 5 + 3)")
+        continue
+
+    result = safe_calculate(parts[0], parts[1], parts[2])
+    print(result)</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">function safeCalculate(aStr, op, bStr) {
+    let a = Number(aStr);
+    let b = Number(bStr);
+
+    if (isNaN(a)) return `Error: '${aStr}' is not a valid number`;
+    if (isNaN(b)) return `Error: '${bStr}' is not a valid number`;
+
+    switch (op) {
+        case "+": return `${a} + ${b} = ${a + b}`;
+        case "-": return `${a} - ${b} = ${a - b}`;
+        case "*": return `${a} * ${b} = ${a * b}`;
+        case "/":
+            if (b === 0) return "Error: Cannot divide by zero!";
+            return `${a} / ${b} = ${a / b}`;
+        default:
+            return `Error: Unknown operator '${op}'`;
+    }
+}
+
+// Test cases (since we can't easily loop with prompt)
+console.log(safeCalculate("10", "+", "3"));     // 10 + 3 = 13
+console.log(safeCalculate("10", "/", "0"));     // Error: Cannot divide by zero!
+console.log(safeCalculate("banana", "+", "3")); // Error: 'banana' is not valid
+console.log(safeCalculate("10", "^", "3"));     // Error: Unknown operator '^'
+
+// In a browser, you could use:
+// let input = prompt("Enter calculation (e.g., 5 + 3):");
+// let parts = input.split(" ");
+// console.log(safeCalculate(parts[0], parts[1], parts[2]));</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">static string SafeCalculate(string aStr, string op, string bStr)
+{
+    double a, b;
+
+    try { a = double.Parse(aStr); }
+    catch (FormatException) { return $"Error: '{aStr}' is not a valid number"; }
+
+    try { b = double.Parse(bStr); }
+    catch (FormatException) { return $"Error: '{bStr}' is not a valid number"; }
+
+    try
+    {
+        return op switch
+        {
+            "+" =&gt; $"{a} + {b} = {a + b}",
+            "-" =&gt; $"{a} - {b} = {a - b}",
+            "*" =&gt; $"{a} * {b} = {a * b}",
+            "/" =&gt; b == 0
+                ? "Error: Cannot divide by zero!"
+                : $"{a} / {b} = {a / b}",
+            _ =&gt; $"Error: Unknown operator '{op}'"
+        };
+    }
+    catch (Exception e)
+    {
+        return $"Unexpected error: {e.Message}";
+    }
+}
+
+// Interactive loop
+Console.WriteLine("=== Safe Calculator ===");
+Console.WriteLine("Type 'quit' to exit\n");
+
+while (true)
+{
+    Console.Write("Enter calculation (e.g., 5 + 3): ");
+    string? input = Console.ReadLine()?.Trim();
+    if (input?.ToLower() == "quit") { Console.WriteLine("Goodbye!"); break; }
+
+    string[] parts = input?.Split(' ') ?? Array.Empty&lt;string&gt;();
+    if (parts.Length != 3)
+    {
+        Console.WriteLine("Error: Use format 'number operator number'");
+        continue;
+    }
+
+    Console.WriteLine(SafeCalculate(parts[0], parts[1], parts[2]));
+}</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 2: File Data Processor</h3>
+                    <p><strong>Objective:</strong> Build a function that reads a "data file" (simulated) and processes numbers:</p>
+                    <ul>
+                        <li>Accept a list of strings (simulating lines from a file)</li>
+                        <li>Convert each line to a number</li>
+                        <li>Skip lines that can't be converted (log a warning)</li>
+                        <li>Return the sum, average, min, and max of the valid numbers</li>
+                        <li>Handle the case where NO lines are valid (don't crash on empty list)</li>
+                        <li>Use <code>finally</code> to print a processing summary</li>
+                    </ul>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="File Data Processor">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">def process_data(lines):
+    """Process a list of strings into numeric statistics."""
+    numbers = []
+    errors = []
+
+    try:
+        for i, line in enumerate(lines, 1):
+            try:
+                number = float(line.strip())
+                numbers.append(number)
+            except ValueError:
+                errors.append(f"Line {i}: '{line.strip()}' is not a number")
+
+        if not numbers:
+            raise ValueError("No valid numbers found in data!")
+
+        return {
+            "sum": sum(numbers),
+            "average": sum(numbers) / len(numbers),
+            "min": min(numbers),
+            "max": max(numbers),
+            "count": len(numbers)
+        }
+
+    except ValueError as e:
+        print(f"❌ Processing failed: {e}")
+        return None
+
+    finally:
+        print(f"\n📊 Processing Summary:")
+        print(f"   Total lines:  {len(lines)}")
+        print(f"   Valid numbers: {len(numbers)}")
+        print(f"   Errors:        {len(errors)}")
+        for err in errors:
+            print(f"   ⚠️ {err}")
+
+# Test with mixed data
+data = ["42", "17.5", "banana", "99", "", "hello", "3.14", "-7"]
+result = process_data(data)
+
+if result:
+    print(f"\n✅ Results:")
+    print(f"   Sum:     {result['sum']}")
+    print(f"   Average: {result['average']:.2f}")
+    print(f"   Min:     {result['min']}")
+    print(f"   Max:     {result['max']}")
+
+# Test with all invalid data
+print("\n" + "=" * 40)
+process_data(["abc", "def", "ghi"])</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">function processData(lines) {
+    let numbers = [];
+    let errors = [];
+
+    try {
+        lines.forEach((line, i) =&gt; {
+            let trimmed = line.trim();
+            let num = Number(trimmed);
+            if (trimmed === "" || isNaN(num)) {
+                errors.push(`Line ${i + 1}: '${trimmed}' is not a number`);
+            } else {
+                numbers.push(num);
+            }
+        });
+
+        if (numbers.length === 0) {
+            throw new Error("No valid numbers found in data!");
+        }
+
+        return {
+            sum: numbers.reduce((a, b) =&gt; a + b, 0),
+            average: numbers.reduce((a, b) =&gt; a + b, 0) / numbers.length,
+            min: Math.min(...numbers),
+            max: Math.max(...numbers),
+            count: numbers.length
+        };
+
+    } catch (error) {
+        console.log(`❌ Processing failed: ${error.message}`);
+        return null;
+
+    } finally {
+        console.log(`\n📊 Processing Summary:`);
+        console.log(`   Total lines:  ${lines.length}`);
+        console.log(`   Valid numbers: ${numbers.length}`);
+        console.log(`   Errors:        ${errors.length}`);
+        errors.forEach(err =&gt; console.log(`   ⚠️ ${err}`));
+    }
+}
+
+let data = ["42", "17.5", "banana", "99", "", "hello", "3.14", "-7"];
+let result = processData(data);
+
+if (result) {
+    console.log(`\n✅ Results:`);
+    console.log(`   Sum:     ${result.sum}`);
+    console.log(`   Average: ${result.average.toFixed(2)}`);
+    console.log(`   Min:     ${result.min}`);
+    console.log(`   Max:     ${result.max}`);
+}</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">static Dictionary&lt;string, double&gt;? ProcessData(string[] lines)
+{
+    var numbers = new List&lt;double&gt;();
+    var errors = new List&lt;string&gt;();
+
+    try
+    {
+        for (int i = 0; i &lt; lines.Length; i++)
+        {
+            string trimmed = lines[i].Trim();
+            try
+            {
+                numbers.Add(double.Parse(trimmed));
+            }
+            catch (FormatException)
+            {
+                errors.Add($"Line {i + 1}: '{trimmed}' is not a number");
+            }
+        }
+
+        if (numbers.Count == 0)
+            throw new InvalidOperationException("No valid numbers found!");
+
+        return new Dictionary&lt;string, double&gt;
+        {
+            ["sum"] = numbers.Sum(),
+            ["average"] = numbers.Average(),
+            ["min"] = numbers.Min(),
+            ["max"] = numbers.Max(),
+            ["count"] = numbers.Count
+        };
+    }
+    catch (InvalidOperationException e)
+    {
+        Console.WriteLine($"❌ Processing failed: {e.Message}");
+        return null;
+    }
+    finally
+    {
+        Console.WriteLine($"\n📊 Processing Summary:");
+        Console.WriteLine($"   Total lines:  {lines.Length}");
+        Console.WriteLine($"   Valid numbers: {numbers.Count}");
+        Console.WriteLine($"   Errors:        {errors.Count}");
+        errors.ForEach(err =&gt; Console.WriteLine($"   ⚠️ {err}"));
+    }
+}
+
+string[] data = { "42", "17.5", "banana", "99", "", "hello", "3.14", "-7" };
+var result = ProcessData(data);
+
+if (result != null)
+{
+    Console.WriteLine($"\n✅ Results:");
+    Console.WriteLine($"   Sum:     {result["sum"]}");
+    Console.WriteLine($"   Average: {result["average"]:F2}");
+    Console.WriteLine($"   Min:     {result["min"]}");
+    Console.WriteLine($"   Max:     {result["max"]}");
+}</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Exercise 1 (Safe Calculator) is practical and relatable — everyone has used a calculator. It covers multiple error types in one function and uses a loop for repeated input. Exercise 2 (File Data Processor) is more realistic — processing messy data with a mix of valid and invalid entries is something every developer encounters. The <code>finally</code> block printing a summary regardless of success/failure demonstrates real-world logging patterns. Challenge fast students: add support for operators like <code>%</code> (modulo) and <code>**</code> (power) to the calculator, or add standard deviation to the data processor.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong>Runtime errors</strong> (exceptions) happen during execution — they're different from syntax errors</li>
+                        <li><strong>try/catch</strong> (Python: <code>try/except</code>) wraps risky code so errors don't crash your program</li>
+                        <li><strong>finally</strong> always runs — use it for cleanup (closing files, connections, resetting state)</li>
+                        <li><strong>Catch specific errors</strong> — don't blindly catch everything or you'll hide real bugs</li>
+                        <li><strong>Error objects</strong> give you the type, message, and stack trace for debugging</li>
+                        <li><strong>Anti-patterns:</strong> empty catch blocks, catching too broadly, using exceptions for normal logic</li>
+                        <li>JavaScript is more lenient (returns <code>NaN</code>/<code>undefined</code> instead of throwing) — be extra vigilant with validation</li>
+                    </ul>
+                </div>
+
+                <h3>🚀 What's Next?</h3>
+                <p>Now that you can <em>catch</em> errors, what about <em>creating</em> your own? In the next lesson, we'll learn to define <strong>custom errors and exceptions</strong> — giving your code meaningful, specific error types instead of generic messages.</p>
+
+                <!-- Quiz -->
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Check</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What keyword does Python use instead of "catch"?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Python uses 'except' instead of 'catch.' The full syntax is try/except, while JavaScript and C# both use try/catch. This is one of the most common cross-language gotchas!">A) except</button>
+                            <button class="quiz-option" data-correct="false" data-hint="'handle' is not a keyword in Python's error handling syntax.">B) handle</button>
+                            <button class="quiz-option" data-correct="false" data-hint="'rescue' is used in Ruby, not Python.">C) rescue</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 2:</strong> When does the <code>finally</code> block run?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="The 'finally' block runs even when the try block succeeds with no errors.">A) Only when an error occurs</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The 'finally' block also runs when errors DO occur — that's the whole point!">B) Only when no error occurs</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="The 'finally' block ALWAYS runs — whether the try block succeeds, an error is caught, or even if a return statement executes inside try or catch. It's guaranteed cleanup.">C) Always, regardless of success or failure</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 3:</strong> What happens in JavaScript when you divide by zero?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="That's what Python and C# do — JavaScript is different here!">A) It throws an error</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="JavaScript returns Infinity (or -Infinity, or NaN for 0/0) instead of throwing an error. This is a fundamental design choice — JavaScript prefers to keep running rather than crash. Python and C# both throw exceptions for division by zero.">B) It returns Infinity</button>
+                            <button class="quiz-option" data-correct="false" data-hint="JavaScript does produce a value (Infinity), not zero.">C) It returns 0</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_18.html" class="prev-lesson">← Previous: Inheritance and Polymorphism</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_20.html" class="next-lesson">Next: Custom Errors and Exceptions →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

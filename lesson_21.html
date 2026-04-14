@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn practical debugging strategies: reading error messages, using print debugging, debugger tools, rubber duck debugging, and systematic approaches to finding and fixing bugs in Python, JavaScript, and C#.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 7.3: Debugging Strategies - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 7</a></li>
+            <li aria-current="page">Lesson 7.3: Debugging Strategies</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🔍 Lesson 7.3: Debugging Strategies</h1>
+                <p class="lead">Your code doesn't work. There's no error message — it just does the <em>wrong thing</em>. Or maybe there <em>is</em> an error message, but it points to a line that looks perfectly fine. Welcome to debugging — the skill you'll use more than any other in your programming career. This lesson isn't about memorizing a tool; it's about developing a <strong>systematic mindset</strong> for finding and fixing problems.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li><strong>Read error messages</strong> effectively — extract the useful parts</li>
+                        <li>Use <strong>print/log debugging</strong> to trace program flow and variable state</li>
+                        <li>Use <strong>debugger tools</strong> (breakpoints, stepping, variable inspection)</li>
+                        <li>Apply the <strong>binary search method</strong> to narrow down bugs</li>
+                        <li>Use <strong>rubber duck debugging</strong> to think through problems</li>
+                        <li>Follow a <strong>systematic debugging process</strong> instead of guessing</li>
+                        <li>Identify the <strong>most common bug categories</strong> and where to look first</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 45 minutes</p>
+                    <p><strong>Project:</strong> Debug a series of intentionally broken programs</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary><h2 style="display: inline; margin: 0;">📑 In This Lesson</h2></summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#reading-errors" class="toc-link">Reading Error Messages</a></li>
+                        <li><a href="#print-debugging" class="toc-link">Print Debugging</a></li>
+                        <li><a href="#debugger-tools" class="toc-link">Debugger Tools</a></li>
+                        <li><a href="#binary-search" class="toc-link">Binary Search Debugging</a></li>
+                        <li><a href="#rubber-duck" class="toc-link">Rubber Duck Debugging</a></li>
+                        <li><a href="#systematic-process" class="toc-link">The Systematic Process</a></li>
+                        <li><a href="#common-bugs" class="toc-link">Common Bug Categories</a></li>
+                        <li><a href="#exercises" class="toc-link">Exercises</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Reading Error Messages -->
+            <section id="reading-errors" class="lesson-section">
+                <h2>Reading Error Messages</h2>
+                <p>Error messages look intimidating, but they follow a predictable structure. Every error message tells you <strong>three things</strong>:</p>
+
+                <div class="mermaid">
+                    flowchart LR
+                        A["<b>WHERE</b><br/>File + Line"] --> B["<b>WHAT</b><br/>Error Type"] --> C["<b>WHY</b><br/>Error Message"]
+                        style A fill:#3b82f6,color:#fff
+                        style B fill:#ef4444,color:#fff
+                        style C fill:#22c55e,color:#fff
+                </div>
+
+                <div class="code-tabs" data-title="Anatomy of an Error Message">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Running this broken code:
+def calculate_average(numbers):
+    total = sum(numbers)
+    return total / len(numbers)
+
+scores = []
+avg = calculate_average(scores)
+
+# Python's error message (read BOTTOM-UP!):
+#
+# Traceback (most recent call last):          ← Start of trace
+#   File "grades.py", line 6, in &lt;module&gt;     ← WHERE (caller)
+#     avg = calculate_average(scores)
+#   File "grades.py", line 3, in calculate_average  ← WHERE (exact)
+#     return total / len(numbers)              ← The line that failed
+# ZeroDivisionError: division by zero          ← WHAT + WHY
+#
+# Reading strategy:
+# 1. Start at the BOTTOM: ZeroDivisionError: division by zero
+# 2. Look UP for YOUR code (skip library files)
+# 3. Line 3: return total / len(numbers) — dividing by len([]) which is 0
+# 4. Line 6 shows HOW we got there: empty list passed in</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// Running this broken code:
+function calculateAverage(numbers) {
+    let total = numbers.reduce((sum, n) =&gt; sum + n);
+    return total / numbers.length;
+}
+
+let scores = null;
+let avg = calculateAverage(scores);
+
+// JavaScript's error message:
+//
+// TypeError: Cannot read properties of null (reading 'reduce')
+//     at calculateAverage (grades.js:2:28)    ← WHERE (exact)
+//     at Object.&lt;anonymous&gt; (grades.js:7:11)  ← WHERE (caller)
+//
+// Reading strategy:
+// 1. First line: TypeError — trying to use null as an object
+// 2. "reading 'reduce'" — the .reduce() call failed
+// 3. grades.js:2:28 — line 2, column 28
+// 4. Ask: why is 'numbers' null? → line 7 passes null
+
+// Node.js shows the code line too:
+// grades.js:2
+//     let total = numbers.reduce((sum, n) =&gt; sum + n);
+//                         ^
+// TypeError: Cannot read properties of null (reading 'reduce')</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// Running this broken code:
+static double CalculateAverage(int[] numbers)
+{
+    int total = numbers.Sum();
+    return total / numbers.Length;
+}
+
+int[] scores = null;
+double avg = CalculateAverage(scores);
+
+// C#'s error message:
+//
+// Unhandled exception. System.NullReferenceException:
+//   Object reference not set to an instance of an object.
+//    at Program.CalculateAverage(Int32[] numbers)
+//       in /app/Program.cs:line 4              ← WHERE (exact)
+//    at Program.Main(String[] args)
+//       in /app/Program.cs:line 9              ← WHERE (caller)
+//
+// Reading strategy:
+// 1. Exception type: NullReferenceException
+// 2. Line 4: numbers.Sum() — numbers is null
+// 3. Line 9: passed null to the function
+// 4. Fix: add a null check or initialize the array</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ Error Message Reading Checklist</h4>
+                    <ul>
+                        <li><strong>Read from the bottom up</strong> (Python) or <strong>top down</strong> (JS/C#) — find the error type and message first</li>
+                        <li><strong>Find YOUR code</strong> in the stack trace — skip library/framework lines</li>
+                        <li><strong>Look at the actual line</strong> — what could go wrong there?</li>
+                        <li><strong>Trace backwards</strong> — how did the bad value get to that line?</li>
+                        <li><strong>Google the error type + message</strong> if you're stuck — someone has had this exact problem before</li>
+                    </ul>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Error messages are where beginners freeze up most. Show a real error on screen and physically walk through it: "First I look at the bottom — <code>ZeroDivisionError</code>. Now I know <em>what</em> happened. Then I look at the line — <code>return total / len(numbers)</code>. What could be zero here? <code>len(numbers)</code>! Now I trace back — what was passed in? An empty list." Model this thinking process out loud. It's not intuitive — students need to see an expert read errors to learn the strategy. Python's "read bottom-up" vs. JS/C#'s "read top-down" is a key cross-language difference to highlight.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Print Debugging -->
+            <section id="print-debugging" class="lesson-section">
+                <h2>Print Debugging</h2>
+                <p>The oldest and most universal debugging technique: <strong>add print statements</strong> to see what your code is actually doing. It's simple, it works everywhere, and even senior developers use it daily.</p>
+
+                <div class="code-tabs" data-title="Strategic Print Debugging">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Bug: this function returns wrong results for some inputs
+def find_longest_word(sentence):
+    words = sentence.split()
+    longest = ""
+
+    for word in words:
+        if len(word) &gt; len(longest):
+            longest = word
+
+    return longest
+
+# It works for "hello world" but fails for "hello, world!"
+# Let's debug with prints:
+
+def find_longest_word(sentence):
+    words = sentence.split()
+    print(f"DEBUG words: {words}")           # See what split() produces
+
+    longest = ""
+    for word in words:
+        print(f"DEBUG checking '{word}' (len={len(word)}) vs '{longest}' (len={len(longest)})")
+        if len(word) &gt; len(longest):
+            longest = word
+            print(f"DEBUG   → new longest: '{longest}'")
+
+    print(f"DEBUG result: '{longest}'")
+    return longest
+
+# Test it:
+result = find_longest_word("I love programming!")
+# DEBUG words: ['I', 'love', 'programming!']
+# DEBUG checking 'I' (len=1) vs '' (len=0)
+# DEBUG   → new longest: 'I'
+# DEBUG checking 'love' (len=4) vs 'I' (len=1)
+# DEBUG   → new longest: 'love'
+# DEBUG checking 'programming!' (len=12) vs 'love' (len=4)
+# DEBUG   → new longest: 'programming!'
+# DEBUG result: 'programming!'
+#
+# AHA! 'programming!' includes the punctuation!
+# Fix: strip punctuation from words before comparing</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// Bug: discount calculation sometimes returns negative prices
+function applyDiscount(price, discountPercent) {
+    let discount = price * discountPercent;
+    let finalPrice = price - discount;
+    return finalPrice;
+}
+
+// applyDiscount(100, 20) should give 80 but gives -1900!
+// Let's debug with console.log:
+
+function applyDiscount(price, discountPercent) {
+    console.log("DEBUG inputs:", { price, discountPercent });
+
+    let discount = price * discountPercent;
+    console.log("DEBUG discount amount:", discount);
+
+    let finalPrice = price - discount;
+    console.log("DEBUG final price:", finalPrice);
+
+    return finalPrice;
+}
+
+applyDiscount(100, 20);
+// DEBUG inputs: { price: 100, discountPercent: 20 }
+// DEBUG discount amount: 2000        ← There it is!
+// DEBUG final price: -1900
+//
+// AHA! discountPercent is 20, not 0.20
+// Fix: divide by 100, or expect 0.20 as input
+
+// Pro tip: console methods for better output
+console.log("simple message");
+console.warn("⚠️ warning");         // Yellow in browser
+console.error("❌ error");           // Red in browser
+console.table([{a: 1}, {a: 2}]);    // Formatted table
+console.group("Section");           // Collapsible group
+console.log("detail 1");
+console.log("detail 2");
+console.groupEnd();</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// Bug: search always returns "not found" even for existing items
+static int FindIndex(string[] items, string target)
+{
+    for (int i = 0; i &lt; items.Length; i++)
+    {
+        if (items[i] == target)
+            return i;
+    }
+    return -1;
+}
+
+string[] names = { "Alice", "Bob", "Charlie" };
+int index = FindIndex(names, "bob");  // Returns -1, but Bob is there!
+
+// Let's debug with Console.WriteLine:
+static int FindIndex(string[] items, string target)
+{
+    Console.WriteLine($"DEBUG searching for: '{target}'");
+
+    for (int i = 0; i &lt; items.Length; i++)
+    {
+        Console.WriteLine($"DEBUG   [{i}] comparing '{items[i]}' == '{target}' → {items[i] == target}");
+        if (items[i] == target)
+            return i;
+    }
+
+    Console.WriteLine("DEBUG   not found!");
+    return -1;
+}
+
+FindIndex(names, "bob");
+// DEBUG searching for: 'bob'
+// DEBUG   [0] comparing 'Alice' == 'bob' → False
+// DEBUG   [1] comparing 'Bob' == 'bob' → False    ← AHA!
+// DEBUG   [2] comparing 'Charlie' == 'bob' → False
+// DEBUG   not found!
+//
+// 'Bob' != 'bob' — case-sensitive comparison!
+// Fix: use StringComparison.OrdinalIgnoreCase
+
+// C# also has Debug.WriteLine (only runs in Debug mode):
+// System.Diagnostics.Debug.WriteLine("Debug only message");</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Print Debugging Best Practices</h4>
+                    <ul>
+                        <li><strong>Prefix with DEBUG</strong> — makes them easy to find and remove later</li>
+                        <li><strong>Print variable names AND values</strong> — <code>f"DEBUG x={x}"</code> not just <code>print(x)</code></li>
+                        <li><strong>Print at decision points</strong> — before/after conditionals and loops</li>
+                        <li><strong>Print at function entry/exit</strong> — see the inputs and the return value</li>
+                        <li><strong>Remove them when done</strong> — or use a logging library for permanent debug output</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Debugger Tools -->
+            <section id="debugger-tools" class="lesson-section">
+                <h2>Debugger Tools</h2>
+                <p>Print debugging works, but for complex problems you need more power. Every language has a <strong>debugger</strong> — a tool that lets you pause your program, inspect every variable, and step through code one line at a time.</p>
+
+                <div class="code-tabs" data-title="Using Built-in Debuggers">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Method 1: Insert a breakpoint in your code
+def process_order(items, tax_rate):
+    subtotal = sum(item["price"] * item["qty"] for item in items)
+
+    breakpoint()  # Program PAUSES here! (Python 3.7+)
+    # Older Python: import pdb; pdb.set_trace()
+
+    tax = subtotal * tax_rate
+    total = subtotal + tax
+    return total
+
+# When the program pauses, you get a (Pdb) prompt:
+#
+# (Pdb) p subtotal          ← Print a variable
+# 59.97
+# (Pdb) p items             ← Print the list
+# [{'name': 'Widget', 'price': 9.99, 'qty': 3}, ...]
+# (Pdb) p tax_rate           ← Check the tax rate
+# 0.08
+# (Pdb) n                    ← Next line (step over)
+# (Pdb) s                    ← Step into function call
+# (Pdb) c                    ← Continue (run until next breakpoint)
+# (Pdb) l                    ← List source code around current line
+# (Pdb) q                    ← Quit debugger
+
+# Method 2: Run with debugger from the start
+# python -m pdb your_script.py
+
+# Method 3: VS Code (recommended for beginners)
+# 1. Click the line number gutter to set a breakpoint (red dot)
+# 2. Press F5 (Run → Start Debugging)
+# 3. Use the debug toolbar: Step Over (F10), Step Into (F11),
+#    Continue (F5), Stop (Shift+F5)
+# 4. Hover over variables to see their values
+# 5. Use the Variables panel and Watch panel</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// Method 1: Insert a breakpoint in your code
+function processOrder(items, taxRate) {
+    let subtotal = items.reduce((sum, item) =&gt;
+        sum + item.price * item.qty, 0);
+
+    debugger;  // Browser DevTools PAUSE here!
+
+    let tax = subtotal * taxRate;
+    let total = subtotal + tax;
+    return total;
+}
+
+// When paused in Chrome/Firefox DevTools:
+//
+// Sources tab → your code is highlighted at the debugger line
+// Scope panel → shows all local variables and their values
+// Console → you can type any expression to evaluate it
+//
+// Controls:
+//   F10 / Step Over    → Execute current line, move to next
+//   F11 / Step Into    → Jump into function call
+//   Shift+F11 / Out   → Run until current function returns
+//   F8 / Continue      → Run until next breakpoint
+//
+// Watch panel → add expressions to monitor (e.g., items.length)
+// Call Stack → see how you got to this point
+
+// Method 2: Set breakpoints in DevTools
+// 1. Open DevTools (F12 or Ctrl+Shift+I)
+// 2. Go to Sources tab
+// 3. Click a line number to set a breakpoint
+// 4. Reload the page — execution pauses at the breakpoint
+
+// Method 3: Conditional breakpoints
+// Right-click a line number → "Add conditional breakpoint"
+// Example: total &gt; 1000  (only pauses when total exceeds 1000)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// Method 1: Debugger.Break() in code
+static decimal ProcessOrder(List&lt;OrderItem&gt; items, decimal taxRate)
+{
+    decimal subtotal = items.Sum(i =&gt; i.Price * i.Qty);
+
+    System.Diagnostics.Debugger.Break();  // Pauses if debugger attached
+
+    decimal tax = subtotal * taxRate;
+    decimal total = subtotal + tax;
+    return total;
+}
+
+// Method 2: VS Code / Visual Studio (recommended)
+//
+// 1. Click the line number gutter → red dot (breakpoint)
+// 2. Press F5 → Start Debugging
+// 3. When paused:
+//    - Hover over any variable to see its value
+//    - Variables panel shows all locals
+//    - Watch panel for custom expressions
+//    - Immediate Window to evaluate code on the fly
+//
+// Stepping:
+//    F10 → Step Over (execute line, don't enter functions)
+//    F11 → Step Into (enter function calls)
+//    Shift+F11 → Step Out (run to end of current function)
+//    F5 → Continue (run to next breakpoint)
+//
+// Pro features:
+//    - Conditional breakpoints: right-click → Condition → total &gt; 1000
+//    - Hit count breakpoints: break after N hits
+//    - Logpoints: print without pausing (like smart print debugging)
+
+// Method 3: Logging with conditional compilation
+#if DEBUG
+    Console.WriteLine($"DEBUG subtotal: {subtotal}");
+#endif
+// This code ONLY runs in Debug builds, not Release builds</code></pre>
+                    </div>
+                </div>
+
+                <h3>Debugger Commands Quick Reference</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Action</th>
+                                <th>🐍 Python (pdb)</th>
+                                <th>⚡ JS (DevTools)</th>
+                                <th>🔷 C# (VS Code)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Set breakpoint in code</td>
+                                <td><code>breakpoint()</code></td>
+                                <td><code>debugger;</code></td>
+                                <td><code>Debugger.Break()</code></td>
+                            </tr>
+                            <tr>
+                                <td>Step over</td>
+                                <td><code>n</code> (next)</td>
+                                <td>F10</td>
+                                <td>F10</td>
+                            </tr>
+                            <tr>
+                                <td>Step into</td>
+                                <td><code>s</code> (step)</td>
+                                <td>F11</td>
+                                <td>F11</td>
+                            </tr>
+                            <tr>
+                                <td>Continue</td>
+                                <td><code>c</code> (continue)</td>
+                                <td>F8</td>
+                                <td>F5</td>
+                            </tr>
+                            <tr>
+                                <td>Print variable</td>
+                                <td><code>p variable</code></td>
+                                <td>Hover / Console</td>
+                                <td>Hover / Immediate</td>
+                            </tr>
+                            <tr>
+                                <td>Show code context</td>
+                                <td><code>l</code> (list)</td>
+                                <td>Sources panel</td>
+                                <td>Editor highlights</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>If possible, do a <strong>live demo</strong> of the VS Code debugger — it's the most visual and beginner-friendly tool across all three languages. Set a breakpoint, run in debug mode, and hover over variables. Students are often amazed that they can see every variable's value in real time. For JavaScript, open Chrome DevTools and demonstrate the Sources tab with <code>debugger;</code>. For Python, show <code>breakpoint()</code> in the terminal — it's less visual but works everywhere. Emphasize that the debugger is not "advanced" — it's a fundamental tool that should be learned early. The sooner students are comfortable with it, the faster they'll debug everything.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Binary Search Debugging -->
+            <section id="binary-search" class="lesson-section">
+                <h2>Binary Search Debugging</h2>
+                <p>When you have a big program and something is wrong but you don't know where, use the <strong>binary search method</strong>: check the middle of the code, determine which half contains the bug, then repeat.</p>
+
+                <div class="mermaid">
+                    flowchart TD
+                        A["100 lines of code<br/>Bug is somewhere..."] --> B["Check line 50:<br/>Is data correct here?"]
+                        B -->|"Yes — data is good"| C["Bug is in lines 51-100"]
+                        B -->|"No — data is wrong"| D["Bug is in lines 1-50"]
+                        C --> E["Check line 75"]
+                        D --> F["Check line 25"]
+                        E --> G["Narrowing down..."]
+                        F --> G
+                        G --> H["Found it! Line 37"]
+                        style A fill:#ef4444,color:#fff
+                        style H fill:#22c55e,color:#fff
+                </div>
+
+                <div class="code-tabs" data-title="Binary Search Debugging Example">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># This pipeline produces the wrong final result.
+# Where does it go wrong?
+
+def load_data():
+    return [
+        {"name": "Widget", "price": "9.99", "qty": "5"},
+        {"name": "Gadget", "price": "24.99", "qty": "2"},
+        {"name": "Gizmo", "price": "14.99", "qty": "3"},
+    ]
+
+def clean_data(raw):
+    cleaned = []
+    for item in raw:
+        cleaned.append({
+            "name": item["name"],
+            "price": float(item["price"]),
+            "qty": int(item["qty"]),
+        })
+    return cleaned
+
+def calculate_totals(items):
+    for item in items:
+        item["total"] = item["price"] + item["qty"]  # Bug here!
+    return items
+
+def apply_tax(items, rate=0.08):
+    for item in items:
+        item["total"] = item["total"] * (1 + rate)
+    return items
+
+def generate_report(items):
+    grand_total = sum(item["total"] for item in items)
+    return f"Grand total: ${grand_total:.2f}"
+
+# Pipeline
+raw = load_data()
+cleaned = clean_data(raw)
+
+# --- STEP 1: Check the midpoint ---
+print(f"CHECKPOINT after clean_data: {cleaned}")
+# Looks good! Prices and quantities are correct numbers.
+
+totals = calculate_totals(cleaned)
+
+# --- STEP 2: Bug is in second half — check after calculate_totals ---
+print(f"CHECKPOINT after calculate_totals: {totals}")
+# [{'name': 'Widget', 'total': 14.99}, ...]
+# WAIT — 9.99 + 5 = 14.99? That's price + qty, not price * qty!
+
+# Found it! Line: item["total"] = item["price"] + item["qty"]
+# Should be: item["total"] = item["price"] * item["qty"]</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// Same pipeline concept in JS — binary search for the bug
+
+function loadData() {
+    return [
+        { name: "Widget", price: "9.99", qty: "5" },
+        { name: "Gadget", price: "24.99", qty: "2" },
+        { name: "Gizmo", price: "14.99", qty: "3" },
+    ];
+}
+
+function cleanData(raw) {
+    return raw.map(item =&gt; ({
+        name: item.name,
+        price: parseFloat(item.price),
+        qty: parseInt(item.qty),
+    }));
+}
+
+function calculateTotals(items) {
+    return items.map(item =&gt; ({
+        ...item,
+        total: item.price + item.qty,   // Bug: should be *
+    }));
+}
+
+function applyTax(items, rate = 0.08) {
+    return items.map(item =&gt; ({
+        ...item,
+        total: item.total * (1 + rate),
+    }));
+}
+
+// Binary search: check the midpoint first
+let raw = loadData();
+let cleaned = cleanData(raw);
+console.log("CHECKPOINT cleaned:", cleaned);  // Looks good ✅
+
+let totals = calculateTotals(cleaned);
+console.log("CHECKPOINT totals:", totals);    // Bug found! ❌
+// total: 14.99 for Widget → price + qty, not price * qty</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// Binary search debugging in C#
+// Check data at the midpoint of your pipeline
+
+var raw = LoadData();
+var cleaned = CleanData(raw);
+
+// CHECKPOINT 1: Is data correct here?
+Console.WriteLine("CHECKPOINT cleaned:");
+foreach (var item in cleaned)
+    Console.WriteLine($"  {item.Name}: ${item.Price} x {item.Qty}");
+// Looks correct ✅
+
+var totals = CalculateTotals(cleaned);
+
+// CHECKPOINT 2: Check after calculate
+Console.WriteLine("CHECKPOINT totals:");
+foreach (var item in totals)
+    Console.WriteLine($"  {item.Name}: total=${item.Total}");
+// Widget: total=$14.99 — that's price + qty, not price * qty! ❌
+
+// Bug found in CalculateTotals!
+// item.Total = item.Price + item.Qty;  // Wrong!
+// item.Total = item.Price * item.Qty;  // Correct!</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Why Binary Search Works</h4>
+                    <p>If your program has 8 stages and the output of stage 8 is wrong, checking all 8 stages takes up to 8 checks. Binary search finds it in <strong>3 checks</strong>: check stage 4, then stage 2 or 6, then the exact stage. For larger programs, the savings are dramatic — 1000 lines of code takes at most ~10 checkpoints instead of reading every line.</p>
+                </div>
+            </section>
+
+            <!-- Rubber Duck Debugging -->
+            <section id="rubber-duck" class="lesson-section">
+                <h2>Rubber Duck Debugging</h2>
+                <p>This technique sounds silly but is remarkably effective: <strong>explain your code, line by line, to a rubber duck</strong> (or any inanimate object, pet, or patient friend). The act of explaining forces you to slow down and articulate what each line <em>should</em> do — and you often spot the mismatch between what it <em>should</em> do and what it <em>actually</em> does.</p>
+
+                <div class="card card-success">
+                    <h4>🦆 The Rubber Duck Method</h4>
+                    <ol>
+                        <li><strong>Place a rubber duck on your desk</strong> (or use a coffee mug, a pet, anything)</li>
+                        <li><strong>Explain the purpose</strong> of the code to the duck — "This function should calculate the total price of items in a cart."</li>
+                        <li><strong>Go line by line</strong> — "First, I initialize <code>total</code> to zero. Then I loop over each item. For each item, I multiply price times quantity and add it to total. Then I return total."</li>
+                        <li><strong>At some point you'll say:</strong> "Wait... I'm adding <code>price + quantity</code> but I should be adding <code>price * quantity</code>..."</li>
+                        <li><strong>Thank the duck.</strong></li>
+                    </ol>
+                </div>
+
+                <p>This works because reading code is <em>passive</em> — your eyes skim over problems. Explaining code is <em>active</em> — you have to think about what each line does and whether that matches your intent. The bug often lives in the gap between <strong>what you think the code does</strong> and <strong>what it actually does</strong>.</p>
+
+                <div class="card card-info">
+                    <h4>💡 Modern Variations</h4>
+                    <ul>
+                        <li><strong>Write a comment for every line</strong> — same effect as explaining to a duck, but in text</li>
+                        <li><strong>Explain it to a coworker</strong> — "pair debugging" is even more effective because they ask questions</li>
+                        <li><strong>Write a forum post describing the problem</strong> — many developers solve their issue while writing the question (this is so common that Stack Overflow has a name for it: "rubber duck debugging")</li>
+                        <li><strong>Step away for 15 minutes</strong> — fresh eyes catch things tired eyes miss</li>
+                    </ul>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>If you can, bring an actual rubber duck to class — it always gets a laugh and makes the concept memorable. Have a student explain a buggy code snippet line by line to the duck. The class will spot the bug together as it's being explained. This technique is especially valuable because it requires <em>no tools</em> — it works at 2 AM when you're frustrated and nothing else is working. It also transfers to all languages and all types of bugs. The "write a forum post" variation is worth emphasizing — many students are surprised to learn that the act of formulating a good question often solves the problem.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Systematic Process -->
+            <section id="systematic-process" class="lesson-section">
+                <h2>The Systematic Process</h2>
+                <p>Resist the urge to randomly change code and hope for the best. Follow a process:</p>
+
+                <div class="mermaid">
+                    flowchart TD
+                        A["1. REPRODUCE<br/>Make the bug happen reliably"] --> B["2. ISOLATE<br/>Find the smallest code that triggers it"]
+                        B --> C["3. IDENTIFY<br/>Pinpoint the exact line/condition"]
+                        C --> D["4. FIX<br/>Change the minimum amount of code"]
+                        D --> E["5. VERIFY<br/>Confirm the fix AND check for side effects"]
+                        E --> F["6. REFLECT<br/>Why did this bug happen? Prevent similar ones"]
+                        style A fill:#3b82f6,color:#fff
+                        style D fill:#f59e0b,color:#fff
+                        style E fill:#22c55e,color:#fff
+                </div>
+
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Step</th>
+                                <th>What To Do</th>
+                                <th>Common Mistake</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>1. Reproduce</strong></td>
+                                <td>Find exact inputs that cause the bug every time</td>
+                                <td>Trying to fix a bug you can't reliably trigger</td>
+                            </tr>
+                            <tr>
+                                <td><strong>2. Isolate</strong></td>
+                                <td>Simplify — remove unrelated code until you have the minimal case</td>
+                                <td>Searching in a file with 500 lines instead of extracting the 10 that matter</td>
+                            </tr>
+                            <tr>
+                                <td><strong>3. Identify</strong></td>
+                                <td>Use prints, debugger, or binary search to find the exact line</td>
+                                <td>Guessing instead of systematically narrowing down</td>
+                            </tr>
+                            <tr>
+                                <td><strong>4. Fix</strong></td>
+                                <td>Change as little as possible — one fix at a time</td>
+                                <td>Changing 5 things at once so you don't know which one worked</td>
+                            </tr>
+                            <tr>
+                                <td><strong>5. Verify</strong></td>
+                                <td>Test the original failing case AND nearby cases</td>
+                                <td>Testing only the one case that was broken</td>
+                            </tr>
+                            <tr>
+                                <td><strong>6. Reflect</strong></td>
+                                <td>Ask "How could I prevent this type of bug?"</td>
+                                <td>Moving on without learning from the experience</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ The #1 Debugging Anti-Pattern: "Shotgun Debugging"</h4>
+                    <p>Randomly changing code to see if the problem goes away is <strong>shotgun debugging</strong>. It's tempting because it feels like action, but it's ineffective and dangerous — you might "fix" the symptom while introducing new bugs. Always <strong>understand</strong> the problem before changing code. If you can't explain why your fix works, you haven't actually fixed it.</p>
+                </div>
+            </section>
+
+            <!-- Common Bug Categories -->
+            <section id="common-bugs" class="lesson-section">
+                <h2>Common Bug Categories</h2>
+                <p>Most bugs fall into a small number of categories. Knowing the usual suspects lets you check them first.</p>
+
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Bug Category</th>
+                                <th>Example</th>
+                                <th>Where to Look</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Off-by-one</strong></td>
+                                <td>Loop runs 9 times instead of 10; array index out of range</td>
+                                <td>Loop bounds (<code>&lt;</code> vs <code>&lt;=</code>), array indices, string slicing</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Wrong operator</strong></td>
+                                <td><code>+</code> instead of <code>*</code>; <code>=</code> instead of <code>==</code></td>
+                                <td>Math expressions, comparisons, assignments</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Type mismatch</strong></td>
+                                <td><code>"5" + 3</code> gives <code>"53"</code> instead of <code>8</code></td>
+                                <td>User input (always strings!), JSON data, API responses</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Null/undefined</strong></td>
+                                <td>Accessing property on <code>null</code> or <code>undefined</code></td>
+                                <td>Function returns, optional values, uninitialized variables</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Scope issues</strong></td>
+                                <td>Variable exists but holds the wrong value; shadowed variable</td>
+                                <td>Functions, loops, nested blocks, closures</td>
+                            </tr>
+                            <tr>
+                                <td><strong>State mutation</strong></td>
+                                <td>Changing a shared list/object from one place affects another</td>
+                                <td>Mutable defaults, shared references, aliased objects</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Case sensitivity</strong></td>
+                                <td><code>"Bob" != "bob"</code> in a search</td>
+                                <td>String comparisons, dictionary keys, file paths</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Async timing</strong></td>
+                                <td>Using data before it's loaded; race conditions</td>
+                                <td>API calls, file reads, event handlers, callbacks</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="code-tabs" data-title="The Usual Suspects">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># 1. Off-by-one
+for i in range(10):    # 0-9, not 1-10!
+    print(i)
+
+# 2. Mutable default argument (Python-specific trap!)
+def add_item(item, items=[]):    # ❌ Shared across ALL calls!
+    items.append(item)
+    return items
+
+print(add_item("a"))  # ['a']
+print(add_item("b"))  # ['a', 'b'] — Wait, where did 'a' come from?!
+
+# Fix:
+def add_item(item, items=None):
+    if items is None:
+        items = []
+    items.append(item)
+    return items
+
+# 3. String/number confusion
+age = input("Your age: ")  # ALWAYS returns a string!
+if age &gt; 18:               # ❌ Comparing string to int!
+    print("Adult")
+# Fix: age = int(input("Your age: "))</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// 1. Type coercion surprises
+console.log("5" + 3);     // "53" (string concatenation!)
+console.log("5" - 3);     // 2   (numeric subtraction)
+console.log("5" == 5);    // true  (loose equality — coerces type)
+console.log("5" === 5);   // false (strict equality — safe!)
+
+// 2. this context
+class Timer {
+    constructor() { this.seconds = 0; }
+    start() {
+        setInterval(function() {
+            this.seconds++;  // ❌ 'this' is NOT the Timer!
+            console.log(this.seconds);  // NaN
+        }, 1000);
+    }
+}
+// Fix: use arrow function (inherits 'this')
+// setInterval(() =&gt; { this.seconds++; }, 1000);
+
+// 3. Equality gotchas
+console.log([] == false);   // true  (wat?)
+console.log(null == undefined);  // true
+console.log(NaN == NaN);   // false (NaN is not equal to anything!)
+// Fix: ALWAYS use === and !== in JavaScript</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// 1. Integer division truncation
+int a = 7, b = 2;
+Console.WriteLine(a / b);       // 3 (not 3.5!)
+Console.WriteLine(a / (double)b);  // 3.5 — cast to double first
+
+// 2. String comparison (case sensitivity)
+string name = "Alice";
+if (name == "alice")  // False! Case-sensitive by default
+    Console.WriteLine("Found");
+// Fix:
+if (name.Equals("alice", StringComparison.OrdinalIgnoreCase))
+    Console.WriteLine("Found");
+
+// 3. Reference equality vs value equality
+int[] a1 = { 1, 2, 3 };
+int[] a2 = { 1, 2, 3 };
+Console.WriteLine(a1 == a2);             // False! Different objects
+Console.WriteLine(a1.SequenceEqual(a2)); // True — compares contents
+
+// 4. Null reference (the billion-dollar mistake)
+string? text = null;
+Console.WriteLine(text.Length);  // NullReferenceException!
+// Fix:
+Console.WriteLine(text?.Length ?? 0);  // 0 (null-safe)</code></pre>
+                    </div>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>The "Usual Suspects" code examples are designed to be run live — let students see each bug in action. Python's mutable default argument is one of the most infamous Python gotchas and always surprises students. JavaScript's type coercion (<code>"5" + 3 = "53"</code>) is a classic. C#'s integer division truncation bites even experienced developers. Walk through each example and ask students to predict the output before running it. The table of common bug categories is worth printing out or posting — when stuck, students can scan it as a checklist: "Is this an off-by-one? A type mismatch? A scope issue?" Having a vocabulary for bug types speeds up debugging enormously.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Exercises -->
+            <section id="exercises" class="lesson-section">
+                <h2>Exercises</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 1: Bug Hunt</h3>
+                    <p><strong>Objective:</strong> Each code snippet below has exactly <strong>one bug</strong>. Find it, explain what's wrong, and fix it. Use any debugging technique from this lesson.</p>
+
+                    <details>
+                        <summary>🐛 Bug 1: Average Calculator</summary>
+                        <div class="code-tabs" data-title="Bug 1: Find the Error">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python"># This should return the average, but returns wrong values
+def average(numbers):
+    total = 0
+    for num in numbers:
+        total += num
+        avg = total / len(numbers)
+    return avg
+
+print(average([10, 20, 30]))  # Should be 20.0, gets 10.0</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">function average(numbers) {
+    let total = 0;
+    for (let num of numbers) {
+        total += num;
+        let avg = total / numbers.length;
+    }
+    return avg;  // Might have a scope issue too!
+}
+console.log(average([10, 20, 30]));  // Should be 20</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">static double Average(int[] numbers)
+{
+    int total = 0;
+    double avg = 0;
+    foreach (int num in numbers)
+    {
+        total += num;
+        avg = total / numbers.Length;  // Computed inside loop!
+    }
+    return avg;
+}
+Console.WriteLine(Average(new[] { 10, 20, 30 })); // Should be 20</code></pre>
+                            </div>
+                        </div>
+                        <details>
+                            <summary>✅ Answer</summary>
+                            <p><strong>Bug:</strong> The average calculation <code>avg = total / len(numbers)</code> is <strong>inside the loop</strong>. It gets recalculated on every iteration, but the <code>total</code> is incomplete until the loop finishes. In the Python version, the indentation puts the calculation inside the <code>for</code> loop. Move it <strong>after</strong> the loop. (In JS, there's also a scope issue — <code>let avg</code> inside the loop isn't accessible outside.)</p>
+                            <p><strong>Fix:</strong> Move <code>avg = total / len(numbers)</code> outside the loop, after it completes. Also in C#, use <code>(double)total / numbers.Length</code> to avoid integer division.</p>
+                        </details>
+                    </details>
+
+                    <details style="margin-top: var(--spacing-md);">
+                        <summary>🐛 Bug 2: FizzBuzz</summary>
+                        <div class="code-tabs" data-title="Bug 2: Find the Error">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python"># FizzBuzz: print "Fizz" for multiples of 3, "Buzz" for 5, "FizzBuzz" for both
+def fizzbuzz(n):
+    results = []
+    for i in range(1, n + 1):
+        if i % 3 == 0:
+            results.append("Fizz")
+        elif i % 5 == 0:
+            results.append("Buzz")
+        elif i % 15 == 0:
+            results.append("FizzBuzz")
+        else:
+            results.append(str(i))
+    return results
+
+# fizzbuzz(15) should end with "FizzBuzz" but ends with "Fizz"</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">function fizzbuzz(n) {
+    let results = [];
+    for (let i = 1; i &lt;= n; i++) {
+        if (i % 3 === 0) {
+            results.push("Fizz");
+        } else if (i % 5 === 0) {
+            results.push("Buzz");
+        } else if (i % 15 === 0) {
+            results.push("FizzBuzz");
+        } else {
+            results.push(String(i));
+        }
+    }
+    return results;
+}</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">static List&lt;string&gt; FizzBuzz(int n)
+{
+    var results = new List&lt;string&gt;();
+    for (int i = 1; i &lt;= n; i++)
+    {
+        if (i % 3 == 0)
+            results.Add("Fizz");
+        else if (i % 5 == 0)
+            results.Add("Buzz");
+        else if (i % 15 == 0)
+            results.Add("FizzBuzz");
+        else
+            results.Add(i.ToString());
+    }
+    return results;
+}</code></pre>
+                            </div>
+                        </div>
+                        <details>
+                            <summary>✅ Answer</summary>
+                            <p><strong>Bug:</strong> The <code>i % 15</code> check comes <strong>last</strong>, but 15 is divisible by both 3 and 5 — so the <code>i % 3</code> check catches it first and returns "Fizz" instead of "FizzBuzz". The <code>elif</code>/<code>else if</code> chain means the 15 check <strong>never runs</strong> for multiples of 15.</p>
+                            <p><strong>Fix:</strong> Check <code>i % 15</code> (or <code>i % 3 == 0 and i % 5 == 0</code>) <strong>first</strong>, before the individual checks. Order matters in conditional chains!</p>
+                        </details>
+                    </details>
+
+                    <details style="margin-top: var(--spacing-md);">
+                        <summary>🐛 Bug 3: Unique Values</summary>
+                        <div class="code-tabs" data-title="Bug 3: Find the Error">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python"># Should return only unique values from a list
+def unique(items):
+    result = []
+    for item in items:
+        if item not in items:
+            result.append(item)
+    return result
+
+print(unique([1, 2, 2, 3, 3, 3]))  # Should be [1, 2, 3], gets []</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">function unique(items) {
+    let result = [];
+    for (let item of items) {
+        if (!items.includes(item)) {
+            result.push(item);
+        }
+    }
+    return result;
+}
+console.log(unique([1, 2, 2, 3, 3, 3])); // Should be [1,2,3], gets []</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">static List&lt;int&gt; Unique(int[] items)
+{
+    var result = new List&lt;int&gt;();
+    foreach (int item in items)
+    {
+        if (!items.Contains(item))
+            result.Add(item);
+    }
+    return result;
+}
+// Unique([1, 2, 2, 3, 3, 3]) → should be [1,2,3], gets []</code></pre>
+                            </div>
+                        </div>
+                        <details>
+                            <summary>✅ Answer</summary>
+                            <p><strong>Bug:</strong> The check is <code>if item not in items</code> — but we're checking if the item is in the <em>original</em> list (<code>items</code>), which it <em>always is</em> (because we're iterating over it!). Every item will be found in <code>items</code>, so nothing gets added to <code>result</code>.</p>
+                            <p><strong>Fix:</strong> Check <code>if item not in result</code> — whether the item is already in the <em>output</em> list, not the input list.</p>
+                        </details>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 2: Debug the Pipeline</h3>
+                    <p><strong>Objective:</strong> The function below is supposed to process a list of student grades and return a summary. It has <strong>3 bugs</strong>. Use print debugging, the binary search method, or any technique to find and fix all three.</p>
+
+                    <details>
+                        <summary>🐛 Buggy Code</summary>
+                        <div class="code-tabs" data-title="Buggy Grade Processor">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">def process_grades(students):
+    """Process student grades and return a summary."""
+    results = []
+
+    for student in students:
+        name = student["name"]
+        grades = student["grades"]
+
+        # Bug 1 is in this section
+        total = 0
+        for grade in grades:
+            total += grade
+        average = total / len(students)  # Hmm...
+
+        # Bug 2 is in this section
+        if average &gt;= 90:
+            letter = "A"
+        elif average &gt;= 80:
+            letter = "B"
+        elif average &gt;= 70:
+            letter = "C"
+        elif average &gt;= 60:
+            letter = "D"
+        else:
+            letter = "F"
+
+        # Bug 3 is in this section
+        results.append({
+            "name": name,
+            "average": average,
+            "letter": letter,
+            "passing": letter != "F" or letter != "D"
+        })
+
+    return results
+
+# Test data
+students = [
+    {"name": "Alice", "grades": [95, 87, 92, 98]},
+    {"name": "Bob", "grades": [72, 65, 78, 70]},
+    {"name": "Charlie", "grades": [55, 42, 61, 50]},
+]
+
+for result in process_grades(students):
+    print(f"{result['name']}: avg={result['average']:.1f}, "
+          f"grade={result['letter']}, passing={result['passing']}")</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">function processGrades(students) {
+    let results = [];
+
+    for (let student of students) {
+        let { name, grades } = student;
+
+        // Bug 1 is in this section
+        let total = 0;
+        for (let grade of grades) {
+            total += grade;
+        }
+        let average = total / students.length;
+
+        // Bug 2 is in this section
+        let letter;
+        if (average &gt;= 90) letter = "A";
+        else if (average &gt;= 80) letter = "B";
+        else if (average &gt;= 70) letter = "C";
+        else if (average &gt;= 60) letter = "D";
+        else letter = "F";
+
+        // Bug 3 is in this section
+        results.push({
+            name,
+            average,
+            letter,
+            passing: letter !== "F" || letter !== "D"
+        });
+    }
+    return results;
+}
+
+let students = [
+    { name: "Alice", grades: [95, 87, 92, 98] },
+    { name: "Bob", grades: [72, 65, 78, 70] },
+    { name: "Charlie", grades: [55, 42, 61, 50] },
+];
+
+processGrades(students).forEach(r =&gt;
+    console.log(`${r.name}: avg=${r.average.toFixed(1)}, ` +
+                `grade=${r.letter}, passing=${r.passing}`));</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">// Same bugs — adapted to C# syntax
+// Bug 1: Wrong denominator in average
+// Bug 2: Letter grade logic looks correct... or does it?
+// Bug 3: Boolean logic error in "passing" check
+
+// Try adding Console.WriteLine checkpoints to find each bug!
+// Fix all three, then verify with the test data.</code></pre>
+                            </div>
+                        </div>
+                    </details>
+
+                    <details>
+                        <summary>✅ Solutions</summary>
+                        <p><strong>Bug 1:</strong> <code>average = total / len(students)</code> divides by the number of <em>students</em> (3) instead of the number of <em>grades</em> for this student. Fix: <code>average = total / len(grades)</code></p>
+                        <p><strong>Bug 2:</strong> The letter grade logic is actually correct! This is a red herring — not every section has a bug. (This teaches students to verify their assumptions rather than assume every section is broken.)</p>
+                        <p><strong>Bug 3:</strong> <code>letter != "F" or letter != "D"</code> is <strong>always True</strong> because of Boolean logic. If <code>letter</code> is "F", then <code>letter != "D"</code> is True (and vice versa). Fix: use <code>and</code> instead of <code>or</code>: <code>letter != "F" and letter != "D"</code></p>
+                    </details>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Exercise 1 (Bug Hunt) is designed to train pattern recognition — each bug represents a common category from the table. Let students try to find each bug <em>before</em> revealing the answer. Exercise 2 is more realistic: a function with multiple bugs that interact with each other. Bug 2 being a "red herring" (no actual bug) is intentional — it teaches students not to assume every section is broken, and to verify their analysis before making changes. The <code>or</code> vs <code>and</code> bug in Bug 3 is one of the most common logical errors in programming and is worth spending extra time on. Ask students: "What does <code>x != 'a' or x != 'b'</code> evaluate to when x is 'a'? When x is 'b'? When x is 'c'?" Walk through the truth table to make it click.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong>Read error messages systematically:</strong> find the error type, then the line in YOUR code, then trace backwards</li>
+                        <li><strong>Print debugging</strong> is simple and universal — prefix with DEBUG, print names AND values, print at decision points</li>
+                        <li><strong>Debugger tools</strong> (breakpoints, stepping, variable inspection) are powerful for complex problems — learn VS Code's debugger early</li>
+                        <li><strong>Binary search debugging</strong> narrows down bugs fast — check the midpoint, determine which half is broken, repeat</li>
+                        <li><strong>Rubber duck debugging</strong> works because explaining activates different thinking than reading — no tools required</li>
+                        <li><strong>Follow a process:</strong> Reproduce → Isolate → Identify → Fix → Verify → Reflect</li>
+                        <li><strong>Know the common bugs:</strong> off-by-one, wrong operator, type mismatch, null/undefined, scope, case sensitivity</li>
+                        <li><strong>Never shotgun debug</strong> — understand the problem before changing code</li>
+                    </ul>
+                </div>
+
+                <h3>🚀 What's Next?</h3>
+                <p>That wraps up <strong>Module 7: Error Handling!</strong> You can now catch errors, create custom exceptions, and systematically debug your code. In Module 8, we move to <strong>Working with Data</strong> — reading and writing files, the first step toward programs that interact with the outside world.</p>
+
+                <!-- Quiz -->
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Check</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> In a Python traceback, where should you look first?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="The top of a Python traceback shows the outermost call — the bottom has the actual error.">A) The top (first line)</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Python tracebacks read bottom-up. The last line shows the error type and message (e.g., ZeroDivisionError: division by zero). Then look up to find the line in YOUR code that caused it. JavaScript and C# are the opposite — they read top-down.">B) The bottom (last line)</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The middle might show library code that isn't useful. Start at the bottom for the error type.">C) The middle</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 2:</strong> What is "rubber duck debugging"?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="That's print debugging — rubber duck debugging doesn't use any tools.">A) Adding print statements shaped like ducks</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Rubber duck debugging means explaining your code line-by-line to an inanimate object (like a rubber duck). The act of explaining forces you to articulate what each line SHOULD do, which often reveals where it does something DIFFERENT than intended.">B) Explaining your code line-by-line to an object to find the bug</button>
+                            <button class="quiz-option" data-correct="false" data-hint="That sounds like a fuzzing technique! Rubber duck debugging is about explanation, not random input.">C) Testing with random inputs to see what breaks</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 3:</strong> What is the FIRST step in the systematic debugging process?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Fixing comes after you understand what's broken. Jumping to fixes without understanding is 'shotgun debugging.'">A) Fix the code</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Step 1 is REPRODUCE — make the bug happen reliably with specific inputs. If you can't reproduce a bug consistently, you can't verify that your fix works. Once reproducible, you can isolate, identify, fix, verify, and reflect.">B) Reproduce the bug reliably</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Googling can help, but first you need to reproduce the bug so you know exactly what to search for.">C) Google the error message</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_20.html" class="prev-lesson">← Previous: Custom Errors and Exceptions</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_22.html" class="next-lesson">Next: Reading and Writing Files →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn for loops, while loops, break, and continue in Python, JavaScript, and C# — master repetition in three languages.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 3.2: Loops — for and while - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 3</a></li>
+            <li aria-current="page">Lesson 3.2: Loops — for and while</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🔁 Lesson 3.2: Loops — for and while</h1>
+                <p class="lead">Why type the same thing a hundred times when you can tell the computer to do it for you? Loops are how programs handle repetition.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Write <code>for</code> loops in all three languages (counting-style and collection-style)</li>
+                        <li>Understand Python's <code>range()</code> vs. the classic <code>for (init; cond; step)</code> pattern in JS/C#</li>
+                        <li>Use <code>while</code> loops for condition-driven repetition</li>
+                        <li>Control loop flow with <code>break</code> and <code>continue</code></li>
+                        <li>Recognize when to use <code>for</code> vs. <code>while</code></li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 45 minutes</p>
+                    <p><strong>Project:</strong> A multiplication table generator and a number-guessing game</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary><h2 style="display: inline; margin: 0;">📑 In This Lesson</h2></summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#why-loops" class="toc-link">Why Loops?</a></li>
+                        <li><a href="#counting-for" class="toc-link">Counting for Loops</a></li>
+                        <li><a href="#collection-for" class="toc-link">Looping Over Collections</a></li>
+                        <li><a href="#while-loops" class="toc-link">while Loops</a></li>
+                        <li><a href="#break-continue" class="toc-link">break and continue</a></li>
+                        <li><a href="#nested-loops" class="toc-link">Nested Loops</a></li>
+                        <li><a href="#for-vs-while" class="toc-link">for vs. while — When to Use Which</a></li>
+                        <li><a href="#exercises" class="toc-link">Exercises</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Why Loops -->
+            <section id="why-loops" class="lesson-section">
+                <h2>Why Loops?</h2>
+                <p>Imagine you need to print the numbers 1 through 1000. Without loops, that's 1000 <code>print</code> statements. With a loop, it's three lines. Loops let your code <strong>repeat a block of instructions</strong> as many times as needed — whether that's a fixed count, once for each item in a list, or until some condition changes.</p>
+
+                <div class="mermaid">
+                    graph TD
+                    A["Start"] --> B{"More items<br/>to process?"}
+                    B -->|Yes| C["Do the work"]
+                    C --> D["Move to next item"]
+                    D --> B
+                    B -->|No| E["Done!"]
+                    style B fill:#f59e0b,stroke:#d97706,color:#fff,stroke-width:2px
+                    style C fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px
+                </div>
+
+                <p>There are two main flavors of loops:</p>
+                <ul>
+                    <li><strong><code>for</code> loops</strong> — best when you know how many times to repeat (or are iterating over a collection)</li>
+                    <li><strong><code>while</code> loops</strong> — best when you repeat until a condition becomes false</li>
+                </ul>
+            </section>
+
+            <!-- Counting for Loops -->
+            <section id="counting-for" class="lesson-section">
+                <h2>Counting for Loops</h2>
+                <p>The most common loop: do something a specific number of times. This is where the three languages diverge most.</p>
+
+                <div class="code-tabs" data-title="Count from 1 to 5">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python: for + range()
+# range(1, 6) produces 1, 2, 3, 4, 5  (start inclusive, stop exclusive)
+for i in range(1, 6):
+    print(i)
+
+# range() with one argument starts at 0:
+# range(5) → 0, 1, 2, 3, 4
+
+# range() with three arguments adds a step:
+# range(0, 10, 2) → 0, 2, 4, 6, 8  (count by 2s)
+# range(10, 0, -1) → 10, 9, 8, ... 1  (count backwards)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript: classic three-part for loop
+// for (initialize; condition; update)
+for (let i = 1; i <= 5; i++) {
+    console.log(i);
+}
+
+// Breaking it down:
+// let i = 1    → runs once before the loop starts
+// i <= 5       → checked before each iteration
+// i++          → runs after each iteration
+
+// Count by 2s:
+// for (let i = 0; i < 10; i += 2) { ... }
+
+// Count backwards:
+// for (let i = 10; i >= 1; i--) { ... }</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C#: same three-part syntax as JavaScript
+for (int i = 1; i <= 5; i++)
+{
+    Console.WriteLine(i);
+}
+
+// The pattern is identical to JavaScript:
+// for (initialize; condition; update)
+
+// Count by 2s:
+// for (int i = 0; i < 10; i += 2) { ... }
+
+// Count backwards:
+// for (int i = 10; i >= 1; i--) { ... }</code></pre>
+                    </div>
+                </div>
+
+                <h3>Syntax Comparison</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Task</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript / 🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>0 to 4</td>
+                                <td><code>for i in range(5)</code></td>
+                                <td><code>for (let i = 0; i &lt; 5; i++)</code></td>
+                            </tr>
+                            <tr>
+                                <td>1 to 10</td>
+                                <td><code>for i in range(1, 11)</code></td>
+                                <td><code>for (let i = 1; i &lt;= 10; i++)</code></td>
+                            </tr>
+                            <tr>
+                                <td>Even numbers 0–8</td>
+                                <td><code>for i in range(0, 10, 2)</code></td>
+                                <td><code>for (let i = 0; i &lt; 10; i += 2)</code></td>
+                            </tr>
+                            <tr>
+                                <td>Countdown 5 to 1</td>
+                                <td><code>for i in range(5, 0, -1)</code></td>
+                                <td><code>for (let i = 5; i &gt;= 1; i--)</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Python's range() Is Exclusive at the End</h4>
+                    <p><code>range(1, 5)</code> gives you 1, 2, 3, 4 — <strong>not</strong> 5. The stop value is excluded. This is the most common beginner mistake with <code>range()</code>. If you want 1 through 5, use <code>range(1, 6)</code>.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Students coming from math will expect "1 to 5" to include 5. Spend a moment explaining why Python's exclusive-end convention exists (it makes <code>range(len(list))</code> work cleanly and avoids off-by-one errors in many cases). For the JS/C# side, emphasize reading the three-part for loop like a sentence: "start at 1, keep going while ≤ 5, add 1 each time." Have students trace through a loop with pen and paper for their first few examples.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Looping Over Collections -->
+            <section id="collection-for" class="lesson-section">
+                <h2>Looping Over Collections</h2>
+                <p>Often you don't want to count — you want to do something with <strong>each item</strong> in a list. All three languages have a convenient way to do this.</p>
+
+                <div class="code-tabs" data-title="Looping Over a List">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python: for...in (same keyword, no range needed)
+fruits = ["apple", "banana", "cherry"]
+
+for fruit in fruits:
+    print(f"I like {fruit}!")
+
+# Output:
+# I like apple!
+# I like banana!
+# I like cherry!
+
+# Need the index too? Use enumerate():
+for index, fruit in enumerate(fruits):
+    print(f"{index}: {fruit}")
+# 0: apple
+# 1: banana
+# 2: cherry</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript: for...of (not for...in!)
+let fruits = ["apple", "banana", "cherry"];
+
+for (let fruit of fruits) {
+    console.log(`I like ${fruit}!`);
+}
+
+// Need the index too? Use forEach() or entries():
+fruits.forEach((fruit, index) => {
+    console.log(`${index}: ${fruit}`);
+});
+
+// ⚠️ WARNING: for...in loops over KEYS (indices), not values
+// for (let i in fruits) → "0", "1", "2" (strings, not items)
+// Always use for...of for arrays!</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C#: foreach (dedicated keyword)
+string[] fruits = { "apple", "banana", "cherry" };
+
+foreach (string fruit in fruits)
+{
+    Console.WriteLine($"I like {fruit}!");
+}
+
+// Need the index too? Use a regular for loop:
+for (int i = 0; i < fruits.Length; i++)
+{
+    Console.WriteLine($"{i}: {fruits[i]}");
+}
+
+// Or use LINQ (more advanced):
+// foreach (var (fruit, index) in fruits.Select((f, i) => (f, i)))
+// {
+//     Console.WriteLine($"{index}: {fruit}");
+// }</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Pattern Recognition: JS/C# Share a Family</h4>
+                    <p>Notice the trend from the conditionals lesson continuing here: JavaScript and C# share syntax DNA (the three-part <code>for</code> loop, curly braces, semicolons). Python takes its own path with <code>for...in range()</code> and <code>for...in collection</code>. In Python, both counting and iterating use the same <code>for x in</code> structure — the only difference is what comes after <code>in</code>.</p>
+                </div>
+            </section>
+
+            <!-- while Loops -->
+            <section id="while-loops" class="lesson-section">
+                <h2>while Loops</h2>
+                <p>A <code>while</code> loop keeps running <strong>as long as a condition is true</strong>. You use it when you don't know in advance how many iterations you need.</p>
+
+                <div class="mermaid">
+                    graph TD
+                    A["count = 0"] --> B{"count &lt; 5?"}
+                    B -->|Yes| C["Print count"]
+                    C --> D["count = count + 1"]
+                    D --> B
+                    B -->|No| E["Loop ends"]
+                    style B fill:#f59e0b,stroke:#d97706,color:#fff,stroke-width:2px
+                    style C fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px
+                </div>
+
+                <div class="code-tabs" data-title="Basic while Loop">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python: while + condition + colon
+count = 0
+
+while count < 5:
+    print(count)
+    count += 1    # Don't forget this! (infinite loop otherwise)
+
+# Output: 0, 1, 2, 3, 4</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript: while + parentheses + braces
+let count = 0;
+
+while (count < 5) {
+    console.log(count);
+    count++;      // Don't forget this!
+}
+
+// Output: 0, 1, 2, 3, 4</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C#: same structure as JavaScript
+int count = 0;
+
+while (count < 5)
+{
+    Console.WriteLine(count);
+    count++;      // Don't forget this!
+}
+
+// Output: 0, 1, 2, 3, 4</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ The Infinite Loop Trap</h4>
+                    <p>If your condition never becomes false, the loop runs forever and your program hangs. The most common cause: <strong>forgetting to update the variable</strong> that the condition checks. Always make sure something inside the loop moves you closer to the exit condition.</p>
+                    <pre><code># INFINITE LOOP — Don't do this!
+# count = 0
+# while count < 5:
+#     print(count)
+#     # Oops — count never changes, so count < 5 is always True</code></pre>
+                </div>
+
+                <h3>A Real Use Case: Input Validation</h3>
+                <p><code>while</code> loops shine when you're waiting for valid user input — you can't know in advance how many tries it will take.</p>
+
+                <div class="code-tabs" data-title="Input Validation with while">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Keep asking until the user enters a valid number
+while True:
+    user_input = input("Enter a number between 1 and 10: ")
+
+    if user_input.isdigit():
+        number = int(user_input)
+        if 1 <= number <= 10:
+            break   # Valid! Exit the loop
+
+    print("Invalid input. Try again.")
+
+print(f"You entered: {number}")</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// Browser: prompt returns a string (or null)
+let number;
+
+while (true) {
+    let userInput = prompt("Enter a number between 1 and 10:");
+
+    number = parseInt(userInput);
+    if (!isNaN(number) && number >= 1 && number <= 10) {
+        break;   // Valid! Exit the loop
+    }
+
+    console.log("Invalid input. Try again.");
+}
+
+console.log(`You entered: ${number}`);</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">int number;
+
+while (true)
+{
+    Console.Write("Enter a number between 1 and 10: ");
+    string userInput = Console.ReadLine();
+
+    if (int.TryParse(userInput, out number) && number >= 1 && number <= 10)
+    {
+        break;   // Valid! Exit the loop
+    }
+
+    Console.WriteLine("Invalid input. Try again.");
+}
+
+Console.WriteLine($"You entered: {number}");</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- break and continue -->
+            <section id="break-continue" class="lesson-section">
+                <h2>break and continue</h2>
+                <p>These two keywords give you fine-grained control over loop execution:</p>
+                <ul>
+                    <li><strong><code>break</code></strong> — immediately exit the loop entirely</li>
+                    <li><strong><code>continue</code></strong> — skip the rest of this iteration and jump to the next one</li>
+                </ul>
+
+                <div class="mermaid">
+                    graph TD
+                    A["Start loop"] --> B{"Check condition"}
+                    B -->|True| C{"Hit continue?"}
+                    C -->|Yes| A
+                    C -->|No| D{"Hit break?"}
+                    D -->|Yes| E["Exit loop"]
+                    D -->|No| F["Run remaining<br/>loop body"]
+                    F --> A
+                    B -->|False| E
+                    style C fill:#f59e0b,stroke:#d97706,color:#fff,stroke-width:2px
+                    style D fill:#ef4444,stroke:#dc2626,color:#fff,stroke-width:2px
+                </div>
+
+                <div class="code-tabs" data-title="break — Exit Early">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Find the first negative number in a list
+numbers = [4, 7, 2, -3, 8, 1]
+
+for num in numbers:
+    if num < 0:
+        print(f"Found negative number: {num}")
+        break       # Stop searching — we found one
+    print(f"Checked {num} — positive")
+
+# Output:
+# Checked 4 — positive
+# Checked 7 — positive
+# Checked 2 — positive
+# Found negative number: -3</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">let numbers = [4, 7, 2, -3, 8, 1];
+
+for (let num of numbers) {
+    if (num < 0) {
+        console.log(`Found negative number: ${num}`);
+        break;
+    }
+    console.log(`Checked ${num} — positive`);
+}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">int[] numbers = { 4, 7, 2, -3, 8, 1 };
+
+foreach (int num in numbers)
+{
+    if (num < 0)
+    {
+        Console.WriteLine($"Found negative number: {num}");
+        break;
+    }
+    Console.WriteLine($"Checked {num} — positive");
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="code-tabs" data-title="continue — Skip This One">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Print only odd numbers from 1 to 10
+for i in range(1, 11):
+    if i % 2 == 0:
+        continue   # Skip even numbers
+    print(i)
+
+# Output: 1, 3, 5, 7, 9</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// Print only odd numbers from 1 to 10
+for (let i = 1; i <= 10; i++) {
+    if (i % 2 === 0) {
+        continue;   // Skip even numbers
+    }
+    console.log(i);
+}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// Print only odd numbers from 1 to 10
+for (int i = 1; i <= 10; i++)
+{
+    if (i % 2 == 0)
+    {
+        continue;   // Skip even numbers
+    }
+    Console.WriteLine(i);
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Good News: break and continue Are the Same Everywhere</h4>
+                    <p>Unlike many features we've compared, <code>break</code> and <code>continue</code> work identically across Python, JavaScript, and C#. Same keywords, same behavior. One less thing to worry about when switching languages.</p>
+                </div>
+            </section>
+
+            <!-- Nested Loops -->
+            <section id="nested-loops" class="lesson-section">
+                <h2>Nested Loops</h2>
+                <p>You can put a loop inside another loop. The inner loop runs completely for <strong>each iteration</strong> of the outer loop. This is useful for grids, tables, and combinations.</p>
+
+                <div class="code-tabs" data-title="Nested Loop — Coordinate Grid">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Print a 3×3 coordinate grid
+for row in range(3):
+    for col in range(3):
+        print(f"({row},{col})", end="  ")
+    print()   # New line after each row
+
+# Output:
+# (0,0)  (0,1)  (0,2)
+# (1,0)  (1,1)  (1,2)
+# (2,0)  (2,1)  (2,2)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// Print a 3×3 coordinate grid
+for (let row = 0; row < 3; row++) {
+    let line = "";
+    for (let col = 0; col < 3; col++) {
+        line += `(${row},${col})  `;
+    }
+    console.log(line.trim());
+}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// Print a 3×3 coordinate grid
+for (int row = 0; row < 3; row++)
+{
+    for (int col = 0; col < 3; col++)
+    {
+        Console.Write($"({row},{col})  ");
+    }
+    Console.WriteLine();   // New line after each row
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Nested Loop Performance</h4>
+                    <p>A loop inside a loop multiplies the iteration count. A 10×10 nested loop runs 100 times. A 1000×1000 nested loop runs <strong>one million</strong> times. For beginners this rarely matters, but it's good to be aware that nested loops can get slow with large data. We'll revisit this when we talk about algorithms in later courses.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Nested loops are one of the first "hard" concepts for beginners. Use the grid/coordinate example first because it's visual and easy to trace. Then show the multiplication table exercise as a practical application. Encourage students to trace through nested loops with a table: "outer = 0, inner goes 0,1,2; outer = 1, inner goes 0,1,2; ..." — this manual tracing builds understanding much faster than just reading the code.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- for vs while -->
+            <section id="for-vs-while" class="lesson-section">
+                <h2>for vs. while — When to Use Which</h2>
+
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Use <code>for</code> when…</th>
+                                <th>Use <code>while</code> when…</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>You know exactly how many iterations</td>
+                                <td>You don't know how many iterations</td>
+                            </tr>
+                            <tr>
+                                <td>You're iterating over a collection</td>
+                                <td>You're waiting for a condition to change</td>
+                            </tr>
+                            <tr>
+                                <td>Counting from A to B</td>
+                                <td>Reading user input until it's valid</td>
+                            </tr>
+                            <tr>
+                                <td>Processing each item in a list</td>
+                                <td>Running a game loop</td>
+                            </tr>
+                            <tr>
+                                <td>"Do this 10 times"</td>
+                                <td>"Keep going until the user says stop"</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ Rule of Thumb</h4>
+                    <p>If you can express the problem as "for each item" or "do this N times," use a <code>for</code> loop. If you can express it as "keep going until…," use a <code>while</code> loop. When in doubt, <code>for</code> is usually the safer choice because it's harder to accidentally create an infinite loop.</p>
+                </div>
+            </section>
+
+            <!-- Exercises -->
+            <section id="exercises" class="lesson-section">
+                <h2>Exercises</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 1: Multiplication Table</h3>
+                    <p><strong>Objective:</strong> Print a multiplication table for a given number (1 through 10).</p>
+                    <p>Example output for <code>number = 7</code>:</p>
+                    <pre><code>7 x 1 = 7
+7 x 2 = 14
+7 x 3 = 21
+...
+7 x 10 = 70</code></pre>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Multiplication Table">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">number = 7
+
+print(f"Multiplication table for {number}:")
+print("-" * 20)
+
+for i in range(1, 11):
+    result = number * i
+    print(f"{number} x {i:2d} = {result:3d}")</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">let number = 7;
+
+console.log(`Multiplication table for ${number}:`);
+console.log("-".repeat(20));
+
+for (let i = 1; i <= 10; i++) {
+    let result = number * i;
+    console.log(`${number} x ${String(i).padStart(2)} = ${String(result).padStart(3)}`);
+}</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">int number = 7;
+
+Console.WriteLine($"Multiplication table for {number}:");
+Console.WriteLine(new string('-', 20));
+
+for (int i = 1; i <= 10; i++)
+{
+    int result = number * i;
+    Console.WriteLine($"{number} x {i,2} = {result,3}");
+}</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 2: FizzBuzz</h3>
+                    <p><strong>Objective:</strong> The classic programming challenge! Print numbers 1 to 30, but:</p>
+                    <ul>
+                        <li>For multiples of 3, print "Fizz" instead of the number</li>
+                        <li>For multiples of 5, print "Buzz" instead of the number</li>
+                        <li>For multiples of both 3 and 5, print "FizzBuzz"</li>
+                    </ul>
+                    <p>Hint: Check the "both" case first — why?</p>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="FizzBuzz">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">for i in range(1, 31):
+    if i % 3 == 0 and i % 5 == 0:
+        print("FizzBuzz")
+    elif i % 3 == 0:
+        print("Fizz")
+    elif i % 5 == 0:
+        print("Buzz")
+    else:
+        print(i)
+
+# Why check "both" first? Because 15 is divisible by 3 AND 5.
+# If we checked "divisible by 3" first, it would print "Fizz"
+# and never reach the "both" check.</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">for (let i = 1; i <= 30; i++) {
+    if (i % 3 === 0 && i % 5 === 0) {
+        console.log("FizzBuzz");
+    } else if (i % 3 === 0) {
+        console.log("Fizz");
+    } else if (i % 5 === 0) {
+        console.log("Buzz");
+    } else {
+        console.log(i);
+    }
+}</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">for (int i = 1; i <= 30; i++)
+{
+    if (i % 3 == 0 && i % 5 == 0)
+        Console.WriteLine("FizzBuzz");
+    else if (i % 3 == 0)
+        Console.WriteLine("Fizz");
+    else if (i % 5 == 0)
+        Console.WriteLine("Buzz");
+    else
+        Console.WriteLine(i);
+}</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 3: Number Guessing Game</h3>
+                    <p><strong>Objective:</strong> Create a number guessing game using a <code>while</code> loop.</p>
+                    <ol>
+                        <li>Set a secret number (hardcode it for now)</li>
+                        <li>Loop: ask the user to guess</li>
+                        <li>Tell them "Too high!" or "Too low!"</li>
+                        <li>When they guess correctly, print how many attempts it took</li>
+                    </ol>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Number Guessing Game">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">secret = 42
+attempts = 0
+
+print("I'm thinking of a number between 1 and 100!")
+
+while True:
+    guess_input = input("Your guess: ")
+
+    if not guess_input.isdigit():
+        print("Please enter a valid number.")
+        continue
+
+    guess = int(guess_input)
+    attempts += 1
+
+    if guess < secret:
+        print("Too low!")
+    elif guess > secret:
+        print("Too high!")
+    else:
+        print(f"🎉 Correct! You got it in {attempts} attempts!")
+        break</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">let secret = 42;
+let attempts = 0;
+
+console.log("I'm thinking of a number between 1 and 100!");
+
+while (true) {
+    let guessInput = prompt("Your guess:");
+    let guess = parseInt(guessInput);
+
+    if (isNaN(guess)) {
+        console.log("Please enter a valid number.");
+        continue;
+    }
+
+    attempts++;
+
+    if (guess < secret) {
+        console.log("Too low!");
+    } else if (guess > secret) {
+        console.log("Too high!");
+    } else {
+        console.log(`🎉 Correct! You got it in ${attempts} attempts!`);
+        break;
+    }
+}</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">int secret = 42;
+int attempts = 0;
+
+Console.WriteLine("I'm thinking of a number between 1 and 100!");
+
+while (true)
+{
+    Console.Write("Your guess: ");
+    string guessInput = Console.ReadLine();
+
+    if (!int.TryParse(guessInput, out int guess))
+    {
+        Console.WriteLine("Please enter a valid number.");
+        continue;
+    }
+
+    attempts++;
+
+    if (guess < secret)
+        Console.WriteLine("Too low!");
+    else if (guess > secret)
+        Console.WriteLine("Too high!");
+    else
+    {
+        Console.WriteLine($"🎉 Correct! You got it in {attempts} attempts!");
+        break;
+    }
+}</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Exercise 1 (multiplication table) is the warm-up — it reinforces counting <code>for</code> loops. Exercise 2 (FizzBuzz) is a programming classic and makes a great class activity; walk through the first few numbers as a group and ask students why order matters in the if/elif chain. Exercise 3 (guessing game) is the star — it naturally demonstrates <code>while True</code> with <code>break</code>, uses <code>continue</code> for input validation, and is fun to play. If students finish early, challenge them to add a random number (import random in Python, Math.random() in JS, Random class in C#) instead of hardcoding the secret.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong><code>for</code> loops</strong> are for counting (<code>range()</code> in Python, three-part syntax in JS/C#) and iterating over collections</li>
+                        <li>Python uses <code>for x in range()</code> and <code>for x in collection</code> — one syntax for both counting and iterating</li>
+                        <li>JavaScript and C# share the classic <code>for (init; cond; step)</code> pattern and have <code>for...of</code> / <code>foreach</code> for collections</li>
+                        <li><strong><code>while</code> loops</strong> repeat as long as a condition is true — perfect when you don't know the iteration count</li>
+                        <li><strong><code>break</code></strong> exits a loop immediately; <strong><code>continue</code></strong> skips to the next iteration</li>
+                        <li>Always make sure <code>while</code> loops have an exit condition to avoid infinite loops</li>
+                        <li>Use <code>for</code> when you know the count or have a collection; use <code>while</code> when waiting for a condition</li>
+                    </ul>
+                </div>
+
+                <h3>🚀 What's Next?</h3>
+                <p>You can now make decisions <em>and</em> repeat actions. In the next lesson, we'll add one more tool to your control flow toolkit: <strong>logical operators and truthiness</strong> — how to combine conditions and understand what each language considers "truthy" or "falsy."</p>
+
+                <!-- Quiz -->
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Check</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What does <code>range(2, 8)</code> produce in Python?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="range() excludes the stop value — 8 is not included.">A) 2, 3, 4, 5, 6, 7, 8</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="range(2, 8) starts at 2 (inclusive) and stops before 8 (exclusive), giving you 2, 3, 4, 5, 6, 7.">B) 2, 3, 4, 5, 6, 7</button>
+                            <button class="quiz-option" data-correct="false" data-hint="range(2, 8) includes the start value (2). You might be thinking of range(3, 8).">C) 3, 4, 5, 6, 7</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 2:</strong> What's the difference between <code>break</code> and <code>continue</code>?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="It's the opposite — break exits the loop, continue keeps it going.">A) break continues the loop; continue exits it</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="break immediately exits the entire loop. continue skips the rest of the current iteration and jumps to the next one.">B) break exits the loop entirely; continue skips to the next iteration</button>
+                            <button class="quiz-option" data-correct="false" data-hint="They exist in all three languages and work the same way in each one.">C) break is Python-only; continue is JS/C# only</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_07.html" class="prev-lesson">← Previous: Conditionals — if, else, and switch</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_09.html" class="next-lesson">Next: Logical Operators and Truthiness →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

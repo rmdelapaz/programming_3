@@ -1,0 +1,1753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn to create custom errors and exceptions: raising/throwing your own errors, defining custom exception classes, and building meaningful error hierarchies in Python, JavaScript, and C#.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 7.2: Custom Errors and Exceptions - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 7</a></li>
+            <li aria-current="page">Lesson 7.2: Custom Errors and Exceptions</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🚨 Lesson 7.2: Custom Errors and Exceptions</h1>
+                <p class="lead">In the last lesson, you learned to <em>catch</em> errors. Now it's time to <em>create</em> them. When a user tries to withdraw more money than they have, or registers with a username that's already taken, a generic <code>Error</code> doesn't tell anyone what actually went wrong. Custom exceptions give your code a <strong>vocabulary</strong> for communicating specific problems — making bugs easier to find and error handling more precise.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li><strong>Raise/throw</strong> built-in exceptions with meaningful messages</li>
+                        <li>Create <strong>custom exception classes</strong> that extend built-in error types</li>
+                        <li>Add <strong>extra data</strong> to your custom exceptions (error codes, context)</li>
+                        <li>Build an <strong>exception hierarchy</strong> for a domain (e.g., banking errors)</li>
+                        <li>Use <strong>guard clauses</strong> to validate inputs at function boundaries</li>
+                        <li>Know when to throw vs. when to return error values</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 50 minutes</p>
+                    <p><strong>Project:</strong> Build a bank account system with a custom error hierarchy</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary><h2 style="display: inline; margin: 0;">📑 In This Lesson</h2></summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#throwing-errors" class="toc-link">Throwing/Raising Errors</a></li>
+                        <li><a href="#when-to-throw" class="toc-link">When to Throw</a></li>
+                        <li><a href="#custom-classes" class="toc-link">Custom Exception Classes</a></li>
+                        <li><a href="#extra-data" class="toc-link">Adding Data to Exceptions</a></li>
+                        <li><a href="#hierarchy" class="toc-link">Exception Hierarchies</a></li>
+                        <li><a href="#guard-clauses" class="toc-link">Guard Clauses</a></li>
+                        <li><a href="#throw-vs-return" class="toc-link">Throw vs. Return</a></li>
+                        <li><a href="#exercises" class="toc-link">Exercises</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Throwing/Raising Errors -->
+            <section id="throwing-errors" class="lesson-section">
+                <h2>Throwing/Raising Errors</h2>
+                <p>You already know that runtime errors happen automatically — divide by zero, access a missing key, etc. But you can also <strong>create and throw errors yourself</strong> when your code detects a problem that the language wouldn't catch on its own.</p>
+
+                <div class="code-tabs" data-title="Throwing Built-in Errors">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python uses 'raise' to throw errors
+def set_age(age):
+    if age &lt; 0:
+        raise ValueError("Age cannot be negative")
+    if age &gt; 150:
+        raise ValueError("Age seems unrealistic")
+    return age
+
+# This works fine
+print(set_age(25))    # 25
+
+# This raises an error you created
+try:
+    set_age(-5)
+except ValueError as e:
+    print(f"Error: {e}")    # Error: Age cannot be negative
+
+# You can raise any built-in exception type
+raise TypeError("Expected a string, got int")
+raise FileNotFoundError("Config file missing: app.yaml")
+raise PermissionError("User lacks admin access")
+raise RuntimeError("Something unexpected happened")</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript uses 'throw' to throw errors
+function setAge(age) {
+    if (age &lt; 0) {
+        throw new RangeError("Age cannot be negative");
+    }
+    if (age &gt; 150) {
+        throw new RangeError("Age seems unrealistic");
+    }
+    return age;
+}
+
+// This works fine
+console.log(setAge(25));    // 25
+
+// This throws an error you created
+try {
+    setAge(-5);
+} catch (error) {
+    console.log(`Error: ${error.message}`);  // Error: Age cannot be negative
+}
+
+// You can throw any built-in error type
+throw new TypeError("Expected a string, got number");
+throw new RangeError("Value out of acceptable range");
+throw new ReferenceError("Configuration not initialized");
+throw new Error("Something unexpected happened");
+
+// JS can technically throw anything — but don't do this!
+// throw "bad!";        // ❌ No stack trace, no .message
+// throw 42;            // ❌ Loses all error information
+// throw { msg: "!" };  // ❌ Not an Error instance</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C# uses 'throw' to throw errors
+static int SetAge(int age)
+{
+    if (age &lt; 0)
+        throw new ArgumentOutOfRangeException(nameof(age), "Age cannot be negative");
+    if (age &gt; 150)
+        throw new ArgumentOutOfRangeException(nameof(age), "Age seems unrealistic");
+    return age;
+}
+
+// This works fine
+Console.WriteLine(SetAge(25));    // 25
+
+// This throws an error you created
+try
+{
+    SetAge(-5);
+}
+catch (ArgumentOutOfRangeException e)
+{
+    Console.WriteLine($"Error: {e.Message}");
+}
+
+// Common built-in exception types to throw
+throw new ArgumentNullException(nameof(name), "Name is required");
+throw new ArgumentException("Email format is invalid");
+throw new InvalidOperationException("Cannot edit a locked record");
+throw new NotImplementedException("Feature coming soon");
+throw new NotSupportedException("PDF export not available");</code></pre>
+                    </div>
+                </div>
+
+                <h3>Throw/Raise Syntax</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Action</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Throw an error</td>
+                                <td><code>raise ValueError("msg")</code></td>
+                                <td><code>throw new Error("msg")</code></td>
+                                <td><code>throw new Exception("msg")</code></td>
+                            </tr>
+                            <tr>
+                                <td>Keyword</td>
+                                <td><code>raise</code></td>
+                                <td><code>throw</code></td>
+                                <td><code>throw</code></td>
+                            </tr>
+                            <tr>
+                                <td>Needs <code>new</code>?</td>
+                                <td>No</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                            </tr>
+                            <tr>
+                                <td>Re-throw current error</td>
+                                <td><code>raise</code> (bare)</td>
+                                <td><code>throw</code> (bare) or <code>throw error</code></td>
+                                <td><code>throw;</code> (bare)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Python Says "raise," Not "throw"</h4>
+                    <p>Just like Python uses <code>except</code> instead of <code>catch</code>, it uses <code>raise</code> instead of <code>throw</code>. Python also doesn't need the <code>new</code> keyword — you just call the exception class directly: <code>raise ValueError("msg")</code>. JavaScript and C# both use <code>throw new</code>.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Emphasize that throwing errors is about <em>communication</em> — you're telling future developers (including yourself) exactly what went wrong and why. Show the JavaScript "don't throw primitives" warning as a practical tip. In JS, <code>throw "bad!"</code> technically works but you lose the stack trace and <code>.message</code> property, making debugging much harder. Always throw <code>Error</code> instances. The re-throw syntax (<code>raise</code> / <code>throw</code> / <code>throw;</code> with no argument) is important — it preserves the original stack trace instead of creating a new one.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- When to Throw -->
+            <section id="when-to-throw" class="lesson-section">
+                <h2>When to Throw</h2>
+                <p>Not every problem deserves an exception. Here's a practical guide:</p>
+
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Situation</th>
+                                <th>Throw an Error?</th>
+                                <th>Why</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Function receives invalid arguments</td>
+                                <td><strong>Yes</strong></td>
+                                <td>The caller made a mistake — tell them immediately</td>
+                            </tr>
+                            <tr>
+                                <td>Required resource is missing (file, API, DB)</td>
+                                <td><strong>Yes</strong></td>
+                                <td>Can't continue without it — caller needs to know</td>
+                            </tr>
+                            <tr>
+                                <td>Business rule violated (overdraft, expired coupon)</td>
+                                <td><strong>Yes</strong></td>
+                                <td>Operation shouldn't proceed — protect data integrity</td>
+                            </tr>
+                            <tr>
+                                <td>Object is in wrong state for operation</td>
+                                <td><strong>Yes</strong></td>
+                                <td>E.g., editing after "save," connecting already-connected</td>
+                            </tr>
+                            <tr>
+                                <td>Search returns no results</td>
+                                <td><strong>No</strong></td>
+                                <td>Empty results are normal — return an empty list</td>
+                            </tr>
+                            <tr>
+                                <td>User input might be invalid</td>
+                                <td><strong>Depends</strong></td>
+                                <td>Validate first; only throw if validation is bypassed</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 The Rule of Thumb</h4>
+                    <p>Throw when the caller <strong>broke a contract</strong> — they passed bad data, called things in the wrong order, or a required external resource failed. Don't throw for situations that are a <strong>normal part of program flow</strong>, like a search returning zero results or a user choosing to cancel.</p>
+                </div>
+            </section>
+
+            <!-- Custom Exception Classes -->
+            <section id="custom-classes" class="lesson-section">
+                <h2>Custom Exception Classes</h2>
+                <p>Built-in errors like <code>ValueError</code> or <code>TypeError</code> are generic. When your application has specific problems — like "insufficient funds" or "username taken" — you should create <strong>custom exceptions</strong> that describe exactly what went wrong.</p>
+
+                <div class="code-tabs" data-title="Creating Custom Exceptions">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Custom exceptions inherit from Exception (or a subclass)
+class InsufficientFundsError(Exception):
+    """Raised when a withdrawal exceeds the account balance."""
+    pass
+
+class AccountLockedError(Exception):
+    """Raised when an operation is attempted on a locked account."""
+    pass
+
+class InvalidAmountError(ValueError):
+    """Raised when a monetary amount is invalid (negative or zero)."""
+    pass
+
+# Using custom exceptions
+class BankAccount:
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self.balance = balance
+        self.locked = False
+
+    def withdraw(self, amount):
+        if self.locked:
+            raise AccountLockedError(f"Account for {self.owner} is locked")
+        if amount &lt;= 0:
+            raise InvalidAmountError(f"Amount must be positive, got {amount}")
+        if amount &gt; self.balance:
+            raise InsufficientFundsError(
+                f"Cannot withdraw ${amount:.2f} — balance is ${self.balance:.2f}"
+            )
+        self.balance -= amount
+        return self.balance
+
+# Catching custom exceptions
+account = BankAccount("Alice", 100)
+
+try:
+    account.withdraw(150)
+except InsufficientFundsError as e:
+    print(f"💰 {e}")
+# 💰 Cannot withdraw $150.00 — balance is $100.00
+
+try:
+    account.withdraw(-50)
+except InvalidAmountError as e:
+    print(f"❌ {e}")
+# ❌ Amount must be positive, got -50</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// Custom exceptions extend Error
+class InsufficientFundsError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = "InsufficientFundsError";  // Override the name!
+    }
+}
+
+class AccountLockedError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = "AccountLockedError";
+    }
+}
+
+class InvalidAmountError extends RangeError {
+    constructor(message) {
+        super(message);
+        this.name = "InvalidAmountError";
+    }
+}
+
+// Using custom exceptions
+class BankAccount {
+    constructor(owner, balance = 0) {
+        this.owner = owner;
+        this.balance = balance;
+        this.locked = false;
+    }
+
+    withdraw(amount) {
+        if (this.locked) {
+            throw new AccountLockedError(`Account for ${this.owner} is locked`);
+        }
+        if (amount &lt;= 0) {
+            throw new InvalidAmountError(`Amount must be positive, got ${amount}`);
+        }
+        if (amount &gt; this.balance) {
+            throw new InsufficientFundsError(
+                `Cannot withdraw $${amount.toFixed(2)} — balance is $${this.balance.toFixed(2)}`
+            );
+        }
+        this.balance -= amount;
+        return this.balance;
+    }
+}
+
+// Catching custom exceptions
+let account = new BankAccount("Alice", 100);
+
+try {
+    account.withdraw(150);
+} catch (error) {
+    if (error instanceof InsufficientFundsError) {
+        console.log(`💰 ${error.message}`);
+    }
+}
+// 💰 Cannot withdraw $150.00 — balance is $100.00</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// Custom exceptions inherit from Exception (or a subclass)
+class InsufficientFundsException : Exception
+{
+    public InsufficientFundsException(string message) : base(message) { }
+}
+
+class AccountLockedException : InvalidOperationException
+{
+    public AccountLockedException(string message) : base(message) { }
+}
+
+class InvalidAmountException : ArgumentException
+{
+    public InvalidAmountException(string message) : base(message) { }
+}
+
+// Using custom exceptions
+class BankAccount
+{
+    public string Owner;
+    public decimal Balance;
+    public bool Locked;
+
+    public BankAccount(string owner, decimal balance = 0)
+    {
+        Owner = owner;
+        Balance = balance;
+        Locked = false;
+    }
+
+    public decimal Withdraw(decimal amount)
+    {
+        if (Locked)
+            throw new AccountLockedException($"Account for {Owner} is locked");
+        if (amount &lt;= 0)
+            throw new InvalidAmountException($"Amount must be positive, got {amount}");
+        if (amount &gt; Balance)
+            throw new InsufficientFundsException(
+                $"Cannot withdraw {amount:C} — balance is {Balance:C}");
+
+        Balance -= amount;
+        return Balance;
+    }
+}
+
+// Catching custom exceptions
+var account = new BankAccount("Alice", 100);
+
+try
+{
+    account.Withdraw(150);
+}
+catch (InsufficientFundsException e)
+{
+    Console.WriteLine($"💰 {e.Message}");
+}
+// 💰 Cannot withdraw $150.00 — balance is $100.00</code></pre>
+                    </div>
+                </div>
+
+                <h3>Custom Exception Syntax</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Base class</td>
+                                <td><code>Exception</code></td>
+                                <td><code>Error</code></td>
+                                <td><code>Exception</code></td>
+                            </tr>
+                            <tr>
+                                <td>Minimal definition</td>
+                                <td><code>class MyError(Exception): pass</code></td>
+                                <td>Constructor + <code>this.name</code></td>
+                                <td>Constructor calling <code>: base(msg)</code></td>
+                            </tr>
+                            <tr>
+                                <td>Naming convention</td>
+                                <td><code>SomethingError</code></td>
+                                <td><code>SomethingError</code></td>
+                                <td><code>SomethingException</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ JavaScript: Always Set <code>this.name</code></h4>
+                    <p>If you don't set <code>this.name</code> in your custom JS error class, the error will display as <code>"Error"</code> in logs and stack traces instead of <code>"InsufficientFundsError"</code>. Python and C# get the class name automatically — JavaScript requires you to set it manually.</p>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 C# Convention: "Exception" Suffix</h4>
+                    <p>C# uses the suffix <code>Exception</code> (e.g., <code>InsufficientFundsException</code>) while Python and JavaScript use <code>Error</code> (e.g., <code>InsufficientFundsError</code>). This is just a naming convention — follow whichever your language community expects.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>The bank account is a perfect teaching domain because every student understands withdrawals, deposits, and balances. Walk through the <code>withdraw()</code> method line by line: "First we check if the account is locked — different error. Then we check if the amount is valid — different error. Then we check if there's enough money — different error." Each check uses a <em>different</em> custom exception, which means the caller can handle each situation differently. Compare this to a single generic <code>raise Exception("something went wrong")</code> — the caller would have no idea what happened. Python's minimal syntax (<code>class MyError(Exception): pass</code>) is worth highlighting; it's the simplest custom exception definition across all three languages.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Adding Data to Exceptions -->
+            <section id="extra-data" class="lesson-section">
+                <h2>Adding Data to Exceptions</h2>
+                <p>A message string is helpful, but sometimes the <em>caller</em> needs structured data to handle the error properly — like the amount that was short, the account balance, or a specific error code. Custom exceptions can carry any data you want.</p>
+
+                <div class="code-tabs" data-title="Exceptions with Extra Data">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">class InsufficientFundsError(Exception):
+    """Carries the shortage amount so callers can act on it."""
+    def __init__(self, balance, amount):
+        self.balance = balance
+        self.amount = amount
+        self.shortage = amount - balance
+        super().__init__(
+            f"Cannot withdraw ${amount:.2f} from ${balance:.2f} "
+            f"(short ${self.shortage:.2f})"
+        )
+
+class ValidationError(Exception):
+    """Carries a field name and error code."""
+    def __init__(self, field, message, code=None):
+        self.field = field
+        self.code = code
+        super().__init__(f"{field}: {message}")
+
+# Using the rich exception data
+def withdraw(balance, amount):
+    if amount &gt; balance:
+        raise InsufficientFundsError(balance, amount)
+    return balance - amount
+
+try:
+    withdraw(75.00, 100.00)
+except InsufficientFundsError as e:
+    print(f"Error: {e}")
+    print(f"  Balance:  ${e.balance:.2f}")
+    print(f"  Requested: ${e.amount:.2f}")
+    print(f"  Short by:  ${e.shortage:.2f}")
+    # Now you can offer: "Would you like to withdraw $75.00 instead?"
+
+# Error: Cannot withdraw $100.00 from $75.00 (short $25.00)
+#   Balance:  $75.00
+#   Requested: $100.00
+#   Short by:  $25.00
+
+# Validation with error codes
+try:
+    raise ValidationError("email", "Invalid format", code="INVALID_EMAIL")
+except ValidationError as e:
+    print(f"Field: {e.field}, Code: {e.code}, Message: {e}")</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">class InsufficientFundsError extends Error {
+    constructor(balance, amount) {
+        let shortage = amount - balance;
+        super(
+            `Cannot withdraw $${amount.toFixed(2)} from $${balance.toFixed(2)} ` +
+            `(short $${shortage.toFixed(2)})`
+        );
+        this.name = "InsufficientFundsError";
+        this.balance = balance;
+        this.amount = amount;
+        this.shortage = shortage;
+    }
+}
+
+class ValidationError extends Error {
+    constructor(field, message, code = null) {
+        super(`${field}: ${message}`);
+        this.name = "ValidationError";
+        this.field = field;
+        this.code = code;
+    }
+}
+
+// Using the rich exception data
+function withdraw(balance, amount) {
+    if (amount &gt; balance) {
+        throw new InsufficientFundsError(balance, amount);
+    }
+    return balance - amount;
+}
+
+try {
+    withdraw(75.00, 100.00);
+} catch (error) {
+    if (error instanceof InsufficientFundsError) {
+        console.log(`Error: ${error.message}`);
+        console.log(`  Balance:  $${error.balance.toFixed(2)}`);
+        console.log(`  Requested: $${error.amount.toFixed(2)}`);
+        console.log(`  Short by:  $${error.shortage.toFixed(2)}`);
+    }
+}
+
+// Validation with error codes
+try {
+    throw new ValidationError("email", "Invalid format", "INVALID_EMAIL");
+} catch (error) {
+    console.log(`Field: ${error.field}, Code: ${error.code}`);
+}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">class InsufficientFundsException : Exception
+{
+    public decimal Balance { get; }
+    public decimal Amount { get; }
+    public decimal Shortage =&gt; Amount - Balance;
+
+    public InsufficientFundsException(decimal balance, decimal amount)
+        : base($"Cannot withdraw {amount:C} from {balance:C} (short {amount - balance:C})")
+    {
+        Balance = balance;
+        Amount = amount;
+    }
+}
+
+class ValidationException : Exception
+{
+    public string Field { get; }
+    public string? Code { get; }
+
+    public ValidationException(string field, string message, string? code = null)
+        : base($"{field}: {message}")
+    {
+        Field = field;
+        Code = code;
+    }
+}
+
+// Using the rich exception data
+static decimal Withdraw(decimal balance, decimal amount)
+{
+    if (amount &gt; balance)
+        throw new InsufficientFundsException(balance, amount);
+    return balance - amount;
+}
+
+try
+{
+    Withdraw(75.00m, 100.00m);
+}
+catch (InsufficientFundsException e)
+{
+    Console.WriteLine($"Error: {e.Message}");
+    Console.WriteLine($"  Balance:  {e.Balance:C}");
+    Console.WriteLine($"  Requested: {e.Amount:C}");
+    Console.WriteLine($"  Short by:  {e.Shortage:C}");
+}
+
+// Validation with error codes
+try
+{
+    throw new ValidationException("email", "Invalid format", "INVALID_EMAIL");
+}
+catch (ValidationException e)
+{
+    Console.WriteLine($"Field: {e.Field}, Code: {e.Code}");
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ Why Data-Rich Exceptions Matter</h4>
+                    <p>With extra data on the exception, the caller can make <strong>smart decisions</strong>. Instead of just showing "insufficient funds," the UI could say: "You're $25.00 short. Would you like to withdraw $75.00 instead?" The error code (<code>INVALID_EMAIL</code>) lets the frontend highlight the right field and show the right message — without parsing error strings.</p>
+                </div>
+            </section>
+
+            <!-- Exception Hierarchies -->
+            <section id="hierarchy" class="lesson-section">
+                <h2>Exception Hierarchies</h2>
+                <p>Just as classes can form inheritance trees, exceptions can too. A hierarchy lets callers choose <em>how specifically</em> they want to handle errors — they can catch the exact type or a broader parent type.</p>
+
+                <div class="mermaid">
+                    classDiagram
+                        class BankError {
+                            +message: string
+                        }
+                        class AccountError {
+                            +account_id: string
+                        }
+                        class TransactionError {
+                            +amount: decimal
+                        }
+                        class InsufficientFundsError {
+                            +balance: decimal
+                            +shortage: decimal
+                        }
+                        class DailyLimitExceededError {
+                            +limit: decimal
+                            +attempted: decimal
+                        }
+                        class AccountLockedError {
+                            +reason: string
+                        }
+                        class AccountNotFoundError {
+                            +account_id: string
+                        }
+                        BankError <|-- AccountError : extends
+                        BankError <|-- TransactionError : extends
+                        TransactionError <|-- InsufficientFundsError : extends
+                        TransactionError <|-- DailyLimitExceededError : extends
+                        AccountError <|-- AccountLockedError : extends
+                        AccountError <|-- AccountNotFoundError : extends
+                </div>
+
+                <div class="code-tabs" data-title="Exception Hierarchy">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Base error for all banking operations
+class BankError(Exception):
+    """Base class for all banking exceptions."""
+    pass
+
+# Account-related errors
+class AccountError(BankError):
+    """Base for account-level problems."""
+    def __init__(self, account_id, message):
+        self.account_id = account_id
+        super().__init__(f"Account {account_id}: {message}")
+
+class AccountLockedError(AccountError):
+    def __init__(self, account_id, reason="policy violation"):
+        self.reason = reason
+        super().__init__(account_id, f"Locked ({reason})")
+
+class AccountNotFoundError(AccountError):
+    def __init__(self, account_id):
+        super().__init__(account_id, "Not found")
+
+# Transaction-related errors
+class TransactionError(BankError):
+    """Base for transaction-level problems."""
+    def __init__(self, amount, message):
+        self.amount = amount
+        super().__init__(f"Transaction of ${amount:.2f}: {message}")
+
+class InsufficientFundsError(TransactionError):
+    def __init__(self, amount, balance):
+        self.balance = balance
+        self.shortage = amount - balance
+        super().__init__(amount, f"Insufficient funds (balance: ${balance:.2f})")
+
+class DailyLimitExceededError(TransactionError):
+    def __init__(self, amount, limit):
+        self.limit = limit
+        super().__init__(amount, f"Exceeds daily limit of ${limit:.2f}")
+
+# --- Catching at different levels of specificity ---
+
+# Specific: handle just insufficient funds
+try:
+    raise InsufficientFundsError(500, 200)
+except InsufficientFundsError as e:
+    print(f"Short ${e.shortage:.2f}")
+
+# Medium: handle any transaction error
+try:
+    raise DailyLimitExceededError(5000, 2000)
+except TransactionError as e:
+    print(f"Transaction failed: {e}")
+
+# Broad: handle any banking error
+try:
+    raise AccountLockedError("ACC-123", "fraud investigation")
+except BankError as e:
+    print(f"Banking error: {e}")</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// Base error for all banking operations
+class BankError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = "BankError";
+    }
+}
+
+// Account-related errors
+class AccountError extends BankError {
+    constructor(accountId, message) {
+        super(`Account ${accountId}: ${message}`);
+        this.name = "AccountError";
+        this.accountId = accountId;
+    }
+}
+
+class AccountLockedError extends AccountError {
+    constructor(accountId, reason = "policy violation") {
+        super(accountId, `Locked (${reason})`);
+        this.name = "AccountLockedError";
+        this.reason = reason;
+    }
+}
+
+class AccountNotFoundError extends AccountError {
+    constructor(accountId) {
+        super(accountId, "Not found");
+        this.name = "AccountNotFoundError";
+    }
+}
+
+// Transaction-related errors
+class TransactionError extends BankError {
+    constructor(amount, message) {
+        super(`Transaction of $${amount.toFixed(2)}: ${message}`);
+        this.name = "TransactionError";
+        this.amount = amount;
+    }
+}
+
+class InsufficientFundsError extends TransactionError {
+    constructor(amount, balance) {
+        super(amount, `Insufficient funds (balance: $${balance.toFixed(2)})`);
+        this.name = "InsufficientFundsError";
+        this.balance = balance;
+        this.shortage = amount - balance;
+    }
+}
+
+// --- Catching at different levels ---
+try {
+    throw new InsufficientFundsError(500, 200);
+} catch (error) {
+    if (error instanceof InsufficientFundsError) {
+        console.log(`Short $${error.shortage.toFixed(2)}`);
+    } else if (error instanceof TransactionError) {
+        console.log(`Transaction failed: ${error.message}`);
+    } else if (error instanceof BankError) {
+        console.log(`Banking error: ${error.message}`);
+    }
+}
+
+// instanceof checks the ENTIRE chain
+let err = new InsufficientFundsError(100, 50);
+console.log(err instanceof InsufficientFundsError);  // true
+console.log(err instanceof TransactionError);         // true
+console.log(err instanceof BankError);                // true
+console.log(err instanceof Error);                    // true</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// Base error for all banking operations
+class BankException : Exception
+{
+    public BankException(string message) : base(message) { }
+}
+
+// Account-related errors
+class AccountException : BankException
+{
+    public string AccountId { get; }
+    public AccountException(string accountId, string message)
+        : base($"Account {accountId}: {message}")
+    { AccountId = accountId; }
+}
+
+class AccountLockedException : AccountException
+{
+    public string Reason { get; }
+    public AccountLockedException(string accountId, string reason = "policy violation")
+        : base(accountId, $"Locked ({reason})")
+    { Reason = reason; }
+}
+
+class AccountNotFoundException : AccountException
+{
+    public AccountNotFoundException(string accountId)
+        : base(accountId, "Not found") { }
+}
+
+// Transaction-related errors
+class TransactionException : BankException
+{
+    public decimal Amount { get; }
+    public TransactionException(decimal amount, string message)
+        : base($"Transaction of {amount:C}: {message}")
+    { Amount = amount; }
+}
+
+class InsufficientFundsException : TransactionException
+{
+    public decimal Balance { get; }
+    public decimal Shortage =&gt; Amount - Balance;
+    public InsufficientFundsException(decimal amount, decimal balance)
+        : base(amount, $"Insufficient funds (balance: {balance:C})")
+    { Balance = balance; }
+}
+
+// --- Catching at different levels ---
+
+// Specific
+try { throw new InsufficientFundsException(500, 200); }
+catch (InsufficientFundsException e)
+{ Console.WriteLine($"Short {e.Shortage:C}"); }
+
+// Medium
+try { throw new InsufficientFundsException(500, 200); }
+catch (TransactionException e)
+{ Console.WriteLine($"Transaction failed: {e.Message}"); }
+
+// Broad
+try { throw new AccountLockedException("ACC-123", "fraud"); }
+catch (BankException e)
+{ Console.WriteLine($"Banking error: {e.Message}"); }</code></pre>
+                    </div>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>The Mermaid diagram is key here — let students see the tree structure before diving into code. Walk through the catching levels: "If I catch <code>TransactionError</code>, that catches <em>both</em> <code>InsufficientFundsError</code> and <code>DailyLimitExceededError</code>. If I catch <code>BankError</code>, I catch <em>everything</em>." This is exactly the same polymorphism they learned in Lesson 18 — exceptions are just classes, and <code>isinstance</code>/<code>instanceof</code>/<code>is</code> works the same way. Note that JavaScript's single <code>catch</code> block means you use <code>instanceof</code> chains instead of multiple catch blocks — less elegant but equally functional.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Guard Clauses -->
+            <section id="guard-clauses" class="lesson-section">
+                <h2>Guard Clauses</h2>
+                <p>A <strong>guard clause</strong> is a check at the top of a function that immediately throws if the input is invalid. Guards make your code cleaner — they eliminate deeply nested <code>if/else</code> blocks by handling the "bad" cases first and letting the "happy path" flow naturally.</p>
+
+                <div class="code-tabs" data-title="Guard Clauses vs. Nested Ifs">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># ❌ Without guards — deeply nested "pyramid of doom"
+def create_user(username, email, age):
+    if username:
+        if len(username) &gt;= 3:
+            if email:
+                if "@" in email:
+                    if age:
+                        if age &gt;= 13:
+                            # FINALLY, the actual logic, buried 6 levels deep
+                            return {"username": username, "email": email, "age": age}
+                        else:
+                            raise ValueError("Must be 13+")
+                    else:
+                        raise ValueError("Age required")
+                else:
+                    raise ValueError("Invalid email")
+            else:
+                raise ValueError("Email required")
+        else:
+            raise ValueError("Username too short")
+    else:
+        raise ValueError("Username required")
+
+# ✅ With guards — flat, clear, and readable
+def create_user(username, email, age):
+    # Guards: check each requirement, bail immediately if invalid
+    if not username:
+        raise ValueError("Username is required")
+    if len(username) &lt; 3:
+        raise ValueError("Username must be at least 3 characters")
+    if not email:
+        raise ValueError("Email is required")
+    if "@" not in email:
+        raise ValueError("Email must contain @")
+    if not age:
+        raise ValueError("Age is required")
+    if age &lt; 13:
+        raise ValueError("Must be at least 13 years old")
+
+    # Happy path — no nesting needed
+    return {"username": username, "email": email, "age": age}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// ❌ Without guards — deeply nested
+function createUser(username, email, age) {
+    if (username) {
+        if (username.length &gt;= 3) {
+            if (email) {
+                if (email.includes("@")) {
+                    if (age) {
+                        if (age &gt;= 13) {
+                            return { username, email, age };
+                        } else { throw new RangeError("Must be 13+"); }
+                    } else { throw new Error("Age required"); }
+                } else { throw new Error("Invalid email"); }
+            } else { throw new Error("Email required"); }
+        } else { throw new Error("Username too short"); }
+    } else { throw new Error("Username required"); }
+}
+
+// ✅ With guards — flat, clear, and readable
+function createUser(username, email, age) {
+    if (!username) throw new Error("Username is required");
+    if (username.length &lt; 3) throw new Error("Username must be at least 3 characters");
+    if (!email) throw new Error("Email is required");
+    if (!email.includes("@")) throw new Error("Email must contain @");
+    if (!age) throw new Error("Age is required");
+    if (age &lt; 13) throw new RangeError("Must be at least 13 years old");
+
+    // Happy path — no nesting
+    return { username, email, age };
+}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// ✅ With guards — clean and modern C#
+static User CreateUser(string? username, string? email, int? age)
+{
+    if (string.IsNullOrWhiteSpace(username))
+        throw new ArgumentException("Username is required");
+    if (username.Length &lt; 3)
+        throw new ArgumentException("Username must be at least 3 characters");
+    if (string.IsNullOrWhiteSpace(email))
+        throw new ArgumentException("Email is required");
+    if (!email.Contains('@'))
+        throw new ArgumentException("Email must contain @");
+    if (age is null)
+        throw new ArgumentNullException(nameof(age), "Age is required");
+    if (age &lt; 13)
+        throw new ArgumentOutOfRangeException(nameof(age), "Must be at least 13");
+
+    // Happy path
+    return new User { Username = username, Email = email, Age = age.Value };
+}
+
+// C# 11+ also has ArgumentException.ThrowIfNullOrEmpty()
+static void QuickGuards(string name, int count)
+{
+    ArgumentException.ThrowIfNullOrEmpty(name);
+    ArgumentOutOfRangeException.ThrowIfNegative(count);
+    // ... happy path
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ Guard Clause Benefits</h4>
+                    <ul>
+                        <li><strong>Flat code</strong> — no nesting pyramid, easy to scan</li>
+                        <li><strong>Fail fast</strong> — invalid inputs are rejected immediately</li>
+                        <li><strong>Happy path is obvious</strong> — it's all the code <em>after</em> the guards</li>
+                        <li><strong>Each guard is independent</strong> — easy to add, remove, or reorder validations</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Throw vs. Return -->
+            <section id="throw-vs-return" class="lesson-section">
+                <h2>Throw vs. Return</h2>
+                <p>When something goes wrong, should you <code>throw</code> an error or <code>return</code> a special value (like <code>null</code> or an error object)? Both have their place.</p>
+
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Approach</th>
+                                <th>Best For</th>
+                                <th>Pros</th>
+                                <th>Cons</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Throw</strong></td>
+                                <td>Broken contracts, unrecoverable states</td>
+                                <td>Can't be ignored, clear stack trace</td>
+                                <td>Interrupts flow, costs performance if frequent</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Return null/None</strong></td>
+                                <td>"Not found" results</td>
+                                <td>Simple, expected by callers</td>
+                                <td>Easy to forget to check, null propagation bugs</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Return result object</strong></td>
+                                <td>Operations that may or may not succeed</td>
+                                <td>Forces caller to handle both paths</td>
+                                <td>More code to write and consume</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="code-tabs" data-title="Throw vs. Return Patterns">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Pattern 1: Throw — for contract violations
+def divide(a, b):
+    if b == 0:
+        raise ZeroDivisionError("Cannot divide by zero")
+    return a / b
+
+# Pattern 2: Return None — for "not found" searches
+def find_user(users, name):
+    for user in users:
+        if user["name"] == name:
+            return user
+    return None  # Not found is a normal outcome
+
+# Pattern 3: Return a result tuple/dict — forces handling
+def validate_password(password):
+    errors = []
+    if len(password) &lt; 8:
+        errors.append("Must be at least 8 characters")
+    if not any(c.isupper() for c in password):
+        errors.append("Must contain an uppercase letter")
+    if not any(c.isdigit() for c in password):
+        errors.append("Must contain a digit")
+
+    if errors:
+        return {"valid": False, "errors": errors}
+    return {"valid": True, "errors": []}
+
+# Usage:
+result = validate_password("abc")
+if not result["valid"]:
+    for error in result["errors"]:
+        print(f"  ❌ {error}")
+# ❌ Must be at least 8 characters
+# ❌ Must contain an uppercase letter
+# ❌ Must contain a digit</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// Pattern 1: Throw — for contract violations
+function divide(a, b) {
+    if (b === 0) throw new Error("Cannot divide by zero");
+    return a / b;
+}
+
+// Pattern 2: Return null — for "not found" searches
+function findUser(users, name) {
+    return users.find(u =&gt; u.name === name) || null;
+}
+
+// Pattern 3: Return a result object — forces handling
+function validatePassword(password) {
+    let errors = [];
+    if (password.length &lt; 8)
+        errors.push("Must be at least 8 characters");
+    if (!/[A-Z]/.test(password))
+        errors.push("Must contain an uppercase letter");
+    if (!/\d/.test(password))
+        errors.push("Must contain a digit");
+
+    return { valid: errors.length === 0, errors };
+}
+
+let result = validatePassword("abc");
+if (!result.valid) {
+    result.errors.forEach(err =&gt; console.log(`  ❌ ${err}`));
+}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// Pattern 1: Throw — for contract violations
+static double Divide(double a, double b)
+{
+    if (b == 0) throw new DivideByZeroException("Cannot divide by zero");
+    return a / b;
+}
+
+// Pattern 2: TryParse pattern — caller decides how to handle
+// This is a very common C# idiom
+static bool TryFindUser(List&lt;User&gt; users, string name, out User? found)
+{
+    found = users.FirstOrDefault(u =&gt; u.Name == name);
+    return found != null;
+}
+
+// Usage:
+if (TryFindUser(users, "Alice", out var user))
+    Console.WriteLine($"Found: {user.Name}");
+else
+    Console.WriteLine("User not found");
+
+// Pattern 3: Return a result object
+record ValidationResult(bool Valid, List&lt;string&gt; Errors);
+
+static ValidationResult ValidatePassword(string password)
+{
+    var errors = new List&lt;string&gt;();
+    if (password.Length &lt; 8)
+        errors.Add("Must be at least 8 characters");
+    if (!password.Any(char.IsUpper))
+        errors.Add("Must contain an uppercase letter");
+    if (!password.Any(char.IsDigit))
+        errors.Add("Must contain a digit");
+    return new ValidationResult(errors.Count == 0, errors);
+}
+
+var result = ValidatePassword("abc");
+if (!result.Valid)
+    result.Errors.ForEach(e =&gt; Console.WriteLine($"  ❌ {e}"));</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 C#'s TryParse Pattern</h4>
+                    <p>C# has a beloved convention: methods that might fail return a <code>bool</code> and put the result in an <code>out</code> parameter. You see this everywhere: <code>int.TryParse()</code>, <code>Dictionary.TryGetValue()</code>, etc. It's the "return" approach baked into the language's DNA.</p>
+                </div>
+            </section>
+
+            <!-- Exercises -->
+            <section id="exercises" class="lesson-section">
+                <h2>Exercises</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 1: User Registration System</h3>
+                    <p><strong>Objective:</strong> Build a registration system with custom exceptions:</p>
+                    <ul>
+                        <li>Create custom exceptions: <code>RegistrationError</code> (base), <code>UsernameTakenError</code>, <code>WeakPasswordError</code>, <code>InvalidEmailError</code></li>
+                        <li><code>WeakPasswordError</code> should list the specific requirements that failed</li>
+                        <li>Build a <code>register_user()</code> function that validates and either succeeds or throws the appropriate custom exception</li>
+                        <li>Maintain a list of existing users to check for duplicate usernames</li>
+                        <li>Demonstrate catching at different levels: specific error types and the base <code>RegistrationError</code></li>
+                    </ul>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="User Registration">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">class RegistrationError(Exception):
+    """Base for all registration problems."""
+    pass
+
+class UsernameTakenError(RegistrationError):
+    def __init__(self, username):
+        self.username = username
+        super().__init__(f"Username '{username}' is already taken")
+
+class WeakPasswordError(RegistrationError):
+    def __init__(self, failures):
+        self.failures = failures
+        msg = "Password too weak: " + "; ".join(failures)
+        super().__init__(msg)
+
+class InvalidEmailError(RegistrationError):
+    def __init__(self, email):
+        self.email = email
+        super().__init__(f"Invalid email address: '{email}'")
+
+# Existing users database (simulated)
+existing_users = ["alice", "bob", "charlie"]
+
+def register_user(username, email, password):
+    # Guard clauses with custom exceptions
+    if not username or len(username) &lt; 3:
+        raise RegistrationError("Username must be at least 3 characters")
+
+    if username.lower() in existing_users:
+        raise UsernameTakenError(username)
+
+    if not email or "@" not in email or "." not in email.split("@")[-1]:
+        raise InvalidEmailError(email)
+
+    # Password validation
+    pw_failures = []
+    if len(password) &lt; 8:
+        pw_failures.append("at least 8 characters")
+    if not any(c.isupper() for c in password):
+        pw_failures.append("one uppercase letter")
+    if not any(c.islower() for c in password):
+        pw_failures.append("one lowercase letter")
+    if not any(c.isdigit() for c in password):
+        pw_failures.append("one digit")
+    if pw_failures:
+        raise WeakPasswordError(pw_failures)
+
+    # Success!
+    existing_users.append(username.lower())
+    return {"username": username, "email": email, "status": "active"}
+
+# --- Test specific catches ---
+test_cases = [
+    ("alice", "alice@test.com", "StrongPass1"),    # Username taken
+    ("newuser", "bad-email", "StrongPass1"),        # Invalid email
+    ("newuser", "new@test.com", "weak"),            # Weak password
+    ("newuser", "new@test.com", "StrongPass1"),     # Success!
+]
+
+for username, email, password in test_cases:
+    try:
+        user = register_user(username, email, password)
+        print(f"✅ Registered: {user['username']}")
+    except UsernameTakenError as e:
+        print(f"👤 {e}")
+    except InvalidEmailError as e:
+        print(f"📧 {e}")
+    except WeakPasswordError as e:
+        print(f"🔒 {e}")
+        print(f"   Missing: {', '.join(e.failures)}")
+    except RegistrationError as e:
+        print(f"❌ Registration failed: {e}")</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">class RegistrationError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = "RegistrationError";
+    }
+}
+
+class UsernameTakenError extends RegistrationError {
+    constructor(username) {
+        super(`Username '${username}' is already taken`);
+        this.name = "UsernameTakenError";
+        this.username = username;
+    }
+}
+
+class WeakPasswordError extends RegistrationError {
+    constructor(failures) {
+        super("Password too weak: " + failures.join("; "));
+        this.name = "WeakPasswordError";
+        this.failures = failures;
+    }
+}
+
+class InvalidEmailError extends RegistrationError {
+    constructor(email) {
+        super(`Invalid email address: '${email}'`);
+        this.name = "InvalidEmailError";
+        this.email = email;
+    }
+}
+
+let existingUsers = ["alice", "bob", "charlie"];
+
+function registerUser(username, email, password) {
+    if (!username || username.length &lt; 3)
+        throw new RegistrationError("Username must be at least 3 characters");
+    if (existingUsers.includes(username.toLowerCase()))
+        throw new UsernameTakenError(username);
+    if (!email || !email.includes("@") || !email.split("@")[1]?.includes("."))
+        throw new InvalidEmailError(email);
+
+    let failures = [];
+    if (password.length &lt; 8) failures.push("at least 8 characters");
+    if (!/[A-Z]/.test(password)) failures.push("one uppercase letter");
+    if (!/[a-z]/.test(password)) failures.push("one lowercase letter");
+    if (!/\d/.test(password)) failures.push("one digit");
+    if (failures.length) throw new WeakPasswordError(failures);
+
+    existingUsers.push(username.toLowerCase());
+    return { username, email, status: "active" };
+}
+
+// Test
+let tests = [
+    ["alice", "alice@test.com", "StrongPass1"],
+    ["newuser", "bad-email", "StrongPass1"],
+    ["newuser", "new@test.com", "weak"],
+    ["newuser", "new@test.com", "StrongPass1"],
+];
+
+for (let [username, email, password] of tests) {
+    try {
+        let user = registerUser(username, email, password);
+        console.log(`✅ Registered: ${user.username}`);
+    } catch (error) {
+        if (error instanceof UsernameTakenError) {
+            console.log(`👤 ${error.message}`);
+        } else if (error instanceof InvalidEmailError) {
+            console.log(`📧 ${error.message}`);
+        } else if (error instanceof WeakPasswordError) {
+            console.log(`🔒 ${error.message}`);
+        } else if (error instanceof RegistrationError) {
+            console.log(`❌ ${error.message}`);
+        }
+    }
+}</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">class RegistrationException : Exception
+{
+    public RegistrationException(string msg) : base(msg) { }
+}
+
+class UsernameTakenException : RegistrationException
+{
+    public string Username { get; }
+    public UsernameTakenException(string username)
+        : base($"Username '{username}' is already taken")
+    { Username = username; }
+}
+
+class WeakPasswordException : RegistrationException
+{
+    public List&lt;string&gt; Failures { get; }
+    public WeakPasswordException(List&lt;string&gt; failures)
+        : base("Password too weak: " + string.Join("; ", failures))
+    { Failures = failures; }
+}
+
+class InvalidEmailException : RegistrationException
+{
+    public string Email { get; }
+    public InvalidEmailException(string email)
+        : base($"Invalid email: '{email}'")
+    { Email = email; }
+}
+
+List&lt;string&gt; existingUsers = new() { "alice", "bob", "charlie" };
+
+Dictionary&lt;string, string&gt; RegisterUser(string username, string email, string password)
+{
+    if (string.IsNullOrWhiteSpace(username) || username.Length &lt; 3)
+        throw new RegistrationException("Username must be at least 3 characters");
+    if (existingUsers.Contains(username.ToLower()))
+        throw new UsernameTakenException(username);
+    if (string.IsNullOrWhiteSpace(email) || !email.Contains('@'))
+        throw new InvalidEmailException(email);
+
+    var failures = new List&lt;string&gt;();
+    if (password.Length &lt; 8) failures.Add("at least 8 characters");
+    if (!password.Any(char.IsUpper)) failures.Add("one uppercase letter");
+    if (!password.Any(char.IsLower)) failures.Add("one lowercase letter");
+    if (!password.Any(char.IsDigit)) failures.Add("one digit");
+    if (failures.Count &gt; 0) throw new WeakPasswordException(failures);
+
+    existingUsers.Add(username.ToLower());
+    return new() { ["username"] = username, ["status"] = "active" };
+}
+
+try { RegisterUser("alice", "a@b.com", "StrongPass1"); }
+catch (UsernameTakenException e) { Console.WriteLine($"👤 {e.Message}"); }
+
+try { RegisterUser("new", "bad", "StrongPass1"); }
+catch (InvalidEmailException e) { Console.WriteLine($"📧 {e.Message}"); }
+
+try { RegisterUser("new", "n@b.com", "weak"); }
+catch (WeakPasswordException e) { Console.WriteLine($"🔒 {e.Message}"); }</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 2: Online Store Order System</h3>
+                    <p><strong>Objective:</strong> Build an order processing system with a custom error hierarchy:</p>
+                    <ul>
+                        <li><code>OrderError</code> (base) → <code>OutOfStockError</code> (with <code>product</code>, <code>requested</code>, <code>available</code>) and <code>InvalidQuantityError</code></li>
+                        <li>A product inventory dictionary with stock levels</li>
+                        <li>An <code>order_item(product, quantity)</code> function that validates and processes orders</li>
+                        <li>A <code>process_cart(items)</code> function that processes multiple items, collecting errors for each failed item instead of stopping at the first error</li>
+                        <li>Display a summary: which items succeeded, which failed, and why</li>
+                    </ul>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Online Store Orders">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">class OrderError(Exception):
+    """Base for all order problems."""
+    pass
+
+class OutOfStockError(OrderError):
+    def __init__(self, product, requested, available):
+        self.product = product
+        self.requested = requested
+        self.available = available
+        super().__init__(
+            f"'{product}': requested {requested}, only {available} available"
+        )
+
+class InvalidQuantityError(OrderError):
+    def __init__(self, product, quantity):
+        self.product = product
+        self.quantity = quantity
+        super().__init__(f"'{product}': invalid quantity {quantity}")
+
+# Inventory
+inventory = {
+    "Widget":  {"price": 9.99,  "stock": 50},
+    "Gadget":  {"price": 24.99, "stock": 3},
+    "Gizmo":   {"price": 14.99, "stock": 0},
+    "Doohickey": {"price": 4.99, "stock": 100},
+}
+
+def order_item(product, quantity):
+    if product not in inventory:
+        raise OrderError(f"Product '{product}' not found")
+    if quantity &lt;= 0 or not isinstance(quantity, int):
+        raise InvalidQuantityError(product, quantity)
+    available = inventory[product]["stock"]
+    if quantity &gt; available:
+        raise OutOfStockError(product, quantity, available)
+
+    inventory[product]["stock"] -= quantity
+    cost = inventory[product]["price"] * quantity
+    return {"product": product, "quantity": quantity, "cost": cost}
+
+def process_cart(items):
+    successes = []
+    failures = []
+
+    for product, quantity in items:
+        try:
+            result = order_item(product, quantity)
+            successes.append(result)
+        except OutOfStockError as e:
+            failures.append({"product": product, "error": str(e), "type": "stock"})
+        except InvalidQuantityError as e:
+            failures.append({"product": product, "error": str(e), "type": "quantity"})
+        except OrderError as e:
+            failures.append({"product": product, "error": str(e), "type": "general"})
+
+    return successes, failures
+
+# Process a cart
+cart = [
+    ("Widget", 5),      # ✅ Success
+    ("Gizmo", 2),       # ❌ Out of stock (0 available)
+    ("Gadget", 10),     # ❌ Out of stock (only 3)
+    ("Flux Cap", 1),    # ❌ Product not found
+    ("Widget", -3),     # ❌ Invalid quantity
+    ("Doohickey", 20),  # ✅ Success
+]
+
+successes, failures = process_cart(cart)
+
+print("=== Order Summary ===\n")
+print("✅ Successful:")
+total = 0
+for item in successes:
+    print(f"   {item['product']} x{item['quantity']} = ${item['cost']:.2f}")
+    total += item["cost"]
+print(f"   Total: ${total:.2f}\n")
+
+print("❌ Failed:")
+for fail in failures:
+    print(f"   {fail['error']}")</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">class OrderError extends Error {
+    constructor(message) { super(message); this.name = "OrderError"; }
+}
+
+class OutOfStockError extends OrderError {
+    constructor(product, requested, available) {
+        super(`'${product}': requested ${requested}, only ${available} available`);
+        this.name = "OutOfStockError";
+        this.product = product;
+        this.requested = requested;
+        this.available = available;
+    }
+}
+
+class InvalidQuantityError extends OrderError {
+    constructor(product, quantity) {
+        super(`'${product}': invalid quantity ${quantity}`);
+        this.name = "InvalidQuantityError";
+        this.product = product;
+        this.quantity = quantity;
+    }
+}
+
+let inventory = {
+    Widget:  { price: 9.99,  stock: 50 },
+    Gadget:  { price: 24.99, stock: 3 },
+    Gizmo:   { price: 14.99, stock: 0 },
+    Doohickey: { price: 4.99, stock: 100 },
+};
+
+function orderItem(product, quantity) {
+    if (!inventory[product]) throw new OrderError(`Product '${product}' not found`);
+    if (quantity &lt;= 0 || !Number.isInteger(quantity))
+        throw new InvalidQuantityError(product, quantity);
+    if (quantity &gt; inventory[product].stock)
+        throw new OutOfStockError(product, quantity, inventory[product].stock);
+
+    inventory[product].stock -= quantity;
+    return { product, quantity, cost: inventory[product].price * quantity };
+}
+
+function processCart(items) {
+    let successes = [], failures = [];
+    for (let [product, qty] of items) {
+        try {
+            successes.push(orderItem(product, qty));
+        } catch (error) {
+            failures.push({ product, error: error.message, type: error.name });
+        }
+    }
+    return { successes, failures };
+}
+
+let cart = [["Widget", 5], ["Gizmo", 2], ["Gadget", 10],
+            ["Flux Cap", 1], ["Widget", -3], ["Doohickey", 20]];
+
+let { successes, failures } = processCart(cart);
+console.log("✅ Successful:");
+successes.forEach(s =&gt; console.log(`   ${s.product} x${s.quantity} = $${s.cost.toFixed(2)}`));
+console.log("❌ Failed:");
+failures.forEach(f =&gt; console.log(`   ${f.error}`));</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">class OrderException : Exception
+{ public OrderException(string msg) : base(msg) { } }
+
+class OutOfStockException : OrderException
+{
+    public string Product { get; }
+    public int Requested { get; }
+    public int Available { get; }
+    public OutOfStockException(string product, int requested, int available)
+        : base($"'{product}': requested {requested}, only {available} available")
+    { Product = product; Requested = requested; Available = available; }
+}
+
+class InvalidQuantityException : OrderException
+{
+    public InvalidQuantityException(string product, int qty)
+        : base($"'{product}': invalid quantity {qty}") { }
+}
+
+var inventory = new Dictionary&lt;string, (decimal Price, int Stock)&gt;
+{
+    ["Widget"]    = (9.99m,  50),
+    ["Gadget"]    = (24.99m, 3),
+    ["Gizmo"]     = (14.99m, 0),
+    ["Doohickey"] = (4.99m,  100),
+};
+
+(string Product, int Qty, decimal Cost) OrderItem(string product, int qty)
+{
+    if (!inventory.ContainsKey(product))
+        throw new OrderException($"Product '{product}' not found");
+    if (qty &lt;= 0)
+        throw new InvalidQuantityException(product, qty);
+    var item = inventory[product];
+    if (qty &gt; item.Stock)
+        throw new OutOfStockException(product, qty, item.Stock);
+    inventory[product] = (item.Price, item.Stock - qty);
+    return (product, qty, item.Price * qty);
+}
+
+var cart = new[] { ("Widget", 5), ("Gizmo", 2), ("Gadget", 10),
+                   ("Doohickey", 20) };
+foreach (var (product, qty) in cart)
+{
+    try
+    {
+        var result = OrderItem(product, qty);
+        Console.WriteLine($"✅ {result.Product} x{result.Qty} = {result.Cost:C}");
+    }
+    catch (OrderException e)
+    {
+        Console.WriteLine($"❌ {e.Message}");
+    }
+}</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Exercise 1 (Registration) directly applies the lesson concepts: custom hierarchy, data-rich exceptions, and guard clauses. Exercise 2 (Online Store) adds an important real-world pattern: collecting errors instead of stopping at the first one. In a shopping cart, you want to show the user <em>all</em> the problems at once, not one at a time. Walk through the <code>process_cart()</code> function and point out how try/catch inside a loop lets each item fail independently. Challenge fast students: add a <code>PaymentError</code> to Exercise 2 that captures a payment decline reason and error code from a simulated payment gateway.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong>raise/throw</strong> creates errors explicitly — Python uses <code>raise</code>, JS and C# use <code>throw new</code></li>
+                        <li><strong>Custom exception classes</strong> extend built-in error types — name them <code>SomethingError</code> (Python/JS) or <code>SomethingException</code> (C#)</li>
+                        <li><strong>Data-rich exceptions</strong> carry context (amounts, codes, field names) — callers can make smart recovery decisions</li>
+                        <li><strong>Exception hierarchies</strong> let callers choose specificity — catch the exact type or a broader parent</li>
+                        <li><strong>Guard clauses</strong> validate inputs at function entry — flat code, fail fast, clear happy path</li>
+                        <li><strong>Throw vs. return:</strong> throw for contract violations, return null/result objects for expected outcomes</li>
+                        <li>JavaScript needs <code>this.name</code> set manually in custom error constructors</li>
+                    </ul>
+                </div>
+
+                <h3>🚀 What's Next?</h3>
+                <p>You can now catch errors, throw errors, and create your own error types. But what about finding bugs <em>before</em> they become errors? In the next lesson, we'll cover <strong>debugging strategies</strong> — the tools and techniques for tracking down problems in your code.</p>
+
+                <!-- Quiz -->
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Check</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What keyword does Python use to throw an error?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="'throw' is used in JavaScript and C#, not Python.">A) throw</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Python uses 'raise' to throw exceptions: raise ValueError('message'). It also doesn't need the 'new' keyword — you call the exception class directly. JavaScript and C# both use 'throw new'.">B) raise</button>
+                            <button class="quiz-option" data-correct="false" data-hint="'error' is not a keyword in any of the three languages for throwing exceptions.">C) error</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 2:</strong> What must you always set in a JavaScript custom error class constructor?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="You must set this.name to your custom class name (e.g., this.name = 'InsufficientFundsError'). Without it, error logs and stack traces show the generic 'Error' name instead. Python and C# get the class name automatically.">A) this.name</button>
+                            <button class="quiz-option" data-correct="false" data-hint="this.type is not a standard property on JavaScript Error objects.">B) this.type</button>
+                            <button class="quiz-option" data-correct="false" data-hint="this.code is a useful convention but not required for the error to display correctly.">C) this.code</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 3:</strong> What is a guard clause?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="That's a try/catch block — guard clauses happen before the try block.">A) A try/catch block that protects your code</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Guard clauses are checks at the top of a function that throw immediately if input is invalid. They eliminate nested if/else blocks by handling bad cases first, letting the 'happy path' flow naturally without nesting.">B) A check at the top of a function that throws if input is invalid</button>
+                            <button class="quiz-option" data-correct="false" data-hint="That's a finally block — guard clauses are about input validation at function entry.">C) A block that runs after an error is caught</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_19.html" class="prev-lesson">← Previous: Try, Catch, and Finally</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_21.html" class="next-lesson">Next: Debugging Strategies →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

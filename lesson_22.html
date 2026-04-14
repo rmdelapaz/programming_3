@@ -1,0 +1,1657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn to read and write files in Python, JavaScript (Node.js), and C#. Covers text files, file modes, appending, CSV basics, encoding, and safe file handling with error management.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 8.1: Reading and Writing Files - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 8</a></li>
+            <li aria-current="page">Lesson 8.1: Reading and Writing Files</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>📂 Lesson 8.1: Reading and Writing Files</h1>
+                <p class="lead">Every program you've written so far has one limitation: when it stops running, all your data disappears. Variables live in memory, and memory is wiped clean when the process ends. <strong>Files</strong> solve this — they let your program save data to disk so it survives restarts, share data with other programs, and process information that's too large to type in by hand. This lesson teaches you how to read from and write to files in all three languages.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li><strong>Understand file paths</strong> — absolute vs. relative, and cross-platform differences</li>
+                        <li><strong>Read text files</strong> — load an entire file or read it line by line</li>
+                        <li><strong>Write text files</strong> — create new files and overwrite existing ones</li>
+                        <li><strong>Append to files</strong> — add data without erasing what's already there</li>
+                        <li>Use <strong>safe file handling patterns</strong> — context managers, try/finally, and using blocks</li>
+                        <li><strong>Work with CSV data</strong> at a basic level</li>
+                        <li><strong>Handle file errors</strong> gracefully — missing files, permission issues, encoding problems</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 60 minutes</p>
+                    <p><strong>Project:</strong> Build a simple note-taking app that saves to a file</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary><h2 style="display: inline; margin: 0;">📑 In This Lesson</h2></summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#why-files" class="toc-link">Why Files Matter</a></li>
+                        <li><a href="#file-paths" class="toc-link">File Paths</a></li>
+                        <li><a href="#reading-files" class="toc-link">Reading Text Files</a></li>
+                        <li><a href="#writing-files" class="toc-link">Writing Text Files</a></li>
+                        <li><a href="#appending" class="toc-link">Appending to Files</a></li>
+                        <li><a href="#safe-handling" class="toc-link">Safe File Handling</a></li>
+                        <li><a href="#csv-basics" class="toc-link">Working with CSV Files</a></li>
+                        <li><a href="#file-errors" class="toc-link">Handling File Errors</a></li>
+                        <li><a href="#exercises" class="toc-link">Exercises</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Why Files Matter -->
+            <section id="why-files" class="lesson-section">
+                <h2>Why Files Matter</h2>
+                <p>Programs need files for three fundamental reasons:</p>
+
+                <div class="mermaid">
+                    flowchart LR
+                        A["<b>PERSIST</b><br/>Save data between<br/>program runs"] --> B["<b>SHARE</b><br/>Exchange data with<br/>other programs"]
+                        B --> C["<b>PROCESS</b><br/>Handle data too large<br/>to type manually"]
+                        style A fill:#3b82f6,color:#fff
+                        style B fill:#6366f1,color:#fff
+                        style C fill:#22c55e,color:#fff
+                </div>
+
+                <p>Think about the programs you use every day: a text editor saves your documents, a game saves your progress, a spreadsheet saves your data. Without files, you'd lose everything the moment you closed the application. Even web applications ultimately store their data in files — databases are just sophisticated file management systems.</p>
+
+                <div class="card card-info">
+                    <h4>💡 The Big Picture</h4>
+                    <p>File I/O (input/output) is one of the most common operations in real-world programming. Configuration files, log files, data exports, reports, user uploads — files are everywhere. The patterns you learn here apply whether you're reading a 10-line text file or processing a 10-gigabyte dataset.</p>
+                </div>
+            </section>
+
+            <!-- File Paths -->
+            <section id="file-paths" class="lesson-section">
+                <h2>File Paths</h2>
+                <p>Before you can read or write a file, you need to tell the computer <em>where</em> it is. That's what a <strong>file path</strong> does. There are two kinds:</p>
+
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Example (Windows)</th>
+                                <th>Example (Mac/Linux)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Absolute</strong></td>
+                                <td>Full path from the root of the filesystem</td>
+                                <td><code>C:\Users\ray\data.txt</code></td>
+                                <td><code>/home/ray/data.txt</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Relative</strong></td>
+                                <td>Path from the current working directory</td>
+                                <td><code>data\scores.txt</code></td>
+                                <td><code>data/scores.txt</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="code-tabs" data-title="Working with File Paths">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">import os
+from pathlib import Path  # Modern Python — recommended!
+
+# --- Absolute vs Relative ---
+absolute = "/home/ray/projects/data.txt"
+relative = "data/scores.txt"  # Relative to where you run the script
+
+# --- The pathlib way (modern Python 3.4+) ---
+# Build paths that work on ANY operating system:
+data_dir = Path("data")
+scores_file = data_dir / "scores.txt"   # Uses / operator!
+print(scores_file)  # data/scores.txt (or data\scores.txt on Windows)
+
+# Useful Path methods:
+p = Path("data/reports/q4.txt")
+print(p.name)       # "q4.txt"         — filename
+print(p.stem)       # "q4"             — filename without extension
+print(p.suffix)     # ".txt"           — file extension
+print(p.parent)     # "data/reports"   — parent directory
+print(p.exists())   # True or False    — does the file exist?
+print(p.is_file())  # True or False    — is it a file (not directory)?
+
+# Get current working directory:
+print(Path.cwd())   # e.g., /home/ray/projects
+
+# --- The os.path way (older but still common) ---
+full_path = os.path.join("data", "scores.txt")  # Cross-platform join
+print(os.path.exists(full_path))   # True/False
+print(os.path.basename(full_path)) # "scores.txt"
+print(os.path.dirname(full_path))  # "data"</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// Node.js — the 'path' module handles cross-platform paths
+const path = require("path");
+const fs = require("fs");
+
+// --- Absolute vs Relative ---
+let absolute = "/home/ray/projects/data.txt";
+let relative = "data/scores.txt";  // Relative to where you run node
+
+// --- Building paths safely ---
+// ALWAYS use path.join() — never concatenate strings with / or \
+let scoresFile = path.join("data", "scores.txt");
+console.log(scoresFile);  // "data/scores.txt" (or "data\scores.txt" on Windows)
+
+// Useful path methods:
+let p = path.join("data", "reports", "q4.txt");
+console.log(path.basename(p));           // "q4.txt"
+console.log(path.basename(p, ".txt"));   // "q4" (without extension)
+console.log(path.extname(p));            // ".txt"
+console.log(path.dirname(p));            // "data/reports"
+
+// Check if file exists:
+console.log(fs.existsSync(scoresFile));  // true or false
+
+// Get current working directory:
+console.log(process.cwd());  // e.g., /home/ray/projects
+
+// Get absolute path from relative:
+console.log(path.resolve("data", "scores.txt"));
+// → /home/ray/projects/data/scores.txt
+
+// __dirname = directory of the CURRENT script file
+// __filename = full path of the CURRENT script file
+console.log(__dirname);   // /home/ray/projects
+console.log(__filename);  // /home/ray/projects/app.js</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">using System.IO;
+
+// --- Absolute vs Relative ---
+string absolute = @"C:\Users\ray\projects\data.txt";  // @ = verbatim string
+string relative = "data/scores.txt";  // Relative to working directory
+
+// --- Building paths safely ---
+// ALWAYS use Path.Combine() — never concatenate with + and slashes
+string scoresFile = Path.Combine("data", "scores.txt");
+Console.WriteLine(scoresFile);  // data\scores.txt (Windows) or data/scores.txt
+
+// Useful Path methods:
+string p = Path.Combine("data", "reports", "q4.txt");
+Console.WriteLine(Path.GetFileName(p));           // "q4.txt"
+Console.WriteLine(Path.GetFileNameWithoutExtension(p)); // "q4"
+Console.WriteLine(Path.GetExtension(p));          // ".txt"
+Console.WriteLine(Path.GetDirectoryName(p));      // "data/reports"
+
+// Check if file/directory exists:
+Console.WriteLine(File.Exists(scoresFile));       // True/False
+Console.WriteLine(Directory.Exists("data"));      // True/False
+
+// Get current working directory:
+Console.WriteLine(Directory.GetCurrentDirectory());
+
+// Get absolute path from relative:
+Console.WriteLine(Path.GetFullPath("data/scores.txt"));
+
+// Cross-platform separator:
+Console.WriteLine(Path.DirectorySeparatorChar);   // \ on Windows, / on Mac/Linux</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Never Hard-Code Path Separators</h4>
+                    <p>Don't write <code>"data\\scores.txt"</code> or <code>"data/scores.txt"</code> with literal slashes. Always use your language's path-building tools (<code>Path()</code> / <code>path.join()</code> / <code>Path.Combine()</code>). This ensures your code works on Windows (<code>\</code>), Mac (<code>/</code>), and Linux (<code>/</code>) without changes.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>File paths trip up beginners more than almost any other topic. The most common issue: students run their script from a different directory than expected, so relative paths don't resolve. Demo this live — create a file in one folder, <code>cd</code> somewhere else, and show how the relative path breaks. Then show <code>Path.cwd()</code> / <code>process.cwd()</code> / <code>Directory.GetCurrentDirectory()</code> to reveal the current directory. The Windows <code>\</code> vs. Mac/Linux <code>/</code> difference is also a source of cross-platform bugs — emphasize path.join/Path.Combine. If students are on Windows with WSL, they deal with BOTH path conventions, making this extra relevant.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Reading Text Files -->
+            <section id="reading-files" class="lesson-section">
+                <h2>Reading Text Files</h2>
+                <p>The most common file operation: open a text file and read its contents. Every language follows the same basic flow:</p>
+
+                <div class="mermaid">
+                    flowchart LR
+                        A["<b>OPEN</b><br/>Get a file handle"] --> B["<b>READ</b><br/>Load the contents"] --> C["<b>CLOSE</b><br/>Release the file"]
+                        style A fill:#3b82f6,color:#fff
+                        style B fill:#6366f1,color:#fff
+                        style C fill:#22c55e,color:#fff
+                </div>
+
+                <h3>Read the Entire File at Once</h3>
+                <div class="code-tabs" data-title="Reading an Entire File">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># --- Method 1: with statement (recommended!) ---
+# 'with' automatically closes the file when the block ends
+with open("data/greeting.txt", "r") as file:
+    content = file.read()          # Read entire file as one string
+    print(content)
+
+# After the 'with' block, file is automatically closed — no cleanup needed!
+
+# --- Method 2: read into a list of lines ---
+with open("data/scores.txt", "r") as file:
+    lines = file.readlines()       # List of strings, one per line
+    print(lines)
+    # ['Alice,95\n', 'Bob,87\n', 'Charlie,72\n']
+    # Note: each line includes the \n newline character!
+
+# Strip the newlines:
+with open("data/scores.txt", "r") as file:
+    lines = [line.strip() for line in file.readlines()]
+    print(lines)
+    # ['Alice,95', 'Bob,87', 'Charlie,72']
+
+# --- Method 3: Pathlib (cleanest for small files) ---
+from pathlib import Path
+content = Path("data/greeting.txt").read_text()
+print(content)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">const fs = require("fs");
+
+// --- Method 1: Synchronous (blocking) ---
+// Simple and predictable — good for scripts and learning
+let content = fs.readFileSync("data/greeting.txt", "utf-8");
+console.log(content);
+
+// --- Method 2: Read as array of lines ---
+let lines = fs.readFileSync("data/scores.txt", "utf-8")
+    .split("\n")           // Split into lines
+    .filter(line =&gt; line); // Remove empty lines
+console.log(lines);
+// ['Alice,95', 'Bob,87', 'Charlie,72']
+
+// --- Method 3: Asynchronous with callback ---
+// Non-blocking — good for servers and performance
+fs.readFile("data/greeting.txt", "utf-8", (err, data) =&gt; {
+    if (err) {
+        console.error("Error reading file:", err.message);
+        return;
+    }
+    console.log(data);
+});
+
+// --- Method 4: Async/Await (modern, recommended) ---
+const fsPromises = require("fs").promises;
+
+async function readGreeting() {
+    let content = await fsPromises.readFile("data/greeting.txt", "utf-8");
+    console.log(content);
+}
+readGreeting();</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">using System.IO;
+
+// --- Method 1: Read entire file as one string ---
+string content = File.ReadAllText("data/greeting.txt");
+Console.WriteLine(content);
+
+// --- Method 2: Read as array of lines ---
+string[] lines = File.ReadAllLines("data/scores.txt");
+foreach (string line in lines)
+    Console.WriteLine(line);
+// Alice,95
+// Bob,87
+// Charlie,72
+
+// --- Method 3: Async version (for larger files or UI apps) ---
+string asyncContent = await File.ReadAllTextAsync("data/greeting.txt");
+
+// --- Method 4: StreamReader (for very large files) ---
+using (StreamReader reader = new StreamReader("data/big_file.txt"))
+{
+    string? line;
+    while ((line = reader.ReadLine()) != null)
+    {
+        Console.WriteLine(line);   // Process one line at a time
+    }
+}  // StreamReader automatically closed here</code></pre>
+                    </div>
+                </div>
+
+                <h3>Read Line by Line (Memory-Efficient)</h3>
+                <p>For large files, reading everything at once can use too much memory. Reading line by line processes the file without loading it all into RAM:</p>
+
+                <div class="code-tabs" data-title="Reading Line by Line">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># The file object itself is iterable — loop over it directly!
+with open("data/large_log.txt", "r") as file:
+    for line_number, line in enumerate(file, start=1):
+        line = line.strip()              # Remove trailing \n
+        if "ERROR" in line:
+            print(f"Line {line_number}: {line}")
+
+# This reads ONE line at a time — works for gigabyte-sized files!
+# The file is never fully loaded into memory.</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">const fs = require("fs");
+const readline = require("readline");
+
+// Create a line reader from a file stream
+const fileStream = fs.createReadStream("data/large_log.txt");
+const rl = readline.createInterface({ input: fileStream });
+
+let lineNumber = 0;
+rl.on("line", (line) =&gt; {
+    lineNumber++;
+    if (line.includes("ERROR")) {
+        console.log(`Line ${lineNumber}: ${line}`);
+    }
+});
+
+rl.on("close", () =&gt; {
+    console.log("Done reading file.");
+});
+
+// For modern async/await style:
+// const rl = readline.createInterface({ input: fileStream });
+// for await (const line of rl) { ... }</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// StreamReader reads line by line — ideal for large files
+int lineNumber = 0;
+using (StreamReader reader = new StreamReader("data/large_log.txt"))
+{
+    string? line;
+    while ((line = reader.ReadLine()) != null)
+    {
+        lineNumber++;
+        if (line.Contains("ERROR"))
+            Console.WriteLine($"Line {lineNumber}: {line}");
+    }
+}
+
+// Or with the modern File.ReadLines() which is lazy (one at a time):
+foreach (string line in File.ReadLines("data/large_log.txt"))
+{
+    if (line.Contains("ERROR"))
+        Console.WriteLine(line);
+}
+// File.ReadLines() is lazy — it reads on demand, unlike ReadAllLines()</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ When to Use Each Approach</h4>
+                    <ul>
+                        <li><strong>Read all at once</strong> — small files (config, settings, short data files) where you need the entire content</li>
+                        <li><strong>Read line by line</strong> — large files (logs, data exports, CSVs) where you process each line independently</li>
+                        <li>Rule of thumb: if the file might be larger than ~100 MB, read line by line</li>
+                    </ul>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Before running any of these examples, students need an actual file to read. Have them create a simple <code>data/greeting.txt</code> file first (even just "Hello, World!" in it). A common beginner frustration is getting <code>FileNotFoundError</code> because the file doesn't exist or the path is wrong. Demonstrate creating the file manually, then reading it. For the line-by-line reading, create a larger file (20+ lines) so students can see the difference. JavaScript's async nature is worth a brief callout: <code>readFileSync</code> is fine for learning and scripts, but real Node.js apps use async I/O. Don't get into callbacks vs. promises vs. async/await in detail here — just show the sync version and mention that the async version exists.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Writing Text Files -->
+            <section id="writing-files" class="lesson-section">
+                <h2>Writing Text Files</h2>
+                <p>Writing is the reverse of reading: you open a file, send content to it, and close it. The critical distinction is the <strong>file mode</strong>:</p>
+
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Mode</th>
+                                <th>Description</th>
+                                <th>If File Exists</th>
+                                <th>If File Doesn't Exist</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong><code>"w"</code> — Write</strong></td>
+                                <td>Create or overwrite</td>
+                                <td>⚠️ Erases all content!</td>
+                                <td>Creates new file</td>
+                            </tr>
+                            <tr>
+                                <td><strong><code>"a"</code> — Append</strong></td>
+                                <td>Add to the end</td>
+                                <td>Adds after existing content</td>
+                                <td>Creates new file</td>
+                            </tr>
+                            <tr>
+                                <td><strong><code>"r"</code> — Read</strong></td>
+                                <td>Read only</td>
+                                <td>Opens for reading</td>
+                                <td>Error!</td>
+                            </tr>
+                            <tr>
+                                <td><strong><code>"x"</code> — Exclusive</strong></td>
+                                <td>Create only (fail if exists)</td>
+                                <td>Error! (won't overwrite)</td>
+                                <td>Creates new file</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="code-tabs" data-title="Writing to Files">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># --- Write: creates file or OVERWRITES if it exists ---
+with open("output/report.txt", "w") as file:
+    file.write("Sales Report\n")
+    file.write("============\n\n")
+    file.write("Q1: $45,000\n")
+    file.write("Q2: $52,000\n")
+
+# --- Write multiple lines at once ---
+lines = ["Alice: 95\n", "Bob: 87\n", "Charlie: 72\n"]
+with open("output/grades.txt", "w") as file:
+    file.writelines(lines)  # Note: writelines does NOT add \n automatically!
+
+# --- Pathlib shortcut ---
+from pathlib import Path
+Path("output/quick.txt").write_text("Hello from Pathlib!\n")
+
+# --- Using print() to write to a file ---
+with open("output/log.txt", "w") as file:
+    print("Starting process...", file=file)    # print to file!
+    print(f"Result: {42}", file=file)
+    print("Done.", file=file)
+
+# --- DANGER: "w" mode erases existing content! ---
+# This is the #1 file-writing mistake:
+with open("important_data.txt", "w") as file:   # ⚠️ Erases everything!
+    file.write("Oops, old data is gone forever")</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">const fs = require("fs");
+
+// --- Write: creates file or OVERWRITES if it exists ---
+fs.writeFileSync("output/report.txt",
+    "Sales Report\n" +
+    "============\n\n" +
+    "Q1: $45,000\n" +
+    "Q2: $52,000\n"
+);
+
+// --- Write from an array of lines ---
+let lines = ["Alice: 95", "Bob: 87", "Charlie: 72"];
+fs.writeFileSync("output/grades.txt", lines.join("\n") + "\n");
+
+// --- Async version (recommended for production) ---
+const fsPromises = require("fs").promises;
+
+async function writeReport() {
+    await fsPromises.writeFile("output/report.txt", "Sales Report\n");
+    console.log("Report written!");
+}
+writeReport();
+
+// --- DANGER: writeFileSync OVERWRITES by default! ---
+fs.writeFileSync("important_data.txt", "Oops, old data is gone!");
+
+// To create a file ONLY if it doesn't exist:
+try {
+    fs.writeFileSync("output/safe.txt", "New content", { flag: "wx" });
+} catch (err) {
+    if (err.code === "EEXIST") {
+        console.log("File already exists — not overwriting.");
+    }
+}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">using System.IO;
+
+// --- Write: creates file or OVERWRITES if it exists ---
+File.WriteAllText("output/report.txt",
+    "Sales Report\n" +
+    "============\n\n" +
+    "Q1: $45,000\n" +
+    "Q2: $52,000\n"
+);
+
+// --- Write from an array of lines ---
+string[] lines = { "Alice: 95", "Bob: 87", "Charlie: 72" };
+File.WriteAllLines("output/grades.txt", lines);
+// WriteAllLines automatically adds newlines between entries!
+
+// --- Async version ---
+await File.WriteAllTextAsync("output/report.txt", "Sales Report\n");
+
+// --- StreamWriter for more control ---
+using (StreamWriter writer = new StreamWriter("output/log.txt"))
+{
+    writer.WriteLine("Starting process...");    // Adds newline
+    writer.WriteLine($"Result: {42}");
+    writer.Write("No newline after this");      // No newline
+}
+
+// --- DANGER: WriteAllText OVERWRITES by default! ---
+File.WriteAllText("important_data.txt", "Oops, old data is gone!");
+
+// To safely avoid overwriting:
+if (!File.Exists("output/safe.txt"))
+{
+    File.WriteAllText("output/safe.txt", "New content");
+}
+else
+{
+    Console.WriteLine("File already exists — not overwriting.");
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ The Most Dangerous File Operation</h4>
+                    <p>Opening a file in write mode (<code>"w"</code>) <strong>immediately erases all existing content</strong> — even before you write anything new. This is the single most common cause of accidental data loss in programming. If you want to add to a file without erasing it, use <strong>append mode</strong> (next section). Always double-check your mode before writing to an important file.</p>
+                </div>
+            </section>
+
+            <!-- Appending to Files -->
+            <section id="appending" class="lesson-section">
+                <h2>Appending to Files</h2>
+                <p>Append mode adds content to the <em>end</em> of a file without touching what's already there. This is how log files, journals, and running records work.</p>
+
+                <div class="code-tabs" data-title="Appending to Files">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">from datetime import datetime
+
+# --- Append mode: "a" ---
+# If the file doesn't exist, it creates it.
+# If it does exist, new content goes at the END.
+
+def log_event(message):
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    with open("app.log", "a") as file:
+        file.write(f"[{timestamp}] {message}\n")
+
+log_event("Application started")
+log_event("User logged in: alice")
+log_event("Processing order #1234")
+
+# app.log now contains:
+# [2026-04-13 10:30:01] Application started
+# [2026-04-13 10:30:01] User logged in: alice
+# [2026-04-13 10:30:01] Processing order #1234
+
+# Run the program again — new entries are ADDED, old ones stay!</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">const fs = require("fs");
+
+// --- Append with appendFileSync ---
+function logEvent(message) {
+    let timestamp = new Date().toISOString().slice(0, 19).replace("T", " ");
+    fs.appendFileSync("app.log", `[${timestamp}] ${message}\n`);
+}
+
+logEvent("Application started");
+logEvent("User logged in: alice");
+logEvent("Processing order #1234");
+
+// --- Or use the flag option with writeFileSync ---
+fs.writeFileSync("app.log", "Extra line\n", { flag: "a" });
+// flag: "a" = append mode
+
+// --- Async version ---
+const fsPromises = require("fs").promises;
+
+async function logEventAsync(message) {
+    let timestamp = new Date().toISOString().slice(0, 19).replace("T", " ");
+    await fsPromises.appendFile("app.log", `[${timestamp}] ${message}\n`);
+}
+logEventAsync("Async log entry");</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">using System.IO;
+
+// --- Append with File.AppendAllText ---
+void LogEvent(string message)
+{
+    string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+    File.AppendAllText("app.log", $"[{timestamp}] {message}\n");
+}
+
+LogEvent("Application started");
+LogEvent("User logged in: alice");
+LogEvent("Processing order #1234");
+
+// --- Append multiple lines ---
+string[] newEntries = { "Entry A", "Entry B", "Entry C" };
+File.AppendAllLines("app.log", newEntries);  // Each gets a newline
+
+// --- StreamWriter in append mode ---
+using (StreamWriter writer = new StreamWriter("app.log", append: true))
+{
+    writer.WriteLine("StreamWriter append entry");
+}
+
+// --- Async version ---
+await File.AppendAllTextAsync("app.log", "Async entry\n");</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Write vs. Append — Quick Decision</h4>
+                    <ul>
+                        <li><strong>Use Write (<code>"w"</code>)</strong> when you want a fresh file every time — generating a report, exporting data, saving the current state</li>
+                        <li><strong>Use Append (<code>"a"</code>)</strong> when you want to accumulate data over time — log files, history, journal entries</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Safe File Handling -->
+            <section id="safe-handling" class="lesson-section">
+                <h2>Safe File Handling</h2>
+                <p>When you open a file, your operating system allocates resources (a "file handle") to track it. If your program crashes or you forget to close the file, those resources leak — and on some systems, the file stays locked. Every language provides a pattern for <strong>guaranteed cleanup</strong>:</p>
+
+                <div class="code-tabs" data-title="Safe File Handling Patterns">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># ❌ UNSAFE: if an error occurs, the file might not close
+file = open("data.txt", "r")
+content = file.read()     # What if this line throws an error?
+file.close()              # This might never run!
+
+# ✅ SAFE: 'with' guarantees the file closes, even if an error occurs
+with open("data.txt", "r") as file:
+    content = file.read()
+# file.close() is called automatically — even if an exception is thrown!
+
+# Why? The 'with' statement calls __enter__() on entry and
+# __exit__() on exit — __exit__() always closes the file.
+
+# ✅ ALSO SAFE: try/finally (but 'with' is preferred)
+file = open("data.txt", "r")
+try:
+    content = file.read()
+finally:
+    file.close()  # Runs even if an exception occurs
+
+# Multiple files at once:
+with open("input.txt", "r") as infile, open("output.txt", "w") as outfile:
+    for line in infile:
+        outfile.write(line.upper())  # Copy with transformation</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">const fs = require("fs");
+
+// For readFileSync/writeFileSync, Node.js handles
+// open and close internally — no explicit cleanup needed:
+let content = fs.readFileSync("data.txt", "utf-8");  // Opens, reads, closes
+
+// But for streams (large files), you manage the lifecycle:
+
+// ❌ UNSAFE: file descriptor might leak on error
+const fd = fs.openSync("data.txt", "r");
+const buffer = Buffer.alloc(1024);
+fs.readSync(fd, buffer);     // What if this throws?
+fs.closeSync(fd);             // Might never run!
+
+// ✅ SAFE: try/finally ensures cleanup
+const fd2 = fs.openSync("data.txt", "r");
+try {
+    const buffer2 = Buffer.alloc(1024);
+    fs.readSync(fd2, buffer2);
+} finally {
+    fs.closeSync(fd2);        // Always runs!
+}
+
+// ✅ BEST: Use high-level APIs that handle cleanup for you
+// readFileSync, writeFileSync, appendFileSync — all safe
+// For streams, attach error handlers:
+const stream = fs.createReadStream("data.txt");
+stream.on("error", (err) =&gt; {
+    console.error("Stream error:", err.message);
+    // Stream closes automatically on error
+});</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">using System.IO;
+
+// ❌ UNSAFE: if an error occurs, reader might not close
+StreamReader reader = new StreamReader("data.txt");
+string content = reader.ReadToEnd();    // What if this throws?
+reader.Close();                          // Might never run!
+
+// ✅ SAFE: 'using' guarantees Dispose() is called (which closes the file)
+using (StreamReader safeReader = new StreamReader("data.txt"))
+{
+    string safeContent = safeReader.ReadToEnd();
+}  // safeReader.Dispose() called automatically — even on exception!
+
+// ✅ MODERN C# 8+: using declaration (no braces needed)
+using StreamReader modernReader = new StreamReader("data.txt");
+string modernContent = modernReader.ReadToEnd();
+// Disposed when modernReader goes out of scope (end of method/block)
+
+// ✅ SIMPLEST: Use File.ReadAllText / WriteAllText
+// These handle open + read/write + close internally:
+string easy = File.ReadAllText("data.txt");  // Safe by design
+File.WriteAllText("output.txt", "Safe!");    // Safe by design
+
+// Multiple files:
+using StreamReader input = new StreamReader("input.txt");
+using StreamWriter output = new StreamWriter("output.txt");
+string? line;
+while ((line = input.ReadLine()) != null)
+{
+    output.WriteLine(line.ToUpper());  // Copy with transformation
+}</code></pre>
+                    </div>
+                </div>
+
+                <h3>The Pattern Across Languages</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Concept</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Auto-cleanup keyword</td>
+                                <td><code>with</code></td>
+                                <td>N/A (use high-level APIs)</td>
+                                <td><code>using</code></td>
+                            </tr>
+                            <tr>
+                                <td>Manual cleanup</td>
+                                <td><code>try/finally + close()</code></td>
+                                <td><code>try/finally + closeSync()</code></td>
+                                <td><code>try/finally + Dispose()</code></td>
+                            </tr>
+                            <tr>
+                                <td>Safest simple API</td>
+                                <td><code>Path.read_text()</code></td>
+                                <td><code>fs.readFileSync()</code></td>
+                                <td><code>File.ReadAllText()</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>The key message: <strong>always use the safe pattern</strong> — <code>with</code> in Python, <code>using</code> in C#, and the high-level APIs in Node.js. The "unsafe" examples exist to show <em>why</em> the safe patterns exist, not as recommended practice. For beginners, the simplest advice is: in Python always use <code>with open()</code>, in C# always use <code>File.ReadAllText()</code>/<code>WriteAllText()</code> for small files or <code>using</code> for streams, and in Node.js always use <code>readFileSync</code>/<code>writeFileSync</code> for scripts. Stream-based approaches can be deferred until students work with larger files.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Working with CSV -->
+            <section id="csv-basics" class="lesson-section">
+                <h2>Working with CSV Files</h2>
+                <p>CSV (Comma-Separated Values) is one of the most common data formats. Every spreadsheet can export CSV, and most data tools can read it. A CSV file is just a text file where values are separated by commas:</p>
+
+                <pre><code>name,score,grade
+Alice,95,A
+Bob,87,B
+Charlie,72,C</code></pre>
+
+                <div class="code-tabs" data-title="Reading and Writing CSV Files">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">import csv
+
+# --- Reading CSV ---
+with open("students.csv", "r") as file:
+    reader = csv.reader(file)
+    header = next(reader)           # First row is the header
+    print(f"Columns: {header}")     # ['name', 'score', 'grade']
+
+    for row in reader:
+        name, score, grade = row    # Unpack each row
+        print(f"{name} scored {score} ({grade})")
+
+# --- Reading CSV as dictionaries (recommended!) ---
+with open("students.csv", "r") as file:
+    reader = csv.DictReader(file)   # Uses header row as keys
+    for row in reader:
+        print(f"{row['name']} scored {row['score']} ({row['grade']})")
+        # row is {'name': 'Alice', 'score': '95', 'grade': 'A'}
+        # Note: all values are STRINGS — convert numbers yourself!
+
+# --- Writing CSV ---
+students = [
+    {"name": "Alice", "score": 95, "grade": "A"},
+    {"name": "Bob", "score": 87, "grade": "B"},
+    {"name": "Charlie", "score": 72, "grade": "C"},
+]
+
+with open("output.csv", "w", newline="") as file:
+    writer = csv.DictWriter(file, fieldnames=["name", "score", "grade"])
+    writer.writeheader()             # Write the header row
+    writer.writerows(students)       # Write all data rows</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">const fs = require("fs");
+
+// --- Reading CSV (manual parsing for simple cases) ---
+let csvText = fs.readFileSync("students.csv", "utf-8");
+let lines = csvText.trim().split("\n");
+let header = lines[0].split(",");       // ['name', 'score', 'grade']
+
+let students = lines.slice(1).map(line =&gt; {
+    let values = line.split(",");
+    return {
+        name: values[0],
+        score: parseInt(values[1]),     // Convert to number!
+        grade: values[2],
+    };
+});
+
+console.log(students);
+// [{name: 'Alice', score: 95, grade: 'A'}, ...]
+
+// --- Writing CSV ---
+let outputStudents = [
+    { name: "Alice", score: 95, grade: "A" },
+    { name: "Bob", score: 87, grade: "B" },
+    { name: "Charlie", score: 72, grade: "C" },
+];
+
+let csvHeader = "name,score,grade\n";
+let csvRows = outputStudents
+    .map(s =&gt; `${s.name},${s.score},${s.grade}`)
+    .join("\n");
+fs.writeFileSync("output.csv", csvHeader + csvRows + "\n");
+
+// ⚠️ This simple approach breaks if values contain commas!
+// "Smith, Jr.",95,A → splits wrong!
+// For real CSV parsing, use a library like 'csv-parse' or 'papaparse':
+// npm install csv-parse</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">using System.IO;
+
+// --- Reading CSV (manual parsing for simple cases) ---
+string[] lines = File.ReadAllLines("students.csv");
+string[] header = lines[0].Split(",");  // ["name", "score", "grade"]
+
+var students = new List&lt;Dictionary&lt;string, string&gt;&gt;();
+for (int i = 1; i &lt; lines.Length; i++)
+{
+    string[] values = lines[i].Split(",");
+    students.Add(new Dictionary&lt;string, string&gt;
+    {
+        ["name"] = values[0],
+        ["score"] = values[1],
+        ["grade"] = values[2],
+    });
+}
+
+foreach (var student in students)
+    Console.WriteLine($"{student["name"]} scored {student["score"]}");
+
+// --- Writing CSV ---
+var outputLines = new List&lt;string&gt; { "name,score,grade" };
+outputLines.Add("Alice,95,A");
+outputLines.Add("Bob,87,B");
+outputLines.Add("Charlie,72,C");
+File.WriteAllLines("output.csv", outputLines);
+
+// ⚠️ Manual parsing breaks with commas in values!
+// For production CSV handling, use a library like CsvHelper:
+// dotnet add package CsvHelper</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ CSV Gotcha: Commas in Values</h4>
+                    <p>Simple <code>.split(",")</code> parsing breaks when values themselves contain commas — like <code>"Smith, Jr."</code>. Real CSV uses quotes to wrap values that contain commas. For anything beyond simple data, use a proper CSV library: Python's built-in <code>csv</code> module, Node.js <code>csv-parse</code> or <code>papaparse</code>, or C#'s <code>CsvHelper</code> NuGet package. Python has the best built-in CSV support of the three.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>CSV is a perfect "real-world" file format for beginners because they can create and inspect CSV files in any spreadsheet app. Have students create a small CSV in a text editor or export one from Google Sheets, then read it with their code. The manual JS/C# parsing is intentionally simple — it works for clean data but fails with edge cases. This sets up the motivation for JSON in the next lesson (lesson 23), which handles nested/complex data much better. Python's <code>csv</code> module is notably better than the manual approaches in JS/C# — highlight this as a Python strength.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- File Errors -->
+            <section id="file-errors" class="lesson-section">
+                <h2>Handling File Errors</h2>
+                <p>Files live in the real world, and the real world is messy. Files might not exist, you might not have permission to read them, or the disk might be full. Your code needs to handle these gracefully.</p>
+
+                <div class="code-tabs" data-title="Common File Errors and How to Handle Them">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># --- Handle specific file errors ---
+try:
+    with open("missing_file.txt", "r") as file:
+        content = file.read()
+except FileNotFoundError:
+    print("Error: File not found. Check the path and filename.")
+except PermissionError:
+    print("Error: No permission to read this file.")
+except UnicodeDecodeError:
+    print("Error: File is not valid text (might be binary).")
+except IsADirectoryError:
+    print("Error: That's a directory, not a file.")
+except OSError as e:
+    print(f"Error: Unexpected file error — {e}")
+
+# --- Check before opening ---
+from pathlib import Path
+
+file_path = Path("data/config.txt")
+
+if not file_path.exists():
+    print(f"File not found: {file_path}")
+elif not file_path.is_file():
+    print(f"Not a file: {file_path}")
+else:
+    content = file_path.read_text()
+    print(f"Read {len(content)} characters.")
+
+# --- Create directories if they don't exist ---
+output_dir = Path("output/reports/2026")
+output_dir.mkdir(parents=True, exist_ok=True)  # Creates all needed folders
+Path(output_dir / "q1.txt").write_text("Q1 Report")
+
+# --- Specifying encoding (important!) ---
+# Default encoding varies by OS! Always be explicit:
+with open("data.txt", "r", encoding="utf-8") as file:
+    content = file.read()
+
+with open("output.txt", "w", encoding="utf-8") as file:
+    file.write("Héllo Wörld! 你好世界")</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">const fs = require("fs");
+const path = require("path");
+
+// --- Handle specific file errors ---
+try {
+    let content = fs.readFileSync("missing_file.txt", "utf-8");
+} catch (err) {
+    switch (err.code) {
+        case "ENOENT":
+            console.log("Error: File not found. Check the path.");
+            break;
+        case "EACCES":
+            console.log("Error: No permission to read this file.");
+            break;
+        case "EISDIR":
+            console.log("Error: That's a directory, not a file.");
+            break;
+        default:
+            console.log(`Error: ${err.message}`);
+    }
+}
+
+// --- Check before opening ---
+let filePath = "data/config.txt";
+
+if (!fs.existsSync(filePath)) {
+    console.log(`File not found: ${filePath}`);
+} else {
+    let stats = fs.statSync(filePath);
+    if (!stats.isFile()) {
+        console.log(`Not a file: ${filePath}`);
+    } else {
+        let content = fs.readFileSync(filePath, "utf-8");
+        console.log(`Read ${content.length} characters.`);
+    }
+}
+
+// --- Create directories if they don't exist ---
+let outputDir = path.join("output", "reports", "2026");
+fs.mkdirSync(outputDir, { recursive: true });  // Creates all needed folders
+fs.writeFileSync(path.join(outputDir, "q1.txt"), "Q1 Report");
+
+// --- Encoding is explicit in Node.js ---
+// Always pass "utf-8" as the second argument to readFileSync
+// Without it, you get a raw Buffer instead of a string:
+let buffer = fs.readFileSync("data.txt");        // Buffer (raw bytes)
+let text = fs.readFileSync("data.txt", "utf-8"); // String (decoded)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">using System.IO;
+using System.Text;
+
+// --- Handle specific file errors ---
+try
+{
+    string content = File.ReadAllText("missing_file.txt");
+}
+catch (FileNotFoundException)
+{
+    Console.WriteLine("Error: File not found. Check the path.");
+}
+catch (UnauthorizedAccessException)
+{
+    Console.WriteLine("Error: No permission to read this file.");
+}
+catch (DirectoryNotFoundException)
+{
+    Console.WriteLine("Error: The directory doesn't exist.");
+}
+catch (IOException ex)
+{
+    Console.WriteLine($"Error: {ex.Message}");
+}
+
+// --- Check before opening ---
+string filePath = "data/config.txt";
+
+if (!File.Exists(filePath))
+{
+    Console.WriteLine($"File not found: {filePath}");
+}
+else
+{
+    string content = File.ReadAllText(filePath);
+    Console.WriteLine($"Read {content.Length} characters.");
+}
+
+// --- Create directories if they don't exist ---
+string outputDir = Path.Combine("output", "reports", "2026");
+Directory.CreateDirectory(outputDir);  // Creates all needed folders
+File.WriteAllText(Path.Combine(outputDir, "q1.txt"), "Q1 Report");
+
+// --- Specifying encoding ---
+// C# defaults to UTF-8 for File.ReadAllText, but be explicit:
+string utf8Content = File.ReadAllText("data.txt", Encoding.UTF8);
+
+// Writing with encoding:
+File.WriteAllText("output.txt", "Héllo Wörld! 你好世界", Encoding.UTF8);</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ File Error Handling Checklist</h4>
+                    <ul>
+                        <li><strong>Always handle <code>FileNotFound</code></strong> — the most common file error</li>
+                        <li><strong>Create directories before writing</strong> — use <code>mkdir(parents=True)</code> / <code>mkdirSync({recursive: true})</code> / <code>Directory.CreateDirectory()</code></li>
+                        <li><strong>Specify encoding explicitly</strong> — always use <code>utf-8</code> unless you have a specific reason not to</li>
+                        <li><strong>Check before or catch after</strong> — either verify the file exists before opening, or use try/catch</li>
+                        <li><strong>Give helpful error messages</strong> — "File not found" is better than a raw stack trace for users</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Exercises -->
+            <section id="exercises" class="lesson-section">
+                <h2>Exercises</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 1: Word Counter</h3>
+                    <p><strong>Objective:</strong> Write a program that reads a text file and reports how many lines, words, and characters it contains (like the <code>wc</code> command on Unix).</p>
+
+                    <p><strong>Steps:</strong></p>
+                    <ol>
+                        <li>Create a file called <code>sample.txt</code> with 5–10 lines of any text</li>
+                        <li>Read the file and count: total lines, total words, and total characters</li>
+                        <li>Print the results in a formatted summary</li>
+                        <li>Handle the case where the file doesn't exist</li>
+                    </ol>
+
+                    <p><strong>Expected output:</strong></p>
+                    <pre><code>File: sample.txt
+Lines: 7
+Words: 42
+Characters: 238</code></pre>
+
+                    <details>
+                        <summary>💡 Hints</summary>
+                        <p>Words can be counted by splitting each line on whitespace. Characters include spaces and punctuation. Don't count the trailing newline character at the end of each line — strip it first.</p>
+                    </details>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Word Counter Solution">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">from pathlib import Path
+
+def word_count(filename):
+    path = Path(filename)
+    if not path.exists():
+        print(f"Error: '{filename}' not found.")
+        return
+
+    lines = 0
+    words = 0
+    chars = 0
+
+    with open(path, "r", encoding="utf-8") as file:
+        for line in file:
+            line = line.rstrip("\n")  # Remove trailing newline
+            lines += 1
+            words += len(line.split())
+            chars += len(line)
+
+    print(f"File: {filename}")
+    print(f"Lines: {lines}")
+    print(f"Words: {words}")
+    print(f"Characters: {chars}")
+
+word_count("sample.txt")</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">const fs = require("fs");
+
+function wordCount(filename) {
+    if (!fs.existsSync(filename)) {
+        console.log(`Error: '${filename}' not found.`);
+        return;
+    }
+
+    let content = fs.readFileSync(filename, "utf-8");
+    let lines = content.trimEnd().split("\n");
+
+    let totalWords = 0;
+    let totalChars = 0;
+
+    for (let line of lines) {
+        totalWords += line.split(/\s+/).filter(w =&gt; w).length;
+        totalChars += line.length;
+    }
+
+    console.log(`File: ${filename}`);
+    console.log(`Lines: ${lines.length}`);
+    console.log(`Words: ${totalWords}`);
+    console.log(`Characters: ${totalChars}`);
+}
+
+wordCount("sample.txt");</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">void WordCount(string filename)
+{
+    if (!File.Exists(filename))
+    {
+        Console.WriteLine($"Error: '{filename}' not found.");
+        return;
+    }
+
+    string[] lines = File.ReadAllLines(filename);
+    int totalWords = 0;
+    int totalChars = 0;
+
+    foreach (string line in lines)
+    {
+        totalWords += line.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
+        totalChars += line.Length;
+    }
+
+    Console.WriteLine($"File: {filename}");
+    Console.WriteLine($"Lines: {lines.Length}");
+    Console.WriteLine($"Words: {totalWords}");
+    Console.WriteLine($"Characters: {totalChars}");
+}
+
+WordCount("sample.txt");</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 2: Simple Note-Taking App</h3>
+                    <p><strong>Objective:</strong> Build a command-line note-taking app that saves notes to a file. The app should support adding new notes (with timestamps), viewing all notes, and searching notes.</p>
+
+                    <p><strong>Features:</strong></p>
+                    <ol>
+                        <li><strong>Add a note:</strong> User types a note, it's saved with a timestamp to <code>notes.txt</code></li>
+                        <li><strong>View all notes:</strong> Display all saved notes</li>
+                        <li><strong>Search notes:</strong> Find notes containing a keyword</li>
+                        <li>Notes should <strong>persist</strong> between program runs (use append mode!)</li>
+                    </ol>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Note-Taking App">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">from datetime import datetime
+from pathlib import Path
+
+NOTES_FILE = "notes.txt"
+
+def add_note():
+    note = input("Enter your note: ").strip()
+    if not note:
+        print("Empty note — nothing saved.")
+        return
+
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
+    with open(NOTES_FILE, "a", encoding="utf-8") as file:
+        file.write(f"[{timestamp}] {note}\n")
+    print("Note saved!")
+
+def view_notes():
+    path = Path(NOTES_FILE)
+    if not path.exists() or path.stat().st_size == 0:
+        print("No notes yet.")
+        return
+
+    print("\n--- All Notes ---")
+    with open(NOTES_FILE, "r", encoding="utf-8") as file:
+        for i, line in enumerate(file, 1):
+            print(f"  {i}. {line.strip()}")
+    print()
+
+def search_notes():
+    keyword = input("Search for: ").strip().lower()
+    if not keyword:
+        print("No keyword entered.")
+        return
+
+    path = Path(NOTES_FILE)
+    if not path.exists():
+        print("No notes yet.")
+        return
+
+    print(f"\n--- Notes matching '{keyword}' ---")
+    found = 0
+    with open(NOTES_FILE, "r", encoding="utf-8") as file:
+        for line in file:
+            if keyword in line.lower():
+                print(f"  • {line.strip()}")
+                found += 1
+
+    if found == 0:
+        print("  No matches found.")
+    print()
+
+# --- Main loop ---
+while True:
+    print("Notes App: [A]dd | [V]iew | [S]earch | [Q]uit")
+    choice = input("> ").strip().lower()
+
+    if choice == "a":
+        add_note()
+    elif choice == "v":
+        view_notes()
+    elif choice == "s":
+        search_notes()
+    elif choice == "q":
+        print("Goodbye!")
+        break
+    else:
+        print("Invalid choice. Try A, V, S, or Q.")</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">const fs = require("fs");
+const readline = require("readline");
+
+const NOTES_FILE = "notes.txt";
+
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+});
+
+function prompt(question) {
+    return new Promise(resolve =&gt; rl.question(question, resolve));
+}
+
+function addNote(text) {
+    let timestamp = new Date().toISOString().slice(0, 16).replace("T", " ");
+    fs.appendFileSync(NOTES_FILE, `[${timestamp}] ${text}\n`);
+    console.log("Note saved!");
+}
+
+function viewNotes() {
+    if (!fs.existsSync(NOTES_FILE)) {
+        console.log("No notes yet.");
+        return;
+    }
+    let content = fs.readFileSync(NOTES_FILE, "utf-8").trim();
+    if (!content) { console.log("No notes yet."); return; }
+
+    console.log("\n--- All Notes ---");
+    content.split("\n").forEach((line, i) =&gt; {
+        console.log(`  ${i + 1}. ${line}`);
+    });
+    console.log();
+}
+
+function searchNotes(keyword) {
+    if (!fs.existsSync(NOTES_FILE)) {
+        console.log("No notes yet.");
+        return;
+    }
+    let lines = fs.readFileSync(NOTES_FILE, "utf-8").trim().split("\n");
+    let matches = lines.filter(l =&gt; l.toLowerCase().includes(keyword.toLowerCase()));
+
+    console.log(`\n--- Notes matching '${keyword}' ---`);
+    if (matches.length === 0) {
+        console.log("  No matches found.");
+    } else {
+        matches.forEach(m =&gt; console.log(`  • ${m}`));
+    }
+    console.log();
+}
+
+async function main() {
+    while (true) {
+        let choice = await prompt("Notes App: [A]dd | [V]iew | [S]earch | [Q]uit\n> ");
+        choice = choice.trim().toLowerCase();
+
+        if (choice === "a") {
+            let note = await prompt("Enter your note: ");
+            if (note.trim()) addNote(note.trim());
+            else console.log("Empty note — nothing saved.");
+        } else if (choice === "v") {
+            viewNotes();
+        } else if (choice === "s") {
+            let keyword = await prompt("Search for: ");
+            if (keyword.trim()) searchNotes(keyword.trim());
+        } else if (choice === "q") {
+            console.log("Goodbye!");
+            rl.close();
+            break;
+        }
+    }
+}
+main();</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">const string NotesFile = "notes.txt";
+
+void AddNote()
+{
+    Console.Write("Enter your note: ");
+    string? note = Console.ReadLine()?.Trim();
+    if (string.IsNullOrEmpty(note))
+    {
+        Console.WriteLine("Empty note — nothing saved.");
+        return;
+    }
+
+    string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
+    File.AppendAllText(NotesFile, $"[{timestamp}] {note}\n");
+    Console.WriteLine("Note saved!");
+}
+
+void ViewNotes()
+{
+    if (!File.Exists(NotesFile) || new FileInfo(NotesFile).Length == 0)
+    {
+        Console.WriteLine("No notes yet.");
+        return;
+    }
+
+    Console.WriteLine("\n--- All Notes ---");
+    string[] lines = File.ReadAllLines(NotesFile);
+    for (int i = 0; i &lt; lines.Length; i++)
+        Console.WriteLine($"  {i + 1}. {lines[i]}");
+    Console.WriteLine();
+}
+
+void SearchNotes()
+{
+    Console.Write("Search for: ");
+    string? keyword = Console.ReadLine()?.Trim().ToLower();
+    if (string.IsNullOrEmpty(keyword)) return;
+
+    if (!File.Exists(NotesFile))
+    {
+        Console.WriteLine("No notes yet.");
+        return;
+    }
+
+    Console.WriteLine($"\n--- Notes matching '{keyword}' ---");
+    var matches = File.ReadAllLines(NotesFile)
+        .Where(line =&gt; line.ToLower().Contains(keyword))
+        .ToList();
+
+    if (matches.Count == 0)
+        Console.WriteLine("  No matches found.");
+    else
+        matches.ForEach(m =&gt; Console.WriteLine($"  • {m}"));
+    Console.WriteLine();
+}
+
+// Main loop
+while (true)
+{
+    Console.WriteLine("Notes App: [A]dd | [V]iew | [S]earch | [Q]uit");
+    Console.Write("> ");
+    string? choice = Console.ReadLine()?.Trim().ToLower();
+
+    switch (choice)
+    {
+        case "a": AddNote(); break;
+        case "v": ViewNotes(); break;
+        case "s": SearchNotes(); break;
+        case "q": Console.WriteLine("Goodbye!"); return;
+        default: Console.WriteLine("Invalid choice."); break;
+    }
+}</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 3: CSV Grade Processor</h3>
+                    <p><strong>Objective:</strong> Read a CSV file of student grades, calculate the average for each student, assign a letter grade, and write the results to a new CSV file.</p>
+
+                    <p><strong>Input file (<code>grades_input.csv</code>):</strong></p>
+                    <pre><code>name,test1,test2,test3
+Alice,95,88,92
+Bob,72,65,78
+Charlie,88,91,85
+Diana,55,42,61</code></pre>
+
+                    <p><strong>Expected output file (<code>grades_output.csv</code>):</strong></p>
+                    <pre><code>name,average,letter_grade
+Alice,91.7,A
+Bob,71.7,C
+Charlie,88.0,B
+Diana,52.7,F</code></pre>
+
+                    <details>
+                        <summary>💡 Hints</summary>
+                        <p>Remember that CSV values are strings — convert test scores to numbers before averaging. Round averages to one decimal place. Use the standard grading scale: A ≥ 90, B ≥ 80, C ≥ 70, D ≥ 60, F below 60.</p>
+                    </details>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Exercise 1 (Word Counter) is a straightforward read exercise — good for building confidence. Exercise 2 (Note-Taking App) is the star of this lesson — it combines reading, writing, appending, and error handling into a real, useful program. Students should run it, add some notes, quit, restart, and see that their notes persisted. That "aha" moment when data survives a restart is the whole point of this lesson. Exercise 3 (CSV Processor) bridges to the next lesson on JSON by working with structured data. The input CSV should be created by students before they start coding. Consider having them export it from Google Sheets to reinforce the real-world connection.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong>File paths:</strong> Use your language's path tools (<code>Path()</code> / <code>path.join()</code> / <code>Path.Combine()</code>) — never hard-code slashes</li>
+                        <li><strong>Reading files:</strong> Read all at once for small files, line by line for large files</li>
+                        <li><strong>Writing files:</strong> <code>"w"</code> mode <strong>erases</strong> existing content — be careful!</li>
+                        <li><strong>Appending:</strong> <code>"a"</code> mode adds to the end — use for logs, journals, and running records</li>
+                        <li><strong>Safe handling:</strong> Always use <code>with</code> (Python), <code>using</code> (C#), or high-level APIs (Node.js) to ensure files are closed</li>
+                        <li><strong>CSV files:</strong> Simple to parse for clean data; use libraries for real-world data with commas in values</li>
+                        <li><strong>Error handling:</strong> Always handle <code>FileNotFoundError</code>, create directories before writing, and specify <code>utf-8</code> encoding</li>
+                    </ul>
+                </div>
+
+                <h3>Cross-Language Comparison</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Operation</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript (Node.js)</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Read all text</td>
+                                <td><code>Path(f).read_text()</code></td>
+                                <td><code>fs.readFileSync(f, "utf-8")</code></td>
+                                <td><code>File.ReadAllText(f)</code></td>
+                            </tr>
+                            <tr>
+                                <td>Read all lines</td>
+                                <td><code>file.readlines()</code></td>
+                                <td><code>content.split("\n")</code></td>
+                                <td><code>File.ReadAllLines(f)</code></td>
+                            </tr>
+                            <tr>
+                                <td>Write (overwrite)</td>
+                                <td><code>open(f, "w")</code></td>
+                                <td><code>fs.writeFileSync(f, data)</code></td>
+                                <td><code>File.WriteAllText(f, data)</code></td>
+                            </tr>
+                            <tr>
+                                <td>Append</td>
+                                <td><code>open(f, "a")</code></td>
+                                <td><code>fs.appendFileSync(f, data)</code></td>
+                                <td><code>File.AppendAllText(f, data)</code></td>
+                            </tr>
+                            <tr>
+                                <td>Safe cleanup</td>
+                                <td><code>with open() as f:</code></td>
+                                <td>Built into Sync APIs</td>
+                                <td><code>using (...) { }</code></td>
+                            </tr>
+                            <tr>
+                                <td>File exists?</td>
+                                <td><code>Path(f).exists()</code></td>
+                                <td><code>fs.existsSync(f)</code></td>
+                                <td><code>File.Exists(f)</code></td>
+                            </tr>
+                            <tr>
+                                <td>Join paths</td>
+                                <td><code>Path("a") / "b"</code></td>
+                                <td><code>path.join("a", "b")</code></td>
+                                <td><code>Path.Combine("a", "b")</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>🚀 What's Next?</h3>
+                <p>Now that you can read and write files, you're ready for a more powerful data format. In the next lesson, we'll work with <strong>JSON</strong> — the universal language for structured data that's used by every API, config file, and data exchange on the web.</p>
+
+                <!-- Quiz -->
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Check</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What happens when you open a file in write mode (<code>"w"</code>) that already has content?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="That's append mode ('a'). Write mode is more destructive.">A) New content is added after the existing content</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Opening a file in write mode ('w') immediately erases ALL existing content. The file becomes empty before any new data is written. This is the most common cause of accidental data loss in file programming. Use append mode ('a') if you want to add to an existing file.">B) All existing content is erased, then new content is written</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Write mode does not raise an error if the file exists — it silently overwrites. Exclusive mode ('x') raises an error if the file exists.">C) An error is raised because the file already exists</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 2:</strong> What is the Python <code>with</code> statement used for in file handling?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="'with' does guarantee closing, but it does more than just that.">A) It makes file operations faster</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="The 'with' statement (Python) and 'using' statement (C#) guarantee that the file is closed properly when the block ends — even if an error occurs inside the block. This prevents resource leaks and file-locking issues. Always use 'with' when opening files in Python.">B) It automatically closes the file when the block ends, even if an error occurs</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The 'with' statement doesn't handle exceptions itself — it handles cleanup. You still need try/except for error handling.">C) It converts the file to read-only mode</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 3:</strong> Why should you always use <code>path.join()</code> or <code>Path.Combine()</code> instead of string concatenation for file paths?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Path joining doesn't affect speed — it's about correctness.">A) It makes the program run faster</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Both approaches create strings, but only one creates CORRECT strings on every OS.">B) Strings can't represent file paths</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Windows uses backslashes (\\) while Mac and Linux use forward slashes (/) in file paths. Functions like path.join() and Path.Combine() automatically use the correct separator for the current operating system, so your code works everywhere without changes.">C) It uses the correct path separator for each operating system</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_21.html" class="prev-lesson">← Previous: Debugging Strategies</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_23.html" class="next-lesson">Next: Working with JSON →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

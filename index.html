@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn programming fundamentals through Python, JavaScript, and C# side by side. A beginner-friendly comparative course.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Programming Fundamentals: Three Language Approach</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+<body>
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+
+    <!-- Progress indicator -->
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">
+                ☰
+            </button>
+            <div class="nav-links" id="nav-links">
+                <a href="#introduction">Introduction</a>
+                <a href="#modules">Modules</a>
+                <a href="#prerequisites">Prerequisites</a>
+                <a href="#resources">Resources</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li aria-current="page">Home</li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main-content">
+        <div class="container">
+            <!-- Hero Section -->
+            <header>
+                <h1>🐍⚡🔷 Programming Fundamentals:<br>Three Language Approach</h1>
+                <p class="lead">Learn core programming concepts through Python, JavaScript, and C# — side by side. One concept, three perspectives, deeper understanding.</p>
+            </header>
+
+            <!-- Overall Progress -->
+            <div id="overall-progress" class="card">
+                <!-- Progress will be inserted by JavaScript -->
+            </div>
+
+            <!-- Introduction Section -->
+            <section id="introduction" class="card">
+                <h2>📚 About This Course</h2>
+                <p>Most programming courses teach one language at a time. This course takes a different approach: you'll learn <strong>programming concepts first</strong>, then see how each concept looks in three popular languages. This comparison-based method helps you understand <em>why</em> languages work the way they do — not just <em>how</em> to write code in one of them.</p>
+                <p>By the end of this course, you won't just know Python <em>or</em> JavaScript <em>or</em> C# — you'll understand programming itself. Picking up a fourth or fifth language later will feel natural because you'll already know the patterns.</p>
+
+                <h3>What You'll Learn</h3>
+                <ul>
+                    <li>Core programming concepts: variables, types, control flow, functions, collections, and OOP</li>
+                    <li>How Python, JavaScript, and C# each implement the same ideas</li>
+                    <li>Key differences: dynamic vs. static typing, interpreted vs. compiled</li>
+                    <li>Error handling, file I/O, and working with APIs</li>
+                    <li>How to read and write code in all three languages with confidence</li>
+                </ul>
+
+                <h3>Why Three Languages?</h3>
+                <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem;">
+                    <div class="card" style="flex: 1; min-width: 200px; border-top: 3px solid var(--python-color);">
+                        <h4>🐍 Python</h4>
+                        <p>Clean, readable syntax. The go-to language for data science, automation, and learning to code.</p>
+                    </div>
+                    <div class="card" style="flex: 1; min-width: 200px; border-top: 3px solid #d4a017;">
+                        <h4>⚡ JavaScript</h4>
+                        <p>The language of the web. Runs in every browser and powers both front-end and back-end development.</p>
+                    </div>
+                    <div class="card" style="flex: 1; min-width: 200px; border-top: 3px solid var(--csharp-color);">
+                        <h4>🔷 C#</h4>
+                        <p>A strongly-typed, compiled language. Used in enterprise software, game development (Unity), and cloud apps.</p>
+                    </div>
+                </div>
+
+                <h3>Who This Course Is For</h3>
+                <ul>
+                    <li><strong>True beginners</strong> who have never written a line of code</li>
+                    <li><strong>Students</strong> who want to build a strong foundation before specializing</li>
+                    <li><strong>Career changers</strong> exploring which language ecosystem fits their goals</li>
+                    <li><strong>Instructors</strong> looking for a structured comparative curriculum to use in class</li>
+                </ul>
+            </section>
+
+            <!-- Course Modules/Lessons -->
+            <section id="modules">
+                <h2>📖 Course Modules</h2>
+
+                <!-- Module 1 -->
+                <div class="card lesson-card">
+                    <h3>Module 1: Getting Started</h3>
+                    <p>Introduction, environment setup, and your first programs in all three languages.</p>
+                    <ul>
+                        <li><a href="lesson_01.html" class="lesson-link">Lesson 1.1: Welcome &amp; Course Overview</a></li>
+                        <li><a href="lesson_02.html" class="lesson-link">Lesson 1.2: Setting Up Your Environment</a></li>
+                        <li><a href="lesson_03.html" class="lesson-link">Lesson 1.3: Hello World in Three Languages</a></li>
+                    </ul>
+                </div>
+
+                <!-- Module 2 -->
+                <div class="card lesson-card">
+                    <h3>Module 2: Variables, Types &amp; Data</h3>
+                    <p>Working with data — how each language stores, names, and handles information.</p>
+                    <ul>
+                        <li><a href="lesson_04.html" class="lesson-link">Lesson 2.1: Variables and Constants</a></li>
+                        <li><a href="lesson_05.html" class="lesson-link">Lesson 2.2: Data Types: Numbers, Strings, Booleans</a></li>
+                        <li><a href="lesson_06.html" class="lesson-link">Lesson 2.3: Type Conversion and Coercion</a></li>
+                    </ul>
+                </div>
+
+                <!-- Module 3 -->
+                <div class="card lesson-card">
+                    <h3>Module 3: Control Flow</h3>
+                    <p>Making decisions and repeating actions — the logic that drives all programs.</p>
+                    <ul>
+                        <li><a href="lesson_07.html" class="lesson-link">Lesson 3.1: Conditionals: if, else, and switch</a></li>
+                        <li><a href="lesson_08.html" class="lesson-link">Lesson 3.2: Loops: for and while</a></li>
+                        <li><a href="lesson_09.html" class="lesson-link">Lesson 3.3: Logical Operators and Truthiness</a></li>
+                    </ul>
+                </div>
+
+                <!-- Module 4 -->
+                <div class="card lesson-card">
+                    <h3>Module 4: Functions</h3>
+                    <p>Organizing code into reusable blocks — the building blocks of clean programs.</p>
+                    <ul>
+                        <li><a href="lesson_10.html" class="lesson-link">Lesson 4.1: Defining and Calling Functions</a></li>
+                        <li><a href="lesson_11.html" class="lesson-link">Lesson 4.2: Parameters, Arguments, and Return Values</a></li>
+                        <li><a href="lesson_12.html" class="lesson-link">Lesson 4.3: Scope and Closures</a></li>
+                    </ul>
+                </div>
+
+                <!-- Module 5 -->
+                <div class="card lesson-card">
+                    <h3>Module 5: Collections</h3>
+                    <p>Storing and working with groups of data — lists, arrays, and dictionaries.</p>
+                    <ul>
+                        <li><a href="lesson_13.html" class="lesson-link">Lesson 5.1: Arrays and Lists</a></li>
+                        <li><a href="lesson_14.html" class="lesson-link">Lesson 5.2: Dictionaries, Objects, and Maps</a></li>
+                        <li><a href="lesson_15.html" class="lesson-link">Lesson 5.3: Iterating Over Collections</a></li>
+                    </ul>
+                </div>
+
+                <!-- Module 6 -->
+                <div class="card lesson-card">
+                    <h3>Module 6: Object-Oriented Programming</h3>
+                    <p>Modeling real-world concepts with classes, objects, and inheritance.</p>
+                    <ul>
+                        <li><a href="lesson_16.html" class="lesson-link">Lesson 6.1: Classes and Objects</a></li>
+                        <li><a href="lesson_17.html" class="lesson-link">Lesson 6.2: Properties, Methods, and Constructors</a></li>
+                        <li><a href="lesson_18.html" class="lesson-link">Lesson 6.3: Inheritance and Polymorphism</a></li>
+                    </ul>
+                </div>
+
+                <!-- Module 7 -->
+                <div class="card lesson-card">
+                    <h3>Module 7: Error Handling</h3>
+                    <p>Writing robust code that handles the unexpected gracefully.</p>
+                    <ul>
+                        <li><a href="lesson_19.html" class="lesson-link">Lesson 7.1: Try, Catch, and Finally</a></li>
+                        <li><a href="lesson_20.html" class="lesson-link">Lesson 7.2: Custom Errors and Exceptions</a></li>
+                        <li><a href="lesson_21.html" class="lesson-link">Lesson 7.3: Debugging Strategies</a></li>
+                    </ul>
+                </div>
+
+                <!-- Module 8 -->
+                <div class="card lesson-card">
+                    <h3>Module 8: Working with Files &amp; APIs</h3>
+                    <p>Connecting your programs to the outside world — files, JSON, and web APIs.</p>
+                    <ul>
+                        <li><a href="lesson_22.html" class="lesson-link">Lesson 8.1: Reading and Writing Files</a></li>
+                        <li><a href="lesson_23.html" class="lesson-link">Lesson 8.2: Working with JSON</a></li>
+                        <li><a href="lesson_24.html" class="lesson-link">Lesson 8.3: Making API Requests</a></li>
+                    </ul>
+                </div>
+
+                <!-- Module 9 -->
+                <div class="card lesson-card">
+                    <h3>Module 9: Capstone Projects</h3>
+                    <p>Bringing it all together — plan, build, and review a complete project.</p>
+                    <ul>
+                        <li><a href="lesson_25.html" class="lesson-link">Lesson 9.1: Project Planning and Design</a></li>
+                        <li><a href="lesson_26.html" class="lesson-link">Lesson 9.2: Building Your Project</a></li>
+                        <li><a href="lesson_27.html" class="lesson-link">Lesson 9.3: Code Review and Next Steps</a></li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Prerequisites Section -->
+            <section id="prerequisites" class="card">
+                <h2>✅ Prerequisites</h2>
+                <p>This course is designed for <strong>true beginners</strong>. No prior programming experience is required. You should have:</p>
+                <ul>
+                    <li>Basic computer skills (navigating files, using a web browser, installing software)</li>
+                    <li>A computer running Windows, macOS, or Linux</li>
+                    <li>Willingness to type code and make mistakes — that's how learning works!</li>
+                </ul>
+
+                <h3>Required Software</h3>
+                <p>We'll walk through installation in Lesson 1.2, but here's the overview:</p>
+                <ul>
+                    <li><strong>VS Code</strong> — free code editor (works for all three languages)</li>
+                    <li><strong>Python 3.10+</strong> — from python.org</li>
+                    <li><strong>Node.js 18+</strong> — for running JavaScript outside the browser</li>
+                    <li><strong>.NET SDK 8+</strong> — for C# development</li>
+                    <li><strong>C# Dev Kit</strong> — VS Code extension from Microsoft</li>
+                </ul>
+            </section>
+
+            <!-- Resources Section -->
+            <section id="resources" class="card">
+                <h2>📚 Additional Resources</h2>
+
+                <h3>Official Documentation</h3>
+                <ul>
+                    <li><a href="https://docs.python.org/3/" target="_blank" rel="noopener">Python 3 Documentation</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank" rel="noopener">MDN JavaScript Reference</a></li>
+                    <li><a href="https://learn.microsoft.com/en-us/dotnet/csharp/" target="_blank" rel="noopener">C# Documentation (Microsoft Learn)</a></li>
+                </ul>
+
+                <h3>Recommended Reading</h3>
+                <ul>
+                    <li><a href="https://automatetheboringstuff.com/" target="_blank" rel="noopener">Automate the Boring Stuff with Python</a> (free online)</li>
+                    <li><a href="https://javascript.info/" target="_blank" rel="noopener">The Modern JavaScript Tutorial</a> (free online)</li>
+                    <li><a href="https://learn.microsoft.com/en-us/dotnet/csharp/tour-of-csharp/" target="_blank" rel="noopener">A Tour of C#</a> (Microsoft Learn)</li>
+                </ul>
+
+                <h3>Support</h3>
+                <p>If you have questions or need help:</p>
+                <ul>
+                    <li>Visit <a href="https://rays-home.netlify.app/contact">the contact page</a></li>
+                    <li>Check the additional resources linked in each lesson</li>
+                </ul>
+            </section>
+
+            <!-- Search Section -->
+            <section class="card">
+                <h2>🔍 Search Course Content</h2>
+                <div style="position: relative;">
+                    <input type="text" id="search-input" placeholder="Search lessons, topics, or keywords..."
+                           aria-label="Search course content">
+                    <div id="search-results" style="display: none; position: absolute; top: 100%; left: 0; right: 0;"></div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

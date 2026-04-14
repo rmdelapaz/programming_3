@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn to make API requests in Python, JavaScript (Node.js), and C#. Covers HTTP basics, GET requests, parsing JSON responses, query parameters, error handling, and working with real public APIs.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 8.3: Making API Requests - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 8</a></li>
+            <li aria-current="page">Lesson 8.3: Making API Requests</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🌐 Lesson 8.3: Making API Requests</h1>
+                <p class="lead">Your programs can now save data to files and load it back. But what if you need data you <em>don't</em> already have — live weather, the latest news, a random joke, or stock prices? That data lives on <strong>servers</strong> all over the internet, and the way your program asks for it is through an <strong>API</strong> (Application Programming Interface). In this lesson, you'll learn to make HTTP requests, parse JSON responses, and build programs that pull live data from the web.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li><strong>Explain what an API is</strong> and how the request/response cycle works</li>
+                        <li>Understand <strong>HTTP basics</strong> — methods (GET, POST), status codes, and headers</li>
+                        <li><strong>Make GET requests</strong> to fetch data from public APIs</li>
+                        <li><strong>Parse JSON responses</strong> and extract the data you need</li>
+                        <li>Use <strong>query parameters</strong> to customize API requests</li>
+                        <li><strong>Handle API errors</strong> — network failures, bad responses, rate limits</li>
+                        <li>Understand <strong>API keys</strong> and why many APIs require them</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 60 minutes</p>
+                    <p><strong>Project:</strong> Build a weather lookup tool using a real API</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary><h2 style="display: inline; margin: 0;">📑 In This Lesson</h2></summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#what-is-api" class="toc-link">What Is an API?</a></li>
+                        <li><a href="#http-basics" class="toc-link">HTTP Basics</a></li>
+                        <li><a href="#get-requests" class="toc-link">Making GET Requests</a></li>
+                        <li><a href="#parsing-responses" class="toc-link">Parsing API Responses</a></li>
+                        <li><a href="#query-params" class="toc-link">Query Parameters</a></li>
+                        <li><a href="#error-handling" class="toc-link">Handling API Errors</a></li>
+                        <li><a href="#api-keys" class="toc-link">API Keys and Authentication</a></li>
+                        <li><a href="#real-apis" class="toc-link">Working with Real APIs</a></li>
+                        <li><a href="#exercises" class="toc-link">Exercises</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- What Is an API? -->
+            <section id="what-is-api" class="lesson-section">
+                <h2>What Is an API?</h2>
+                <p>An API is a way for programs to talk to each other. When you visit a website, your browser makes a request and gets back HTML (a web page). When your <em>program</em> makes a request, it gets back <strong>data</strong> — usually JSON.</p>
+
+                <div class="mermaid">
+                    sequenceDiagram
+                        participant P as Your Program
+                        participant S as API Server
+                        P->>S: HTTP Request (GET /weather?city=Portland)
+                        S->>S: Process request, look up data
+                        S->>P: HTTP Response (JSON data)
+                        P->>P: Parse JSON, use the data
+                </div>
+
+                <p>Think of an API like a restaurant:</p>
+                <ul>
+                    <li><strong>The menu</strong> = the API documentation (tells you what you can order)</li>
+                    <li><strong>Your order</strong> = the HTTP request (what you're asking for)</li>
+                    <li><strong>The kitchen</strong> = the server (processes your request)</li>
+                    <li><strong>Your food</strong> = the response (the data you get back)</li>
+                </ul>
+
+                <p>You don't need to know how the kitchen works — you just need to know what's on the menu and how to place an order. That's the power of APIs.</p>
+
+                <div class="card card-info">
+                    <h4>💡 APIs Are Everywhere</h4>
+                    <ul>
+                        <li><strong>Weather apps</strong> → call a weather API (OpenWeatherMap, WeatherAPI)</li>
+                        <li><strong>Social media feeds</strong> → call Twitter/Reddit/GitHub APIs</li>
+                        <li><strong>Maps and directions</strong> → call Google Maps or Mapbox APIs</li>
+                        <li><strong>Payment processing</strong> → call Stripe or PayPal APIs</li>
+                        <li><strong>AI assistants</strong> → call OpenAI or Anthropic APIs</li>
+                    </ul>
+                    <p>If an app on your phone shows data it didn't create itself, it's almost certainly using an API.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>This is one of the most exciting lessons in the course — it's where programs start feeling "real" because they connect to the outside world. Start by opening a browser and visiting <code>https://api.github.com/users/github</code> — students will see raw JSON in their browser. Explain: "That's an API response. Your browser made a GET request, and the server sent back JSON instead of a web page. Your program can do the exact same thing." The restaurant analogy works well — students immediately understand the menu/order/kitchen/food metaphor. Emphasize that they've been <em>consuming</em> APIs every time they use an app; now they'll learn how to do it themselves in code.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- HTTP Basics -->
+            <section id="http-basics" class="lesson-section">
+                <h2>HTTP Basics</h2>
+                <p>HTTP (HyperText Transfer Protocol) is the language of the web. Every API request uses HTTP. You need to know three things: <strong>methods</strong>, <strong>status codes</strong>, and <strong>headers</strong>.</p>
+
+                <h3>HTTP Methods</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Purpose</th>
+                                <th>Example</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>GET</strong></td>
+                                <td>Retrieve data (read-only)</td>
+                                <td>Get the weather for Portland</td>
+                            </tr>
+                            <tr>
+                                <td><strong>POST</strong></td>
+                                <td>Send data to create something</td>
+                                <td>Create a new user account</td>
+                            </tr>
+                            <tr>
+                                <td><strong>PUT</strong></td>
+                                <td>Update/replace existing data</td>
+                                <td>Update a user's profile</td>
+                            </tr>
+                            <tr>
+                                <td><strong>DELETE</strong></td>
+                                <td>Remove data</td>
+                                <td>Delete a blog post</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>In this lesson, we'll focus on <strong>GET</strong> — the most common method and the one you'll use 90% of the time as a beginner.</p>
+
+                <h3>HTTP Status Codes</h3>
+                <p>Every response includes a status code — a number that tells you whether the request succeeded:</p>
+
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Range</th>
+                                <th>Meaning</th>
+                                <th>Common Codes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>2xx ✅</strong></td>
+                                <td>Success</td>
+                                <td><code>200 OK</code> — everything worked</td>
+                            </tr>
+                            <tr>
+                                <td><strong>3xx ↪️</strong></td>
+                                <td>Redirect</td>
+                                <td><code>301 Moved Permanently</code> — try a different URL</td>
+                            </tr>
+                            <tr>
+                                <td><strong>4xx ❌</strong></td>
+                                <td>Client Error (your fault)</td>
+                                <td><code>400 Bad Request</code>, <code>401 Unauthorized</code>, <code>403 Forbidden</code>, <code>404 Not Found</code>, <code>429 Too Many Requests</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>5xx 💥</strong></td>
+                                <td>Server Error (their fault)</td>
+                                <td><code>500 Internal Server Error</code>, <code>503 Service Unavailable</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ Quick Memory Aid</h4>
+                    <ul>
+                        <li><strong>2xx</strong> = "Here's your data!" (success)</li>
+                        <li><strong>4xx</strong> = "You asked wrong." (check your URL, API key, or parameters)</li>
+                        <li><strong>5xx</strong> = "We broke." (the server has a problem — try again later)</li>
+                    </ul>
+                </div>
+
+                <h3>Anatomy of a URL</h3>
+                <div class="mermaid">
+                    flowchart LR
+                        A["<b>https://</b><br/>Protocol"] --> B["<b>api.weather.com</b><br/>Host (server)"]
+                        B --> C["<b>/v1/forecast</b><br/>Path (endpoint)"]
+                        C --> D["<b>?city=Portland&amp;units=metric</b><br/>Query parameters"]
+                        style A fill:#3b82f6,color:#fff
+                        style B fill:#6366f1,color:#fff
+                        style C fill:#22c55e,color:#fff
+                        style D fill:#f59e0b,color:#fff
+                </div>
+            </section>
+
+            <!-- Making GET Requests -->
+            <section id="get-requests" class="lesson-section">
+                <h2>Making GET Requests</h2>
+                <p>Let's make our first API calls. We'll use free, public APIs that don't require any signup or API key.</p>
+
+                <div class="code-tabs" data-title="Your First API Request">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">import requests  # pip install requests
+
+# --- Basic GET request ---
+response = requests.get("https://api.github.com/users/github")
+
+print(response.status_code)   # 200
+print(type(response))         # &lt;class 'requests.models.Response'&gt;
+
+# The response body is a JSON string — parse it:
+data = response.json()        # Shortcut for json.loads(response.text)
+print(data["name"])           # GitHub
+print(data["public_repos"])   # (number of public repos)
+print(data["bio"])            # How people build software.
+
+# --- You can also get the raw text ---
+print(response.text[:100])    # First 100 chars of raw JSON string
+
+# --- Response headers ---
+print(response.headers["content-type"])   # application/json; charset=utf-8
+
+# --- Install requests if you haven't ---
+# pip install requests
+# (or: pip install requests --break-system-packages on some systems)
+# 'requests' is not built-in — it's the most popular Python package</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// --- Node.js 18+ has built-in fetch! ---
+// (Older Node.js: npm install node-fetch)
+
+// Method 1: async/await (recommended)
+async function getGitHubUser() {
+    const response = await fetch("https://api.github.com/users/github");
+
+    console.log(response.status);     // 200
+    console.log(response.ok);         // true (status 200-299)
+
+    const data = await response.json();  // Parse JSON body
+    console.log(data.name);              // GitHub
+    console.log(data.public_repos);      // (number)
+    console.log(data.bio);              // How people build software.
+}
+
+getGitHubUser();
+
+// Method 2: .then() chain
+fetch("https://api.github.com/users/github")
+    .then(response =&gt; response.json())
+    .then(data =&gt; console.log(data.name))
+    .catch(err =&gt; console.error("Error:", err));
+
+// --- Response headers ---
+async function showHeaders() {
+    const response = await fetch("https://api.github.com/users/github");
+    console.log(response.headers.get("content-type"));
+    // application/json; charset=utf-8
+}
+showHeaders();</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">using System.Net.Http;
+using System.Text.Json;
+
+// --- HttpClient is C#'s built-in HTTP library ---
+// Create ONE HttpClient and reuse it (important for performance!)
+HttpClient client = new HttpClient();
+
+// Basic GET request:
+HttpResponseMessage response = await client.GetAsync(
+    "https://api.github.com/users/github"
+);
+// GitHub API requires a User-Agent header:
+client.DefaultRequestHeaders.Add("User-Agent", "MyApp");
+
+Console.WriteLine((int)response.StatusCode);  // 200
+Console.WriteLine(response.IsSuccessStatusCode);  // True
+
+// Read and parse JSON:
+string jsonText = await response.Content.ReadAsStringAsync();
+JsonDocument doc = JsonDocument.Parse(jsonText);
+JsonElement root = doc.RootElement;
+
+Console.WriteLine(root.GetProperty("name").GetString());  // GitHub
+Console.WriteLine(root.GetProperty("public_repos").GetInt32());
+
+// --- Shortcut: GetStringAsync ---
+string json = await client.GetStringAsync(
+    "https://api.github.com/users/github"
+);
+var data = JsonDocument.Parse(json).RootElement;
+
+// --- Deserialize to a class ---
+class GitHubUser
+{
+    public string Name { get; set; } = "";
+    public int PublicRepos { get; set; }
+    public string? Bio { get; set; }
+}
+
+var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+var user = JsonSerializer.Deserialize&lt;GitHubUser&gt;(json, options);
+Console.WriteLine(user?.Name);  // GitHub</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Setup Requirements</h4>
+                    <ul>
+                        <li><strong>Python:</strong> Install the <code>requests</code> library first: <code>pip install requests</code>. It's not built-in but is the standard for HTTP in Python.</li>
+                        <li><strong>JavaScript:</strong> <code>fetch()</code> is built-in for Node.js 18+ and all modern browsers. For older Node.js, use <code>npm install node-fetch</code>.</li>
+                        <li><strong>C#:</strong> <code>HttpClient</code> is built-in (part of <code>System.Net.Http</code>). No extra packages needed.</li>
+                    </ul>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Have students run the GitHub API example first — it works without any API key and returns interesting data. If they get a <code>403 Forbidden</code> error in C#, it's because GitHub requires a <code>User-Agent</code> header. Point out that <code>response.json()</code> (Python/JS) does exactly what <code>json.loads(response.text)</code> would do — it's a convenience method. The key "aha moment" is seeing live data from the internet appear in their terminal. For Python, if students don't have <code>requests</code> installed, they'll get an <code>ImportError</code> — walk through <code>pip install requests</code> and explain that it's the single most-downloaded Python package for a reason. In C#, emphasize creating <strong>one</strong> <code>HttpClient</code> and reusing it — creating a new one per request is a common beginner mistake that causes connection issues.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Parsing API Responses -->
+            <section id="parsing-responses" class="lesson-section">
+                <h2>Parsing API Responses</h2>
+                <p>API responses are just JSON — you already know how to work with JSON from the last lesson. The new challenge is that API JSON tends to be <em>deeply nested</em> and you need to find the specific fields you care about.</p>
+
+                <div class="code-tabs" data-title="Navigating a Real API Response">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">import requests
+import json
+
+# Fetch data about a GitHub repository
+response = requests.get("https://api.github.com/repos/python/cpython")
+repo = response.json()
+
+# Step 1: Explore the response — see what fields are available
+# Pretty-print the keys:
+print(json.dumps(list(repo.keys()), indent=2))
+
+# Step 2: Extract what you need
+print(f"Name: {repo['name']}")                 # cpython
+print(f"Stars: {repo['stargazers_count']}")    # (large number)
+print(f"Language: {repo['language']}")          # Python
+print(f"Open Issues: {repo['open_issues']}")
+print(f"Description: {repo['description']}")
+
+# Step 3: Navigate nested data
+print(f"Owner: {repo['owner']['login']}")       # python
+print(f"Owner Avatar: {repo['owner']['avatar_url']}")
+
+# Step 4: Handle missing fields safely
+license_name = repo.get("license", {}).get("name", "Unknown")
+print(f"License: {license_name}")
+
+# Pro tip: During development, dump the whole response to see its shape:
+# print(json.dumps(repo, indent=2))  # Shows everything, nicely formatted</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">async function exploreRepo() {
+    const response = await fetch("https://api.github.com/repos/nodejs/node");
+    const repo = await response.json();
+
+    // Step 1: Explore — see what's available
+    console.log(Object.keys(repo));
+
+    // Step 2: Extract what you need
+    console.log(`Name: ${repo.name}`);                  // node
+    console.log(`Stars: ${repo.stargazers_count}`);
+    console.log(`Language: ${repo.language}`);           // JavaScript (or C++)
+    console.log(`Open Issues: ${repo.open_issues}`);
+
+    // Step 3: Navigate nested data
+    console.log(`Owner: ${repo.owner.login}`);           // nodejs
+    console.log(`Owner Avatar: ${repo.owner.avatar_url}`);
+
+    // Step 4: Handle missing fields safely with optional chaining
+    console.log(`License: ${repo.license?.name ?? "Unknown"}`);
+
+    // Pro tip: During development, dump everything:
+    // console.log(JSON.stringify(repo, null, 2));
+}
+exploreRepo();</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">HttpClient client = new HttpClient();
+client.DefaultRequestHeaders.Add("User-Agent", "MyApp");
+
+string json = await client.GetStringAsync(
+    "https://api.github.com/repos/dotnet/runtime"
+);
+JsonDocument doc = JsonDocument.Parse(json);
+JsonElement repo = doc.RootElement;
+
+// Step 1: Explore — list available properties
+foreach (JsonProperty prop in repo.EnumerateObject())
+    Console.WriteLine(prop.Name);
+
+// Step 2: Extract what you need
+Console.WriteLine($"Name: {repo.GetProperty("name").GetString()}");
+Console.WriteLine($"Stars: {repo.GetProperty("stargazers_count").GetInt32()}");
+Console.WriteLine($"Language: {repo.GetProperty("language").GetString()}");
+
+// Step 3: Navigate nested data
+Console.WriteLine($"Owner: {repo.GetProperty("owner").GetProperty("login").GetString()}");
+
+// Step 4: Handle missing fields safely
+string licenseName = "Unknown";
+if (repo.TryGetProperty("license", out JsonElement licenseEl) &amp;&amp;
+    licenseEl.ValueKind != JsonValueKind.Null &amp;&amp;
+    licenseEl.TryGetProperty("name", out JsonElement nameEl))
+{
+    licenseName = nameEl.GetString() ?? "Unknown";
+}
+Console.WriteLine($"License: {licenseName}");</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 The Explore-Then-Extract Workflow</h4>
+                    <ol>
+                        <li><strong>Read the API docs</strong> (if available) to know what to expect</li>
+                        <li><strong>Make a request</strong> and pretty-print the full response</li>
+                        <li><strong>Identify the fields</strong> you need — note the nesting path</li>
+                        <li><strong>Write access code</strong> for just those fields</li>
+                        <li><strong>Add safe access</strong> (<code>.get()</code>, <code>?.</code>, <code>TryGetProperty</code>) for optional fields</li>
+                    </ol>
+                </div>
+            </section>
+
+            <!-- Query Parameters -->
+            <section id="query-params" class="lesson-section">
+                <h2>Query Parameters</h2>
+                <p>Most APIs let you customize your request with <strong>query parameters</strong> — the <code>?key=value&amp;key2=value2</code> part at the end of a URL. These filter, sort, or configure what data you get back.</p>
+
+                <div class="code-tabs" data-title="Using Query Parameters">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">import requests
+
+# --- Method 1: params dictionary (recommended!) ---
+# requests builds the URL for you and handles encoding
+response = requests.get(
+    "https://api.github.com/search/repositories",
+    params={
+        "q": "language:python stars:>10000",
+        "sort": "stars",
+        "order": "desc",
+        "per_page": 5,
+    }
+)
+data = response.json()
+
+print(f"Total results: {data['total_count']}")
+for repo in data["items"]:
+    print(f"  ⭐ {repo['stargazers_count']:,}  {repo['full_name']}")
+    print(f"     {repo['description'][:60]}...")
+
+# requests built this URL automatically:
+print(response.url)
+# https://api.github.com/search/repositories?q=language%3Apython+stars%3A%3E10000&amp;sort=stars&amp;...
+
+# --- Method 2: URL string (works but messy) ---
+# You'd have to manually encode special characters
+url = "https://api.github.com/search/repositories?q=python&amp;sort=stars"
+response = requests.get(url)
+
+# Always prefer the params dict — it handles:
+# - URL encoding (spaces → %20, : → %3A)
+# - Special characters
+# - Building the URL correctly</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// --- Method 1: URLSearchParams (recommended!) ---
+async function searchRepos() {
+    const params = new URLSearchParams({
+        q: "language:javascript stars:>10000",
+        sort: "stars",
+        order: "desc",
+        per_page: "5",    // URLSearchParams values must be strings
+    });
+
+    const url = `https://api.github.com/search/repositories?${params}`;
+    const response = await fetch(url);
+    const data = await response.json();
+
+    console.log(`Total results: ${data.total_count}`);
+    for (let repo of data.items) {
+        console.log(`  ⭐ ${repo.stargazers_count.toLocaleString()}  ${repo.full_name}`);
+        console.log(`     ${repo.description?.slice(0, 60)}...`);
+    }
+}
+searchRepos();
+
+// --- Method 2: Template literal (simpler for few params) ---
+async function searchSimple(language) {
+    let url = `https://api.github.com/search/repositories?q=language:${language}&amp;sort=stars&amp;per_page=3`;
+    let response = await fetch(url);
+    let data = await response.json();
+    return data.items;
+}
+
+// URLSearchParams handles encoding automatically:
+let params = new URLSearchParams({ q: "hello world" });
+console.log(params.toString());  // q=hello+world</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">using System.Web;
+
+HttpClient client = new HttpClient();
+client.DefaultRequestHeaders.Add("User-Agent", "MyApp");
+
+// --- Method 1: UriBuilder + query string ---
+var builder = new UriBuilder("https://api.github.com/search/repositories");
+var query = HttpUtility.ParseQueryString(string.Empty);
+query["q"] = "language:csharp stars:>5000";
+query["sort"] = "stars";
+query["order"] = "desc";
+query["per_page"] = "5";
+builder.Query = query.ToString();
+
+string json = await client.GetStringAsync(builder.ToString());
+JsonDocument doc = JsonDocument.Parse(json);
+JsonElement root = doc.RootElement;
+
+Console.WriteLine($"Total: {root.GetProperty("total_count").GetInt32()}");
+foreach (JsonElement repo in root.GetProperty("items").EnumerateArray())
+{
+    string name = repo.GetProperty("full_name").GetString()!;
+    int stars = repo.GetProperty("stargazers_count").GetInt32();
+    Console.WriteLine($"  ⭐ {stars:N0}  {name}");
+}
+
+// --- Method 2: String interpolation (simpler cases) ---
+string lang = "csharp";
+string url = $"https://api.github.com/search/repositories?q=language:{lang}&amp;sort=stars";
+string simpleJson = await client.GetStringAsync(url);</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Always Use Parameter Builders</h4>
+                    <p>Never manually concatenate query strings with <code>+</code> or <code>f-strings</code> for user input. If someone searches for "C# tips &amp; tricks", the <code>&amp;</code> and <code>#</code> would break the URL. Parameter builders (<code>params={}</code>, <code>URLSearchParams</code>, <code>HttpUtility.ParseQueryString</code>) automatically encode special characters.</p>
+                </div>
+            </section>
+
+            <!-- Error Handling -->
+            <section id="error-handling" class="lesson-section">
+                <h2>Handling API Errors</h2>
+                <p>API requests can fail in many ways: the server might be down, your internet might be offline, the API might reject your request, or you might hit a rate limit. Robust code handles all of these.</p>
+
+                <div class="code-tabs" data-title="Comprehensive API Error Handling">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">import requests
+
+def fetch_user(username):
+    """Fetch a GitHub user's profile with full error handling."""
+    url = f"https://api.github.com/users/{username}"
+
+    try:
+        response = requests.get(url, timeout=10)  # 10-second timeout
+
+        # Check for HTTP errors (4xx and 5xx)
+        if response.status_code == 404:
+            print(f"User '{username}' not found.")
+            return None
+        elif response.status_code == 403:
+            print("Access forbidden — you may have hit the rate limit.")
+            print(f"Rate limit resets at: {response.headers.get('X-RateLimit-Reset')}")
+            return None
+        elif response.status_code != 200:
+            print(f"Error: HTTP {response.status_code}")
+            return None
+
+        return response.json()
+
+    except requests.exceptions.ConnectionError:
+        print("Error: Could not connect. Check your internet connection.")
+        return None
+    except requests.exceptions.Timeout:
+        print("Error: Request timed out. The server may be slow.")
+        return None
+    except requests.exceptions.JSONDecodeError:
+        print("Error: Response was not valid JSON.")
+        return None
+    except requests.exceptions.RequestException as e:
+        print(f"Error: {e}")
+        return None
+
+# Usage:
+user = fetch_user("octocat")
+if user:
+    print(f"Found: {user['name']} ({user['login']})")
+
+user = fetch_user("this-user-definitely-does-not-exist-12345")
+# User 'this-user-definitely-does-not-exist-12345' not found.</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">async function fetchUser(username) {
+    const url = `https://api.github.com/users/${username}`;
+
+    try {
+        // AbortController for timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() =&gt; controller.abort(), 10000);
+
+        const response = await fetch(url, { signal: controller.signal });
+        clearTimeout(timeoutId);
+
+        // Check HTTP status
+        if (response.status === 404) {
+            console.log(`User '${username}' not found.`);
+            return null;
+        }
+        if (response.status === 403) {
+            console.log("Access forbidden — rate limit may be hit.");
+            return null;
+        }
+        if (!response.ok) {
+            console.log(`Error: HTTP ${response.status}`);
+            return null;
+        }
+
+        return await response.json();
+
+    } catch (err) {
+        if (err.name === "AbortError") {
+            console.log("Error: Request timed out.");
+        } else if (err.name === "TypeError") {
+            // fetch throws TypeError for network failures
+            console.log("Error: Network failure. Check your connection.");
+        } else {
+            console.log(`Error: ${err.message}`);
+        }
+        return null;
+    }
+}
+
+// Usage:
+let user = await fetchUser("octocat");
+if (user) console.log(`Found: ${user.name} (${user.login})`);
+
+await fetchUser("this-user-definitely-does-not-exist-12345");
+// User 'this-user-definitely-does-not-exist-12345' not found.</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">using System.Net.Http;
+using System.Text.Json;
+
+HttpClient client = new HttpClient();
+client.DefaultRequestHeaders.Add("User-Agent", "MyApp");
+client.Timeout = TimeSpan.FromSeconds(10);
+
+async Task&lt;JsonElement?&gt; FetchUser(string username)
+{
+    string url = $"https://api.github.com/users/{username}";
+
+    try
+    {
+        HttpResponseMessage response = await client.GetAsync(url);
+
+        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            Console.WriteLine($"User '{username}' not found.");
+            return null;
+        }
+        if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+        {
+            Console.WriteLine("Access forbidden — rate limit may be hit.");
+            return null;
+        }
+        if (!response.IsSuccessStatusCode)
+        {
+            Console.WriteLine($"Error: HTTP {(int)response.StatusCode}");
+            return null;
+        }
+
+        string json = await response.Content.ReadAsStringAsync();
+        return JsonDocument.Parse(json).RootElement;
+    }
+    catch (TaskCanceledException)
+    {
+        Console.WriteLine("Error: Request timed out.");
+        return null;
+    }
+    catch (HttpRequestException ex)
+    {
+        Console.WriteLine($"Error: {ex.Message}");
+        return null;
+    }
+}
+
+// Usage:
+var user = await FetchUser("octocat");
+if (user.HasValue)
+    Console.WriteLine($"Found: {user.Value.GetProperty("name").GetString()}");</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ API Error Handling Checklist</h4>
+                    <ul>
+                        <li><strong>Set a timeout</strong> — don't let requests hang forever (10 seconds is reasonable)</li>
+                        <li><strong>Check the status code</strong> — handle 404, 403, and other expected errors specifically</li>
+                        <li><strong>Catch network errors</strong> — no internet, DNS failure, server unreachable</li>
+                        <li><strong>Catch JSON parse errors</strong> — the response might not be valid JSON</li>
+                        <li><strong>Return null/None on failure</strong> — let the caller decide what to do</li>
+                        <li><strong>Log meaningful messages</strong> — "User not found" is better than a raw stack trace</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- API Keys -->
+            <section id="api-keys" class="lesson-section">
+                <h2>API Keys and Authentication</h2>
+                <p>Many APIs require an <strong>API key</strong> — a unique code that identifies you. It's like a library card: free to get, but required to borrow books. API keys let the provider track usage, enforce rate limits, and block abuse.</p>
+
+                <div class="mermaid">
+                    flowchart LR
+                        A["1. Sign up<br/>on the API website"] --> B["2. Get your<br/>API key"]
+                        B --> C["3. Include key<br/>in your requests"]
+                        C --> D["4. API server<br/>validates key"]
+                        style A fill:#3b82f6,color:#fff
+                        style B fill:#6366f1,color:#fff
+                        style C fill:#f59e0b,color:#fff
+                        style D fill:#22c55e,color:#fff
+                </div>
+
+                <div class="code-tabs" data-title="Using an API Key">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">import requests
+import os
+
+# --- NEVER hard-code your API key! ---
+# ❌ Bad: api_key = "abc123secret"  — anyone reading your code sees it!
+
+# ✅ Good: Use an environment variable
+api_key = os.environ.get("WEATHER_API_KEY")
+if not api_key:
+    print("Error: Set the WEATHER_API_KEY environment variable.")
+    print("  export WEATHER_API_KEY=your_key_here  (Mac/Linux)")
+    print("  set WEATHER_API_KEY=your_key_here      (Windows)")
+    exit(1)
+
+# Method 1: API key as a query parameter (most common)
+response = requests.get(
+    "https://api.weatherapi.com/v1/current.json",
+    params={
+        "key": api_key,
+        "q": "Portland",
+    }
+)
+
+# Method 2: API key in a header (some APIs prefer this)
+response = requests.get(
+    "https://api.example.com/data",
+    headers={
+        "Authorization": f"Bearer {api_key}",
+        # or: "X-API-Key": api_key
+    }
+)
+
+# --- Using a .env file (popular approach) ---
+# 1. Create a file called .env:
+#    WEATHER_API_KEY=abc123secret
+#
+# 2. Install python-dotenv: pip install python-dotenv
+#
+# 3. Load it in your code:
+# from dotenv import load_dotenv
+# load_dotenv()
+# api_key = os.environ["WEATHER_API_KEY"]
+#
+# 4. Add .env to .gitignore so it's never committed!</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// --- NEVER hard-code your API key! ---
+// ❌ Bad: const apiKey = "abc123secret";
+
+// ✅ Good: Use an environment variable
+const apiKey = process.env.WEATHER_API_KEY;
+if (!apiKey) {
+    console.log("Error: Set the WEATHER_API_KEY environment variable.");
+    process.exit(1);
+}
+
+// Method 1: API key as a query parameter
+const params = new URLSearchParams({
+    key: apiKey,
+    q: "Portland",
+});
+const response = await fetch(
+    `https://api.weatherapi.com/v1/current.json?${params}`
+);
+
+// Method 2: API key in a header
+const response2 = await fetch("https://api.example.com/data", {
+    headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        // or: "X-API-Key": apiKey
+    }
+});
+
+// --- Using a .env file with dotenv ---
+// 1. Create .env file:  WEATHER_API_KEY=abc123secret
+// 2. npm install dotenv
+// 3. At top of your script:
+//    require("dotenv").config();
+//    const apiKey = process.env.WEATHER_API_KEY;
+// 4. Add .env to .gitignore!</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// --- NEVER hard-code your API key! ---
+// ❌ Bad: string apiKey = "abc123secret";
+
+// ✅ Good: Use an environment variable
+string? apiKey = Environment.GetEnvironmentVariable("WEATHER_API_KEY");
+if (string.IsNullOrEmpty(apiKey))
+{
+    Console.WriteLine("Error: Set the WEATHER_API_KEY environment variable.");
+    return;
+}
+
+HttpClient client = new HttpClient();
+
+// Method 1: API key as a query parameter
+string url = $"https://api.weatherapi.com/v1/current.json?key={apiKey}&amp;q=Portland";
+string json = await client.GetStringAsync(url);
+
+// Method 2: API key in a header
+client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
+// or: client.DefaultRequestHeaders.Add("X-API-Key", apiKey);
+string json2 = await client.GetStringAsync("https://api.example.com/data");
+
+// --- Using appsettings.json or User Secrets ---
+// For .NET projects, use the Secret Manager:
+// dotnet user-secrets init
+// dotnet user-secrets set "WeatherApiKey" "abc123secret"
+// Then read with IConfiguration in your app.</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Never Commit API Keys to Git!</h4>
+                    <p>If you push an API key to GitHub, bots will find it within <em>minutes</em> and use it. Always:</p>
+                    <ol>
+                        <li>Store keys in <strong>environment variables</strong> or a <strong>.env file</strong></li>
+                        <li>Add <code>.env</code> to your <strong>.gitignore</strong></li>
+                        <li>If you accidentally commit a key, <strong>revoke it immediately</strong> and generate a new one</li>
+                    </ol>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>API key security is worth spending extra time on — leaked keys are a real and common problem. Show a news article about a company that was charged thousands of dollars because a developer committed an AWS key to GitHub. For the exercises, recommend <a href="https://wttr.in" target="_blank">wttr.in</a> (no key required) or have students sign up for a free <a href="https://www.weatherapi.com" target="_blank">WeatherAPI</a> key (free tier, no credit card). The <code>.env</code> file pattern is industry standard — even for a beginner course, it's worth teaching the right habit early. Students who go on to build real applications will thank you.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Working with Real APIs -->
+            <section id="real-apis" class="lesson-section">
+                <h2>Working with Real APIs</h2>
+                <p>Let's put it all together with some free public APIs. These examples don't require API keys.</p>
+
+                <h3>Example 1: Random Jokes</h3>
+                <div class="code-tabs" data-title="Official Joke API (No Key Required)">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">import requests
+
+def get_joke():
+    response = requests.get(
+        "https://official-joke-api.appspot.com/random_joke",
+        timeout=10
+    )
+    if response.status_code != 200:
+        return "Couldn't fetch a joke right now."
+
+    joke = response.json()
+    return f"{joke['setup']}\n...{joke['punchline']}"
+
+print(get_joke())
+# Why don't scientists trust atoms?
+# ...Because they make up everything!</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">async function getJoke() {
+    const response = await fetch(
+        "https://official-joke-api.appspot.com/random_joke"
+    );
+    if (!response.ok) return "Couldn't fetch a joke right now.";
+
+    const joke = await response.json();
+    return `${joke.setup}\n...${joke.punchline}`;
+}
+
+console.log(await getJoke());</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">HttpClient client = new HttpClient();
+string json = await client.GetStringAsync(
+    "https://official-joke-api.appspot.com/random_joke"
+);
+var joke = JsonDocument.Parse(json).RootElement;
+Console.WriteLine(joke.GetProperty("setup").GetString());
+Console.WriteLine($"...{joke.GetProperty("punchline").GetString()}");</code></pre>
+                    </div>
+                </div>
+
+                <h3>Example 2: Weather (Text-Based, No Key)</h3>
+                <div class="code-tabs" data-title="wttr.in Weather API">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">import requests
+
+def get_weather(city):
+    """Fetch weather using wttr.in (no API key needed!)"""
+    # ?format=j1 returns JSON instead of the ASCII art version
+    response = requests.get(
+        f"https://wttr.in/{city}",
+        params={"format": "j1"},
+        timeout=10
+    )
+    if response.status_code != 200:
+        print(f"Could not get weather for {city}")
+        return
+
+    data = response.json()
+    current = data["current_condition"][0]
+
+    temp_f = current["temp_F"]
+    temp_c = current["temp_C"]
+    desc = current["weatherDesc"][0]["value"]
+    humidity = current["humidity"]
+    wind = current["windspeedMiles"]
+
+    print(f"\n🌤️ Weather in {city}:")
+    print(f"   Temperature: {temp_f}°F ({temp_c}°C)")
+    print(f"   Conditions:  {desc}")
+    print(f"   Humidity:    {humidity}%")
+    print(f"   Wind:        {wind} mph")
+
+get_weather("Portland")
+get_weather("Tokyo")
+get_weather("London")</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">async function getWeather(city) {
+    const params = new URLSearchParams({ format: "j1" });
+    const response = await fetch(`https://wttr.in/${city}?${params}`);
+
+    if (!response.ok) {
+        console.log(`Could not get weather for ${city}`);
+        return;
+    }
+
+    const data = await response.json();
+    const current = data.current_condition[0];
+
+    console.log(`\n🌤️ Weather in ${city}:`);
+    console.log(`   Temperature: ${current.temp_F}°F (${current.temp_C}°C)`);
+    console.log(`   Conditions:  ${current.weatherDesc[0].value}`);
+    console.log(`   Humidity:    ${current.humidity}%`);
+    console.log(`   Wind:        ${current.windspeedMiles} mph`);
+}
+
+await getWeather("Portland");
+await getWeather("Tokyo");</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">HttpClient client = new HttpClient();
+
+async Task GetWeather(string city)
+{
+    string url = $"https://wttr.in/{city}?format=j1";
+    string json = await client.GetStringAsync(url);
+    var root = JsonDocument.Parse(json).RootElement;
+    var current = root.GetProperty("current_condition")[0];
+
+    Console.WriteLine($"\n🌤️ Weather in {city}:");
+    Console.WriteLine($"   Temp: {current.GetProperty("temp_F").GetString()}°F");
+    Console.WriteLine($"   Conditions: {current.GetProperty("weatherDesc")[0].GetProperty("value").GetString()}");
+    Console.WriteLine($"   Humidity: {current.GetProperty("humidity").GetString()}%");
+}
+
+await GetWeather("Portland");
+await GetWeather("Tokyo");</code></pre>
+                    </div>
+                </div>
+
+                <h3>Free Public APIs for Practice</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>API</th>
+                                <th>URL</th>
+                                <th>Key?</th>
+                                <th>Returns</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>GitHub</strong></td>
+                                <td><code>api.github.com</code></td>
+                                <td>No</td>
+                                <td>User profiles, repos, search</td>
+                            </tr>
+                            <tr>
+                                <td><strong>wttr.in</strong></td>
+                                <td><code>wttr.in/{city}?format=j1</code></td>
+                                <td>No</td>
+                                <td>Weather data</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Joke API</strong></td>
+                                <td><code>official-joke-api.appspot.com</code></td>
+                                <td>No</td>
+                                <td>Random jokes</td>
+                            </tr>
+                            <tr>
+                                <td><strong>JSONPlaceholder</strong></td>
+                                <td><code>jsonplaceholder.typicode.com</code></td>
+                                <td>No</td>
+                                <td>Fake REST API for testing</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Open Trivia DB</strong></td>
+                                <td><code>opentdb.com/api.php</code></td>
+                                <td>No</td>
+                                <td>Trivia questions</td>
+                            </tr>
+                            <tr>
+                                <td><strong>WeatherAPI</strong></td>
+                                <td><code>api.weatherapi.com</code></td>
+                                <td>Yes (free)</td>
+                                <td>Detailed weather + forecast</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Exercises -->
+            <section id="exercises" class="lesson-section">
+                <h2>Exercises</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 1: GitHub Profile Viewer</h3>
+                    <p><strong>Objective:</strong> Build a program that takes a GitHub username as input and displays a formatted profile card with their info.</p>
+
+                    <p><strong>Requirements:</strong></p>
+                    <ol>
+                        <li>Prompt the user for a GitHub username</li>
+                        <li>Fetch their profile from <code>https://api.github.com/users/{username}</code></li>
+                        <li>Display: name, bio, location, public repos count, followers count, account creation date</li>
+                        <li>Handle errors: user not found, network failure</li>
+                        <li>Allow looking up multiple users without restarting</li>
+                    </ol>
+
+                    <p><strong>Expected output:</strong></p>
+                    <pre><code>Enter GitHub username (or 'quit'): octocat
+
+╔══════════════════════════════════╗
+  👤  The Octocat (@octocat)
+  📍  San Francisco
+  📝  (no bio)
+  📦  8 public repos
+  👥  12,345 followers
+  📅  Joined: 2011-01-25
+╚══════════════════════════════════╝</code></pre>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="GitHub Profile Viewer">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">import requests
+
+def show_profile(username):
+    response = requests.get(
+        f"https://api.github.com/users/{username}",
+        timeout=10
+    )
+
+    if response.status_code == 404:
+        print(f"User '{username}' not found.")
+        return
+    if response.status_code != 200:
+        print(f"Error: HTTP {response.status_code}")
+        return
+
+    u = response.json()
+    name = u.get("name") or "(no name)"
+    bio = u.get("bio") or "(no bio)"
+    location = u.get("location") or "(unknown)"
+    repos = u.get("public_repos", 0)
+    followers = u.get("followers", 0)
+    joined = u.get("created_at", "")[:10]
+
+    print(f"\n╔══════════════════════════════════╗")
+    print(f"  👤  {name} (@{u['login']})")
+    print(f"  📍  {location}")
+    print(f"  📝  {bio[:50]}")
+    print(f"  📦  {repos} public repos")
+    print(f"  👥  {followers:,} followers")
+    print(f"  📅  Joined: {joined}")
+    print(f"╚══════════════════════════════════╝\n")
+
+while True:
+    username = input("Enter GitHub username (or 'quit'): ").strip()
+    if username.lower() == "quit":
+        break
+    if username:
+        show_profile(username)</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">const readline = require("readline");
+const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+const prompt = (q) =&gt; new Promise(r =&gt; rl.question(q, r));
+
+async function showProfile(username) {
+    const response = await fetch(`https://api.github.com/users/${username}`);
+    if (response.status === 404) { console.log(`User '${username}' not found.`); return; }
+    if (!response.ok) { console.log(`Error: HTTP ${response.status}`); return; }
+
+    const u = await response.json();
+    console.log(`\n╔══════════════════════════════════╗`);
+    console.log(`  👤  ${u.name ?? "(no name)"} (@${u.login})`);
+    console.log(`  📍  ${u.location ?? "(unknown)"}`);
+    console.log(`  📝  ${(u.bio ?? "(no bio)").slice(0, 50)}`);
+    console.log(`  📦  ${u.public_repos} public repos`);
+    console.log(`  👥  ${u.followers.toLocaleString()} followers`);
+    console.log(`  📅  Joined: ${u.created_at?.slice(0, 10)}`);
+    console.log(`╚══════════════════════════════════╝\n`);
+}
+
+async function main() {
+    while (true) {
+        let name = (await prompt("GitHub username (or 'quit'): ")).trim();
+        if (name === "quit") { rl.close(); break; }
+        if (name) await showProfile(name);
+    }
+}
+main();</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">HttpClient client = new HttpClient();
+client.DefaultRequestHeaders.Add("User-Agent", "GitHubProfileViewer");
+
+while (true)
+{
+    Console.Write("GitHub username (or 'quit'): ");
+    string? username = Console.ReadLine()?.Trim();
+    if (username == "quit" || string.IsNullOrEmpty(username)) break;
+
+    var resp = await client.GetAsync($"https://api.github.com/users/{username}");
+    if (resp.StatusCode == System.Net.HttpStatusCode.NotFound)
+    { Console.WriteLine($"User '{username}' not found."); continue; }
+
+    string json = await resp.Content.ReadAsStringAsync();
+    var u = JsonDocument.Parse(json).RootElement;
+
+    string name = u.GetProperty("name").ValueKind == JsonValueKind.Null
+        ? "(no name)" : u.GetProperty("name").GetString()!;
+
+    Console.WriteLine($"\n╔══════════════════════════════════╗");
+    Console.WriteLine($"  👤  {name} (@{u.GetProperty("login").GetString()})");
+    Console.WriteLine($"  📦  {u.GetProperty("public_repos").GetInt32()} public repos");
+    Console.WriteLine($"  👥  {u.GetProperty("followers").GetInt32():N0} followers");
+    Console.WriteLine($"╚══════════════════════════════════╝\n");
+}</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 2: Weather Dashboard</h3>
+                    <p><strong>Objective:</strong> Build a weather lookup tool that lets the user check the weather for any city. Use the <code>wttr.in</code> API (no key required).</p>
+
+                    <p><strong>Requirements:</strong></p>
+                    <ol>
+                        <li>Prompt the user for a city name</li>
+                        <li>Fetch weather from <code>https://wttr.in/{city}?format=j1</code></li>
+                        <li>Display: temperature (°F and °C), conditions, humidity, wind speed, "feels like" temperature</li>
+                        <li>Handle errors: invalid city, network failure</li>
+                        <li><strong>Bonus:</strong> Save the last 5 lookups to a <code>weather_history.json</code> file (combining Lessons 22, 23, and 24!)</li>
+                    </ol>
+
+                    <details>
+                        <summary>💡 Hints</summary>
+                        <p>The <code>wttr.in</code> JSON response has this structure: <code>data["current_condition"][0]</code> contains the current weather. Fields include <code>temp_F</code>, <code>temp_C</code>, <code>FeelsLikeF</code>, <code>humidity</code>, <code>windspeedMiles</code>, and <code>weatherDesc[0]["value"]</code>. For the bonus, use the Load → Modify → Save pattern from Lesson 23.</p>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 3: Trivia Game</h3>
+                    <p><strong>Objective:</strong> Build a trivia game using the Open Trivia Database API. The game should ask 5 questions, track the score, and show the final result.</p>
+
+                    <p><strong>API endpoint:</strong> <code>https://opentdb.com/api.php?amount=5&amp;type=multiple</code></p>
+
+                    <p><strong>Requirements:</strong></p>
+                    <ol>
+                        <li>Fetch 5 multiple-choice trivia questions</li>
+                        <li>Display each question with shuffled answer choices (A, B, C, D)</li>
+                        <li>Accept the user's answer and check if it's correct</li>
+                        <li>Track and display the score (e.g., "3/5 correct!")</li>
+                        <li>Handle HTML entities in the questions (the API returns <code>&amp;amp;</code> and <code>&amp;quot;</code>)</li>
+                    </ol>
+
+                    <details>
+                        <summary>💡 Hints</summary>
+                        <p>The API response has <code>results</code> array. Each result has <code>question</code>, <code>correct_answer</code>, and <code>incorrect_answers</code> (an array of 3). Combine correct + incorrect, shuffle them, and display as A/B/C/D. Python: use <code>html.unescape()</code> for HTML entities. JavaScript: create a simple function or use a regex. The shuffle is important — if the correct answer is always first, it's too easy!</p>
+                    </details>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Exercise 1 (GitHub Profile) is the warmup and works great as a live-coding demo. Exercise 2 (Weather Dashboard) is the main project — the bonus of saving history to JSON ties together all three lessons in Module 8. Exercise 3 (Trivia Game) is the most fun and makes an excellent capstone for this module — students build a playable game that pulls live data from the internet. The HTML entity decoding (<code>&amp;amp;</code> → <code>&amp;</code>) is a real-world data-cleaning challenge. If students struggle, suggest they focus on exercises 1 and 2 first and treat exercise 3 as an optional challenge. All three exercises use APIs that work without API keys, so there's no setup friction.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong>APIs</strong> let your programs fetch live data from servers across the internet</li>
+                        <li><strong>HTTP GET requests</strong> retrieve data; the response includes a status code and a body (usually JSON)</li>
+                        <li><strong>Status codes:</strong> 2xx = success, 4xx = you made an error, 5xx = server error</li>
+                        <li><strong>Query parameters</strong> customize your request — use parameter builders, not string concatenation</li>
+                        <li><strong>Always handle errors:</strong> network failures, timeouts, bad status codes, invalid JSON</li>
+                        <li><strong>API keys</strong> identify you to the server — store them in environment variables, never in code</li>
+                        <li><strong>The workflow:</strong> read docs → make request → explore response → extract fields → handle errors</li>
+                    </ul>
+                </div>
+
+                <h3>Cross-Language Comparison</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Operation</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>HTTP library</td>
+                                <td><code>requests</code> (pip install)</td>
+                                <td><code>fetch()</code> (built-in)</td>
+                                <td><code>HttpClient</code> (built-in)</td>
+                            </tr>
+                            <tr>
+                                <td>GET request</td>
+                                <td><code>requests.get(url)</code></td>
+                                <td><code>await fetch(url)</code></td>
+                                <td><code>await client.GetAsync(url)</code></td>
+                            </tr>
+                            <tr>
+                                <td>Parse JSON response</td>
+                                <td><code>response.json()</code></td>
+                                <td><code>await response.json()</code></td>
+                                <td><code>JsonDocument.Parse(text)</code></td>
+                            </tr>
+                            <tr>
+                                <td>Status code</td>
+                                <td><code>response.status_code</code></td>
+                                <td><code>response.status</code></td>
+                                <td><code>(int)response.StatusCode</code></td>
+                            </tr>
+                            <tr>
+                                <td>Success check</td>
+                                <td><code>status_code == 200</code></td>
+                                <td><code>response.ok</code></td>
+                                <td><code>response.IsSuccessStatusCode</code></td>
+                            </tr>
+                            <tr>
+                                <td>Query params</td>
+                                <td><code>params={...}</code></td>
+                                <td><code>URLSearchParams</code></td>
+                                <td><code>HttpUtility.ParseQueryString</code></td>
+                            </tr>
+                            <tr>
+                                <td>Env variable</td>
+                                <td><code>os.environ.get(key)</code></td>
+                                <td><code>process.env.KEY</code></td>
+                                <td><code>Environment.GetEnvironmentVariable</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>🚀 What's Next?</h3>
+                <p>That wraps up <strong>Module 8: Working with Files &amp; APIs!</strong> You can now read/write files, work with JSON, and fetch live data from the internet. In Module 9, you'll bring everything together in a <strong>Capstone Project</strong> — planning, building, and reviewing a complete program that uses the skills from the entire course.</p>
+
+                <!-- Quiz -->
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Check</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What does HTTP status code 404 mean?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="200 means OK / success. 404 is an error code.">A) The request was successful</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="HTTP 404 means 'Not Found' — the resource you requested doesn't exist at that URL. This is a 4xx (client error) code, meaning the problem is with your request. Common cause: misspelled URL or the resource was deleted.">B) The requested resource was not found</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Server errors are in the 5xx range (500, 503). 404 is a 4xx client error.">C) The server had an internal error</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 2:</strong> Why should you NEVER hard-code API keys in your source code?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="API keys don't affect performance. The issue is security.">A) It makes the program run slower</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="If you commit code with an API key to a repository (especially public ones like GitHub), automated bots will find and exploit it within minutes. This can result in unauthorized usage, large bills, or account compromise. Always use environment variables or .env files and add .env to your .gitignore.">B) Anyone who sees your code (especially on GitHub) can steal and misuse your key</button>
+                            <button class="quiz-option" data-correct="false" data-hint="API keys work the same whether they're hard-coded or in environment variables. The issue is who can SEE them.">C) Hard-coded keys stop working after a while</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 3:</strong> What HTTP method should you use to retrieve data from an API?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="POST is for sending data to CREATE something new (like creating a user account). To retrieve/read data, use a different method.">A) POST</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="GET is the HTTP method for retrieving data. It's read-only and doesn't modify anything on the server. About 90% of API calls beginners make will be GET requests. POST is for creating, PUT for updating, and DELETE for removing data.">B) GET</button>
+                            <button class="quiz-option" data-correct="false" data-hint="DELETE is for removing data from the server, not retrieving it.">C) DELETE</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_23.html" class="prev-lesson">← Previous: Working with JSON</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_25.html" class="next-lesson">Next: Project Planning and Design →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

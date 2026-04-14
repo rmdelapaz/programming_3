@@ -1,0 +1,1760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn inheritance and polymorphism: creating child classes, overriding methods, using super, and treating different types through a shared interface in Python, JavaScript, and C#.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 6.3: Inheritance and Polymorphism - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 6</a></li>
+            <li aria-current="page">Lesson 6.3: Inheritance and Polymorphism</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🧬 Lesson 6.3: Inheritance and Polymorphism</h1>
+                <p class="lead">What if you're building a game with warriors, mages, and archers? They all have names and health, but each fights differently. Do you copy-paste the shared code into three separate classes? <strong>No.</strong> You use <em>inheritance</em> to share the common parts and <em>polymorphism</em> to let each type behave in its own way.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Explain <strong>why inheritance exists</strong> and when to use it</li>
+                        <li>Create a <strong>child class</strong> that extends a parent class</li>
+                        <li>Call the <strong>parent constructor</strong> with <code>super()</code></li>
+                        <li><strong>Override</strong> methods to customize behavior in child classes</li>
+                        <li>Use <strong>polymorphism</strong> to treat different types through a shared interface</li>
+                        <li>Check types with <code>isinstance</code> / <code>instanceof</code></li>
+                        <li>Know when to prefer <strong>composition over inheritance</strong></li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 60 minutes</p>
+                    <p><strong>Project:</strong> Build an RPG character system with a shared base class and specialized subclasses</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary><h2 style="display: inline; margin: 0;">📑 In This Lesson</h2></summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#why-inheritance" class="toc-link">Why Inheritance?</a></li>
+                        <li><a href="#creating-subclasses" class="toc-link">Creating Subclasses</a></li>
+                        <li><a href="#super" class="toc-link">Calling the Parent: super()</a></li>
+                        <li><a href="#overriding" class="toc-link">Overriding Methods</a></li>
+                        <li><a href="#polymorphism" class="toc-link">Polymorphism in Action</a></li>
+                        <li><a href="#type-checking" class="toc-link">Type Checking</a></li>
+                        <li><a href="#composition" class="toc-link">Inheritance vs. Composition</a></li>
+                        <li><a href="#exercises" class="toc-link">Exercises</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Why Inheritance -->
+            <section id="why-inheritance" class="lesson-section">
+                <h2>Why Inheritance?</h2>
+                <p>Imagine building classes for different animals. Dogs, cats, and birds all have names and can make sounds — but each makes a <em>different</em> sound. Without inheritance, you'd duplicate shared code across every class:</p>
+
+                <div class="code-tabs" data-title="The Duplication Problem">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># ❌ Without inheritance — lots of duplicated code
+class Dog:
+    def __init__(self, name, age):
+        self.name = name       # Duplicated!
+        self.age = age         # Duplicated!
+
+    def speak(self):
+        return f"{self.name} says Woof!"
+
+class Cat:
+    def __init__(self, name, age):
+        self.name = name       # Same code again!
+        self.age = age         # Same code again!
+
+    def speak(self):
+        return f"{self.name} says Meow!"
+
+class Bird:
+    def __init__(self, name, age):
+        self.name = name       # And again!
+        self.age = age         # And again!
+
+    def speak(self):
+        return f"{self.name} says Tweet!"
+
+# The __init__ method is identical in all three classes.
+# If we add a "vaccinated" attribute, we'd change it in THREE places.</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// ❌ Without inheritance — lots of duplicated code
+class Dog {
+    constructor(name, age) {
+        this.name = name;   // Duplicated!
+        this.age = age;     // Duplicated!
+    }
+    speak() { return `${this.name} says Woof!`; }
+}
+
+class Cat {
+    constructor(name, age) {
+        this.name = name;   // Same code again!
+        this.age = age;     // Same code again!
+    }
+    speak() { return `${this.name} says Meow!`; }
+}
+
+class Bird {
+    constructor(name, age) {
+        this.name = name;   // And again!
+        this.age = age;     // And again!
+    }
+    speak() { return `${this.name} says Tweet!`; }
+}
+
+// Adding a "vaccinated" field means changing THREE constructors.</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// ❌ Without inheritance — lots of duplicated code
+class Dog
+{
+    public string Name;   // Duplicated!
+    public int Age;       // Duplicated!
+
+    public Dog(string name, int age)
+    { Name = name; Age = age; }
+
+    public string Speak() =&gt; $"{Name} says Woof!";
+}
+
+class Cat
+{
+    public string Name;   // Same fields again!
+    public int Age;
+
+    public Cat(string name, int age)
+    { Name = name; Age = age; }
+
+    public string Speak() =&gt; $"{Name} says Meow!";
+}
+
+// Adding a "Vaccinated" field means changing EVERY class.</code></pre>
+                    </div>
+                </div>
+
+                <p><strong>Inheritance</strong> solves this by letting you define shared attributes and methods <em>once</em> in a <strong>parent class</strong> (also called a <em>base class</em> or <em>superclass</em>), and then create <strong>child classes</strong> (also called <em>subclasses</em> or <em>derived classes</em>) that automatically get everything the parent has — plus their own specializations.</p>
+
+                <div class="mermaid">
+                    classDiagram
+                        class Animal {
+                            +name: string
+                            +age: int
+                            +speak(): string
+                            +describe(): string
+                        }
+                        class Dog {
+                            +breed: string
+                            +speak(): string
+                            +fetch(): void
+                        }
+                        class Cat {
+                            +indoor: bool
+                            +speak(): string
+                            +purr(): void
+                        }
+                        class Bird {
+                            +can_fly: bool
+                            +speak(): string
+                            +fly(): void
+                        }
+                        Animal <|-- Dog : extends
+                        Animal <|-- Cat : extends
+                        Animal <|-- Bird : extends
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Start with the "duplication problem" code and ask students: "What happens if we want to add a <code>vaccinated</code> attribute to every animal?" They'll see the pain of changing three classes. Then show the diagram — the parent holds the shared parts, children add their own. The class diagram is a great visual anchor. Real-world analogy: a Vehicle parent class with Car, Truck, and Motorcycle children. Students immediately grasp that all vehicles have engines and wheels, but each type has unique features.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Creating Subclasses -->
+            <section id="creating-subclasses" class="lesson-section">
+                <h2>Creating Subclasses</h2>
+                <p>Here's the inheritance version. The <code>Animal</code> parent class holds everything shared, and each child class adds only what's unique.</p>
+
+                <div class="code-tabs" data-title="Basic Inheritance">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Parent class (base class / superclass)
+class Animal:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+    def speak(self):
+        return f"{self.name} makes a sound"
+
+    def describe(self):
+        return f"{self.name}, age {self.age}"
+
+# Child class — inherits from Animal
+class Dog(Animal):
+    pass  # Inherits everything, adds nothing (yet)
+
+class Cat(Animal):
+    pass
+
+# Dogs and Cats get Animal's attributes and methods for FREE
+fido = Dog("Fido", 3)
+whiskers = Cat("Whiskers", 5)
+
+print(fido.describe())      # Fido, age 3
+print(whiskers.describe())  # Whiskers, age 5
+print(fido.speak())         # Fido makes a sound
+print(whiskers.speak())     # Whiskers makes a sound
+
+# They're different types but share behavior
+print(type(fido))      # &lt;class 'Dog'&gt;
+print(type(whiskers))  # &lt;class 'Cat'&gt;</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// Parent class
+class Animal {
+    constructor(name, age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    speak() {
+        return `${this.name} makes a sound`;
+    }
+
+    describe() {
+        return `${this.name}, age ${this.age}`;
+    }
+}
+
+// Child class — extends Animal
+class Dog extends Animal {
+    // Inherits everything, adds nothing (yet)
+}
+
+class Cat extends Animal {}
+
+// Dogs and Cats get Animal's constructor and methods for FREE
+let fido = new Dog("Fido", 3);
+let whiskers = new Cat("Whiskers", 5);
+
+console.log(fido.describe());      // Fido, age 3
+console.log(whiskers.describe());  // Whiskers, age 5
+console.log(fido.speak());         // Fido makes a sound
+console.log(whiskers.speak());     // Whiskers makes a sound
+
+console.log(fido instanceof Dog);     // true
+console.log(fido instanceof Animal);  // true</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// Parent class
+class Animal
+{
+    public string Name;
+    public int Age;
+
+    public Animal(string name, int age)
+    {
+        Name = name;
+        Age = age;
+    }
+
+    public virtual string Speak()
+    {
+        return $"{Name} makes a sound";
+    }
+
+    public string Describe()
+    {
+        return $"{Name}, age {Age}";
+    }
+}
+
+// Child class — inherits from Animal
+class Dog : Animal
+{
+    public Dog(string name, int age) : base(name, age) { }
+}
+
+class Cat : Animal
+{
+    public Cat(string name, int age) : base(name, age) { }
+}
+
+Dog fido = new Dog("Fido", 3);
+Cat whiskers = new Cat("Whiskers", 5);
+
+Console.WriteLine(fido.Describe());      // Fido, age 3
+Console.WriteLine(whiskers.Describe());  // Whiskers, age 5
+Console.WriteLine(fido.Speak());         // Fido makes a sound</code></pre>
+                    </div>
+                </div>
+
+                <h3>Inheritance Syntax Comparison</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Extend a class</td>
+                                <td><code>class Dog(Animal):</code></td>
+                                <td><code>class Dog extends Animal</code></td>
+                                <td><code>class Dog : Animal</code></td>
+                            </tr>
+                            <tr>
+                                <td>Keyword</td>
+                                <td>Parentheses <code>()</code></td>
+                                <td><code>extends</code></td>
+                                <td>Colon <code>:</code></td>
+                            </tr>
+                            <tr>
+                                <td>Auto-inherit constructor?</td>
+                                <td>Yes (if child has no <code>__init__</code>)</td>
+                                <td>Yes (if child has no <code>constructor</code>)</td>
+                                <td>No — must call <code>: base()</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ C# Requires Explicit Constructor Chaining</h4>
+                    <p>In C#, child classes <strong>must</strong> explicitly call the parent constructor using <code>: base(...)</code>. Python and JavaScript automatically use the parent constructor if the child doesn't define its own. This is another example of C#'s philosophy of making everything explicit.</p>
+                </div>
+            </section>
+
+            <!-- super() -->
+            <section id="super" class="lesson-section">
+                <h2>Calling the Parent: super()</h2>
+                <p>When a child class needs its own constructor — to add extra attributes — it must still call the parent's constructor to set up the inherited parts. That's what <code>super()</code> does.</p>
+
+                <div class="code-tabs" data-title="Using super() in Constructors">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">class Animal:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+    def speak(self):
+        return f"{self.name} makes a sound"
+
+class Dog(Animal):
+    def __init__(self, name, age, breed):
+        super().__init__(name, age)  # Call Animal's __init__
+        self.breed = breed           # Dog-specific attribute
+
+    def fetch(self, item):
+        return f"{self.name} fetches the {item}!"
+
+class Cat(Animal):
+    def __init__(self, name, age, indoor=True):
+        super().__init__(name, age)
+        self.indoor = indoor
+
+    def purr(self):
+        return f"{self.name} purrs..."
+
+# Create with child-specific attributes
+fido = Dog("Fido", 3, "Golden Retriever")
+whiskers = Cat("Whiskers", 5, indoor=False)
+
+# Inherited methods still work
+print(fido.describe())    # Fido, age 3
+
+# Child-specific methods
+print(fido.fetch("ball"))     # Fido fetches the ball!
+print(fido.breed)             # Golden Retriever
+print(whiskers.purr())        # Whiskers purrs...
+print(whiskers.indoor)        # False</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">class Animal {
+    constructor(name, age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    speak() { return `${this.name} makes a sound`; }
+    describe() { return `${this.name}, age ${this.age}`; }
+}
+
+class Dog extends Animal {
+    constructor(name, age, breed) {
+        super(name, age);      // Call Animal's constructor
+        this.breed = breed;    // Dog-specific property
+    }
+
+    fetch(item) {
+        return `${this.name} fetches the ${item}!`;
+    }
+}
+
+class Cat extends Animal {
+    constructor(name, age, indoor = true) {
+        super(name, age);
+        this.indoor = indoor;
+    }
+
+    purr() { return `${this.name} purrs...`; }
+}
+
+let fido = new Dog("Fido", 3, "Golden Retriever");
+let whiskers = new Cat("Whiskers", 5, false);
+
+console.log(fido.describe());       // Fido, age 3
+console.log(fido.fetch("ball"));    // Fido fetches the ball!
+console.log(whiskers.purr());       // Whiskers purrs...</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">class Animal
+{
+    public string Name;
+    public int Age;
+
+    public Animal(string name, int age)
+    {
+        Name = name;
+        Age = age;
+    }
+
+    public virtual string Speak() =&gt; $"{Name} makes a sound";
+    public string Describe() =&gt; $"{Name}, age {Age}";
+}
+
+class Dog : Animal
+{
+    public string Breed;
+
+    public Dog(string name, int age, string breed)
+        : base(name, age)       // Call Animal's constructor
+    {
+        Breed = breed;          // Dog-specific
+    }
+
+    public string Fetch(string item) =&gt; $"{Name} fetches the {item}!";
+}
+
+class Cat : Animal
+{
+    public bool Indoor;
+
+    public Cat(string name, int age, bool indoor = true)
+        : base(name, age)
+    {
+        Indoor = indoor;
+    }
+
+    public string Purr() =&gt; $"{Name} purrs...";
+}
+
+Dog fido = new Dog("Fido", 3, "Golden Retriever");
+Cat whiskers = new Cat("Whiskers", 5, false);
+
+Console.WriteLine(fido.Describe());     // Fido, age 3
+Console.WriteLine(fido.Fetch("ball"));  // Fido fetches the ball!
+Console.WriteLine(whiskers.Purr());     // Whiskers purrs...</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 super() Must Come First</h4>
+                    <p>In JavaScript, you <strong>must</strong> call <code>super()</code> before using <code>this</code> in a child constructor — the engine will throw an error otherwise. Python and C# have the same recommendation but are slightly more flexible about ordering. Best practice in all three: call <code>super()</code> as the first line of the child constructor.</p>
+                </div>
+
+                <h3>super() Syntax Comparison</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Call parent constructor</td>
+                                <td><code>super().__init__(args)</code></td>
+                                <td><code>super(args)</code></td>
+                                <td><code>: base(args)</code></td>
+                            </tr>
+                            <tr>
+                                <td>Call parent method</td>
+                                <td><code>super().method()</code></td>
+                                <td><code>super.method()</code></td>
+                                <td><code>base.Method()</code></td>
+                            </tr>
+                            <tr>
+                                <td>Where it goes</td>
+                                <td>Inside <code>__init__</code></td>
+                                <td>Inside <code>constructor</code></td>
+                                <td>After <code>:</code> in signature</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>The C# syntax is the most different here — <code>: base(name, age)</code> appears in the constructor <em>signature</em>, not in the body. Draw attention to this. Python's <code>super().__init__()</code> looks odd because you're calling <code>__init__</code> explicitly — remind students that Python's dunder methods are always explicit. JavaScript's <code>super()</code> in the constructor is the cleanest syntax. A common mistake: forgetting <code>super()</code> entirely, which means the parent's attributes never get set.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Overriding Methods -->
+            <section id="overriding" class="lesson-section">
+                <h2>Overriding Methods</h2>
+                <p>A child class can <strong>override</strong> a parent method by defining a method with the same name. The child's version replaces the parent's — but you can still call the parent's version with <code>super()</code> if needed.</p>
+
+                <div class="code-tabs" data-title="Method Overriding">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">class Animal:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+    def speak(self):
+        return f"{self.name} makes a sound"
+
+    def describe(self):
+        return f"{self.name}, age {self.age}"
+
+class Dog(Animal):
+    def __init__(self, name, age, breed):
+        super().__init__(name, age)
+        self.breed = breed
+
+    # Override speak — replace parent's version
+    def speak(self):
+        return f"{self.name} says Woof!"
+
+    # Override describe — extend parent's version
+    def describe(self):
+        base = super().describe()  # Call parent's describe()
+        return f"{base}, {self.breed}"
+
+class Cat(Animal):
+    def __init__(self, name, age, indoor=True):
+        super().__init__(name, age)
+        self.indoor = indoor
+
+    def speak(self):
+        return f"{self.name} says Meow!"
+
+    def describe(self):
+        base = super().describe()
+        status = "indoor" if self.indoor else "outdoor"
+        return f"{base}, {status} cat"
+
+fido = Dog("Fido", 3, "Golden Retriever")
+whiskers = Cat("Whiskers", 5)
+
+print(fido.speak())       # Fido says Woof!      (overridden)
+print(whiskers.speak())   # Whiskers says Meow!   (overridden)
+
+print(fido.describe())    # Fido, age 3, Golden Retriever
+print(whiskers.describe()) # Whiskers, age 5, indoor cat</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">class Animal {
+    constructor(name, age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    speak() { return `${this.name} makes a sound`; }
+    describe() { return `${this.name}, age ${this.age}`; }
+}
+
+class Dog extends Animal {
+    constructor(name, age, breed) {
+        super(name, age);
+        this.breed = breed;
+    }
+
+    // Override speak — replace parent's version
+    speak() {
+        return `${this.name} says Woof!`;
+    }
+
+    // Override describe — extend parent's version
+    describe() {
+        return `${super.describe()}, ${this.breed}`;
+    }
+}
+
+class Cat extends Animal {
+    constructor(name, age, indoor = true) {
+        super(name, age);
+        this.indoor = indoor;
+    }
+
+    speak() { return `${this.name} says Meow!`; }
+
+    describe() {
+        let status = this.indoor ? "indoor" : "outdoor";
+        return `${super.describe()}, ${status} cat`;
+    }
+}
+
+let fido = new Dog("Fido", 3, "Golden Retriever");
+let whiskers = new Cat("Whiskers", 5);
+
+console.log(fido.speak());       // Fido says Woof!
+console.log(fido.describe());    // Fido, age 3, Golden Retriever
+console.log(whiskers.describe()); // Whiskers, age 5, indoor cat</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">class Animal
+{
+    public string Name;
+    public int Age;
+
+    public Animal(string name, int age)
+    { Name = name; Age = age; }
+
+    // 'virtual' = "children can override this"
+    public virtual string Speak() =&gt; $"{Name} makes a sound";
+    public virtual string Describe() =&gt; $"{Name}, age {Age}";
+}
+
+class Dog : Animal
+{
+    public string Breed;
+
+    public Dog(string name, int age, string breed)
+        : base(name, age) { Breed = breed; }
+
+    // 'override' = "I'm replacing the parent's version"
+    public override string Speak() =&gt; $"{Name} says Woof!";
+
+    public override string Describe() =&gt;
+        $"{base.Describe()}, {Breed}";
+}
+
+class Cat : Animal
+{
+    public bool Indoor;
+
+    public Cat(string name, int age, bool indoor = true)
+        : base(name, age) { Indoor = indoor; }
+
+    public override string Speak() =&gt; $"{Name} says Meow!";
+
+    public override string Describe()
+    {
+        string status = Indoor ? "indoor" : "outdoor";
+        return $"{base.Describe()}, {status} cat";
+    }
+}
+
+Dog fido = new Dog("Fido", 3, "Golden Retriever");
+Cat whiskers = new Cat("Whiskers", 5);
+
+Console.WriteLine(fido.Speak());       // Fido says Woof!
+Console.WriteLine(fido.Describe());    // Fido, age 3, Golden Retriever
+Console.WriteLine(whiskers.Describe()); // Whiskers, age 5, indoor cat</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ C# Requires <code>virtual</code> and <code>override</code></h4>
+                    <p>C# is the strictest language here. The parent method must be marked <code>virtual</code> to allow overriding, and the child must use the <code>override</code> keyword. Without these, C# <em>hides</em> the parent method instead of replacing it — a subtle bug. Python and JavaScript let you override freely without any keywords.</p>
+                </div>
+
+                <div class="mermaid">
+                    sequenceDiagram
+                        participant Code as Your Code
+                        participant Dog as fido (Dog)
+                        participant Animal as Animal (Parent)
+                        Code->>Dog: fido.speak()
+                        Note right of Dog: Dog has speak()<br/>→ Uses Dog's version
+                        Dog-->>Code: "Fido says Woof!"
+                        Code->>Dog: fido.describe()
+                        Dog->>Animal: super().describe()
+                        Animal-->>Dog: "Fido, age 3"
+                        Note right of Dog: Adds breed info
+                        Dog-->>Code: "Fido, age 3, Golden Retriever"
+                </div>
+            </section>
+
+            <!-- Polymorphism -->
+            <section id="polymorphism" class="lesson-section">
+                <h2>Polymorphism in Action</h2>
+                <p><strong>Polymorphism</strong> (Greek for "many forms") means you can treat different types through a <strong>shared interface</strong>. If Dog, Cat, and Bird all have a <code>speak()</code> method, you can call <code>speak()</code> on any of them without knowing or caring which specific type it is.</p>
+
+                <div class="code-tabs" data-title="Polymorphism: One Interface, Many Behaviors">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">class Animal:
+    def __init__(self, name):
+        self.name = name
+
+    def speak(self):
+        return f"{self.name} makes a sound"
+
+class Dog(Animal):
+    def speak(self):
+        return f"{self.name} says Woof!"
+
+class Cat(Animal):
+    def speak(self):
+        return f"{self.name} says Meow!"
+
+class Bird(Animal):
+    def speak(self):
+        return f"{self.name} says Tweet!"
+
+# A list of DIFFERENT types — but all are Animals
+animals = [Dog("Fido"), Cat("Whiskers"), Bird("Tweety"), Dog("Rex")]
+
+# Polymorphism: same method call, different behavior
+for animal in animals:
+    print(animal.speak())
+# Fido says Woof!
+# Whiskers says Meow!
+# Tweety says Tweet!
+# Rex says Woof!
+
+# Works with any function that expects an Animal
+def introduce(animal):
+    """Works with ANY animal — doesn't care about the specific type"""
+    print(f"Meet {animal.name}! {animal.speak()}")
+
+introduce(Dog("Buddy"))    # Meet Buddy! Buddy says Woof!
+introduce(Cat("Luna"))     # Meet Luna! Luna says Meow!
+introduce(Bird("Polly"))   # Meet Polly! Polly says Tweet!</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">class Animal {
+    constructor(name) { this.name = name; }
+    speak() { return `${this.name} makes a sound`; }
+}
+
+class Dog extends Animal {
+    speak() { return `${this.name} says Woof!`; }
+}
+
+class Cat extends Animal {
+    speak() { return `${this.name} says Meow!`; }
+}
+
+class Bird extends Animal {
+    speak() { return `${this.name} says Tweet!`; }
+}
+
+// A list of DIFFERENT types — all are Animals
+let animals = [new Dog("Fido"), new Cat("Whiskers"),
+               new Bird("Tweety"), new Dog("Rex")];
+
+// Polymorphism: same method call, different behavior
+animals.forEach(animal =&gt; console.log(animal.speak()));
+// Fido says Woof!
+// Whiskers says Meow!
+// Tweety says Tweet!
+// Rex says Woof!
+
+// Works with any function that expects an Animal
+function introduce(animal) {
+    console.log(`Meet ${animal.name}! ${animal.speak()}`);
+}
+
+introduce(new Dog("Buddy"));   // Meet Buddy! Buddy says Woof!
+introduce(new Cat("Luna"));    // Meet Luna! Luna says Meow!</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">class Animal
+{
+    public string Name;
+    public Animal(string name) { Name = name; }
+    public virtual string Speak() =&gt; $"{Name} makes a sound";
+}
+
+class Dog : Animal
+{
+    public Dog(string name) : base(name) { }
+    public override string Speak() =&gt; $"{Name} says Woof!";
+}
+
+class Cat : Animal
+{
+    public Cat(string name) : base(name) { }
+    public override string Speak() =&gt; $"{Name} says Meow!";
+}
+
+class Bird : Animal
+{
+    public Bird(string name) : base(name) { }
+    public override string Speak() =&gt; $"{Name} says Tweet!";
+}
+
+// A list of the PARENT type — holds any child
+List&lt;Animal&gt; animals = new List&lt;Animal&gt;
+{
+    new Dog("Fido"), new Cat("Whiskers"),
+    new Bird("Tweety"), new Dog("Rex")
+};
+
+// Polymorphism: same method call, different behavior
+foreach (Animal animal in animals)
+    Console.WriteLine(animal.Speak());
+
+// Works with any method that accepts Animal
+static void Introduce(Animal animal)
+{
+    Console.WriteLine($"Meet {animal.Name}! {animal.Speak()}");
+}
+
+Introduce(new Dog("Buddy"));
+Introduce(new Cat("Luna"));</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ Why Polymorphism Matters</h4>
+                    <p>Polymorphism lets you write code that works with <em>any</em> type in a family — without <code>if</code>/<code>else</code> chains checking which type you have. The <code>introduce()</code> function doesn't contain <code>if dog... else if cat...</code>. It just calls <code>speak()</code> and the right version runs automatically. This makes code <strong>extensible</strong>: you can add a new <code>Snake</code> class and <code>introduce()</code> works immediately without changes.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Polymorphism is the "aha!" moment of OOP. Walk through the <code>animals</code> loop step by step: "When the loop reaches Fido, Python looks at Fido's <em>actual type</em> (Dog), finds Dog's <code>speak()</code>, and calls it. When it reaches Whiskers, it finds Cat's <code>speak()</code>." The key insight: the <em>same code</em> (<code>animal.speak()</code>) does <em>different things</em> depending on the object's type. C# students should note that <code>List&lt;Animal&gt;</code> can hold any child type — this is polymorphism through the type system.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Type Checking -->
+            <section id="type-checking" class="lesson-section">
+                <h2>Type Checking</h2>
+                <p>Sometimes you <em>do</em> need to know what specific type an object is — especially when a child class has methods the parent doesn't.</p>
+
+                <div class="code-tabs" data-title="Checking Object Types">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">fido = Dog("Fido", 3, "Golden Retriever")
+whiskers = Cat("Whiskers", 5)
+
+# isinstance() — checks if object is a type (or a subtype)
+print(isinstance(fido, Dog))     # True
+print(isinstance(fido, Animal))  # True  ← Dog IS an Animal
+print(isinstance(fido, Cat))     # False
+
+# type() — exact type only
+print(type(fido) == Dog)         # True
+print(type(fido) == Animal)      # False ← exact type is Dog, not Animal
+
+# Practical use: type-specific behavior
+animals = [Dog("Fido", 3, "Lab"), Cat("Whiskers", 5), Dog("Rex", 2, "Poodle")]
+
+dogs = [a for a in animals if isinstance(a, Dog)]
+print(f"Dogs: {[d.name for d in dogs]}")  # Dogs: ['Fido', 'Rex']
+
+# Only call fetch() on dogs
+for animal in animals:
+    if isinstance(animal, Dog):
+        print(animal.fetch("ball"))</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">let fido = new Dog("Fido", 3, "Golden Retriever");
+let whiskers = new Cat("Whiskers", 5);
+
+// instanceof — checks if object is a type (or subtype)
+console.log(fido instanceof Dog);     // true
+console.log(fido instanceof Animal);  // true  ← Dog IS an Animal
+console.log(fido instanceof Cat);     // false
+
+// constructor.name — get the exact class name
+console.log(fido.constructor.name);   // "Dog"
+
+// Practical use
+let animals = [new Dog("Fido", 3, "Lab"), new Cat("Whiskers", 5),
+               new Dog("Rex", 2, "Poodle")];
+
+let dogs = animals.filter(a =&gt; a instanceof Dog);
+console.log(dogs.map(d =&gt; d.name));  // ['Fido', 'Rex']
+
+for (let animal of animals) {
+    if (animal instanceof Dog) {
+        console.log(animal.fetch("ball"));
+    }
+}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">Dog fido = new Dog("Fido", 3, "Golden Retriever");
+Cat whiskers = new Cat("Whiskers", 5);
+
+// 'is' keyword — checks type (including subtypes)
+Console.WriteLine(fido is Dog);     // True
+Console.WriteLine(fido is Animal);  // True  ← Dog IS an Animal
+Console.WriteLine(fido is Cat);     // False
+
+// GetType() — exact type
+Console.WriteLine(fido.GetType().Name);  // "Dog"
+
+// 'is' with pattern matching (C# 7+)
+Animal mystery = new Dog("Rex", 2, "Poodle");
+if (mystery is Dog dog)
+{
+    // 'dog' is now a Dog variable — no cast needed!
+    Console.WriteLine(dog.Fetch("ball"));
+}
+
+// Filter by type with LINQ
+var animals = new List&lt;Animal&gt;
+{
+    new Dog("Fido", 3, "Lab"), new Cat("Whiskers", 5),
+    new Dog("Rex", 2, "Poodle")
+};
+
+var dogs = animals.OfType&lt;Dog&gt;().ToList();
+Console.WriteLine(string.Join(", ", dogs.Select(d =&gt; d.Name)));
+// Fido, Rex</code></pre>
+                    </div>
+                </div>
+
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Check</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Is this type or subtype?</td>
+                                <td><code>isinstance(obj, Type)</code></td>
+                                <td><code>obj instanceof Type</code></td>
+                                <td><code>obj is Type</code></td>
+                            </tr>
+                            <tr>
+                                <td>Exact type name</td>
+                                <td><code>type(obj).__name__</code></td>
+                                <td><code>obj.constructor.name</code></td>
+                                <td><code>obj.GetType().Name</code></td>
+                            </tr>
+                            <tr>
+                                <td>Filter by type</td>
+                                <td><code>isinstance</code> in comprehension</td>
+                                <td><code>.filter()</code> with <code>instanceof</code></td>
+                                <td><code>.OfType&lt;T&gt;()</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Composition -->
+            <section id="composition" class="lesson-section">
+                <h2>Inheritance vs. Composition</h2>
+                <p>Inheritance is powerful, but it's not always the right choice. There's an alternative called <strong>composition</strong> — instead of "is-a" relationships, you build "has-a" relationships.</p>
+
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Approach</th>
+                                <th>Relationship</th>
+                                <th>Example</th>
+                                <th>When to Use</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Inheritance</strong></td>
+                                <td>"is-a"</td>
+                                <td>A Dog <em>is an</em> Animal</td>
+                                <td>True subtype relationship, shared identity</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Composition</strong></td>
+                                <td>"has-a"</td>
+                                <td>A Car <em>has an</em> Engine</td>
+                                <td>Objects contain other objects, flexible assembly</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="code-tabs" data-title="Composition: 'Has-a' Relationships">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Composition: A character HAS-A weapon and HAS-A armor
+class Weapon:
+    def __init__(self, name, damage):
+        self.name = name
+        self.damage = damage
+
+    def __str__(self):
+        return f"{self.name} ({self.damage} dmg)"
+
+class Armor:
+    def __init__(self, name, defense):
+        self.name = name
+        self.defense = defense
+
+    def __str__(self):
+        return f"{self.name} ({self.defense} def)"
+
+class Character:
+    def __init__(self, name, health=100):
+        self.name = name
+        self.health = health
+        self.weapon = None     # HAS-A weapon
+        self.armor = None      # HAS-A armor
+
+    def equip_weapon(self, weapon):
+        self.weapon = weapon
+        print(f"{self.name} equips {weapon}")
+
+    def equip_armor(self, armor):
+        self.armor = armor
+        print(f"{self.name} equips {armor}")
+
+    def attack(self, target):
+        damage = self.weapon.damage if self.weapon else 1
+        defense = target.armor.defense if target.armor else 0
+        actual = max(damage - defense, 0)
+        target.health -= actual
+        print(f"{self.name} attacks {target.name} for {actual} damage!")
+
+# Mix and match — no rigid class hierarchy needed
+hero = Character("Alice")
+hero.equip_weapon(Weapon("Flame Sword", 25))
+hero.equip_armor(Armor("Dragon Shield", 10))
+
+enemy = Character("Goblin", 50)
+enemy.equip_weapon(Weapon("Rusty Dagger", 8))
+
+hero.attack(enemy)  # Alice attacks Goblin for 25 damage!
+enemy.attack(hero)  # Goblin attacks Alice for 0 damage! (8 - 10 def)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">class Weapon {
+    constructor(name, damage) {
+        this.name = name;
+        this.damage = damage;
+    }
+    toString() { return `${this.name} (${this.damage} dmg)`; }
+}
+
+class Armor {
+    constructor(name, defense) {
+        this.name = name;
+        this.defense = defense;
+    }
+    toString() { return `${this.name} (${this.defense} def)`; }
+}
+
+class Character {
+    constructor(name, health = 100) {
+        this.name = name;
+        this.health = health;
+        this.weapon = null;
+        this.armor = null;
+    }
+
+    equipWeapon(weapon) {
+        this.weapon = weapon;
+        console.log(`${this.name} equips ${weapon}`);
+    }
+
+    equipArmor(armor) {
+        this.armor = armor;
+        console.log(`${this.name} equips ${armor}`);
+    }
+
+    attack(target) {
+        let damage = this.weapon ? this.weapon.damage : 1;
+        let defense = target.armor ? target.armor.defense : 0;
+        let actual = Math.max(damage - defense, 0);
+        target.health -= actual;
+        console.log(`${this.name} attacks ${target.name} for ${actual} damage!`);
+    }
+}
+
+let hero = new Character("Alice");
+hero.equipWeapon(new Weapon("Flame Sword", 25));
+hero.equipArmor(new Armor("Dragon Shield", 10));
+
+let enemy = new Character("Goblin", 50);
+enemy.equipWeapon(new Weapon("Rusty Dagger", 8));
+
+hero.attack(enemy);  // Alice attacks Goblin for 25 damage!
+enemy.attack(hero);  // Goblin attacks Alice for 0 damage!</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">class Weapon
+{
+    public string Name;
+    public int Damage;
+    public Weapon(string name, int damage) { Name = name; Damage = damage; }
+    public override string ToString() =&gt; $"{Name} ({Damage} dmg)";
+}
+
+class Armor
+{
+    public string Name;
+    public int Defense;
+    public Armor(string name, int defense) { Name = name; Defense = defense; }
+    public override string ToString() =&gt; $"{Name} ({Defense} def)";
+}
+
+class Character
+{
+    public string Name;
+    public int Health;
+    public Weapon? Weapon;
+    public Armor? Armor;
+
+    public Character(string name, int health = 100)
+    { Name = name; Health = health; }
+
+    public void EquipWeapon(Weapon weapon)
+    { Weapon = weapon; Console.WriteLine($"{Name} equips {weapon}"); }
+
+    public void EquipArmor(Armor armor)
+    { Armor = armor; Console.WriteLine($"{Name} equips {armor}"); }
+
+    public void Attack(Character target)
+    {
+        int damage = Weapon?.Damage ?? 1;
+        int defense = target.Armor?.Defense ?? 0;
+        int actual = Math.Max(damage - defense, 0);
+        target.Health -= actual;
+        Console.WriteLine($"{Name} attacks {target.Name} for {actual} damage!");
+    }
+}
+
+var hero = new Character("Alice");
+hero.EquipWeapon(new Weapon("Flame Sword", 25));
+hero.EquipArmor(new Armor("Dragon Shield", 10));
+
+var enemy = new Character("Goblin", 50);
+enemy.EquipWeapon(new Weapon("Rusty Dagger", 8));
+
+hero.Attack(enemy);
+enemy.Attack(hero);</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 The Guideline</h4>
+                    <p><strong>Use inheritance</strong> when the relationship is truly "is-a" — a Dog truly <em>is</em> an Animal. <strong>Use composition</strong> when the relationship is "has-a" — a Character <em>has</em> a Weapon. Composition is more flexible because you can swap components at runtime (change weapons mid-game). A common rule of thumb in software design: <em>"Favor composition over inheritance."</em></p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>The RPG equipment example makes composition intuitive — students immediately understand that a character can swap weapons without changing their class. Contrast this with an inheritance approach: would you have <code>SwordCharacter</code>, <code>BowCharacter</code>, <code>MageCharacter</code>? What if a character can use multiple weapon types? Inheritance breaks down, composition thrives. This sets up good design thinking. Don't demonize inheritance — it's the right tool when the "is-a" relationship is genuine.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Exercises -->
+            <section id="exercises" class="lesson-section">
+                <h2>Exercises</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 1: Shape Hierarchy</h3>
+                    <p><strong>Objective:</strong> Create a shape system with inheritance:</p>
+                    <ul>
+                        <li><code>Shape</code> base class with a <code>name</code> attribute and <code>area()</code> / <code>perimeter()</code> methods (return 0)</li>
+                        <li><code>Rectangle(width, height)</code> — overrides <code>area()</code> and <code>perimeter()</code></li>
+                        <li><code>Circle(radius)</code> — overrides <code>area()</code> and <code>perimeter()</code></li>
+                        <li><code>Square(side)</code> — inherits from <code>Rectangle</code> (a square is a rectangle with equal sides)</li>
+                        <li>Each class should have a string representation showing its dimensions</li>
+                        <li>Create a list of mixed shapes and print the total area of all shapes combined</li>
+                    </ul>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Shape Hierarchy">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">import math
+
+class Shape:
+    def __init__(self, name):
+        self.name = name
+
+    def area(self):
+        return 0
+
+    def perimeter(self):
+        return 0
+
+    def __str__(self):
+        return f"{self.name}: area={self.area():.2f}, perimeter={self.perimeter():.2f}"
+
+class Rectangle(Shape):
+    def __init__(self, width, height):
+        super().__init__("Rectangle")
+        self.width = width
+        self.height = height
+
+    def area(self):
+        return self.width * self.height
+
+    def perimeter(self):
+        return 2 * (self.width + self.height)
+
+    def __str__(self):
+        return f"Rectangle({self.width}x{self.height}): area={self.area():.2f}"
+
+class Circle(Shape):
+    def __init__(self, radius):
+        super().__init__("Circle")
+        self.radius = radius
+
+    def area(self):
+        return math.pi * self.radius ** 2
+
+    def perimeter(self):
+        return 2 * math.pi * self.radius
+
+    def __str__(self):
+        return f"Circle(r={self.radius}): area={self.area():.2f}"
+
+class Square(Rectangle):
+    def __init__(self, side):
+        super().__init__(side, side)  # Rectangle with equal sides
+        self.name = "Square"
+
+    def __str__(self):
+        return f"Square({self.width}): area={self.area():.2f}"
+
+# Polymorphism in action
+shapes = [Rectangle(5, 3), Circle(4), Square(6), Rectangle(10, 2), Circle(1)]
+
+for shape in shapes:
+    print(shape)
+
+total = sum(s.area() for s in shapes)
+print(f"\nTotal area: {total:.2f}")</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">class Shape {
+    constructor(name) { this.name = name; }
+    area() { return 0; }
+    perimeter() { return 0; }
+    toString() {
+        return `${this.name}: area=${this.area().toFixed(2)}`;
+    }
+}
+
+class Rectangle extends Shape {
+    constructor(width, height) {
+        super("Rectangle");
+        this.width = width;
+        this.height = height;
+    }
+    area() { return this.width * this.height; }
+    perimeter() { return 2 * (this.width + this.height); }
+    toString() { return `Rectangle(${this.width}x${this.height}): area=${this.area().toFixed(2)}`; }
+}
+
+class Circle extends Shape {
+    constructor(radius) {
+        super("Circle");
+        this.radius = radius;
+    }
+    area() { return Math.PI * this.radius ** 2; }
+    perimeter() { return 2 * Math.PI * this.radius; }
+    toString() { return `Circle(r=${this.radius}): area=${this.area().toFixed(2)}`; }
+}
+
+class Square extends Rectangle {
+    constructor(side) {
+        super(side, side);
+        this.name = "Square";
+    }
+    toString() { return `Square(${this.width}): area=${this.area().toFixed(2)}`; }
+}
+
+let shapes = [new Rectangle(5, 3), new Circle(4), new Square(6),
+              new Rectangle(10, 2), new Circle(1)];
+
+shapes.forEach(s =&gt; console.log(`${s}`));
+let total = shapes.reduce((sum, s) =&gt; sum + s.area(), 0);
+console.log(`\nTotal area: ${total.toFixed(2)}`);</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">class Shape
+{
+    public string Name;
+    public Shape(string name) { Name = name; }
+    public virtual double Area() =&gt; 0;
+    public virtual double Perimeter() =&gt; 0;
+    public override string ToString() =&gt;
+        $"{Name}: area={Area():F2}";
+}
+
+class Rectangle : Shape
+{
+    public double Width, Height;
+    public Rectangle(double w, double h) : base("Rectangle")
+    { Width = w; Height = h; }
+    public override double Area() =&gt; Width * Height;
+    public override double Perimeter() =&gt; 2 * (Width + Height);
+    public override string ToString() =&gt;
+        $"Rectangle({Width}x{Height}): area={Area():F2}";
+}
+
+class Circle : Shape
+{
+    public double Radius;
+    public Circle(double r) : base("Circle") { Radius = r; }
+    public override double Area() =&gt; Math.PI * Radius * Radius;
+    public override double Perimeter() =&gt; 2 * Math.PI * Radius;
+    public override string ToString() =&gt;
+        $"Circle(r={Radius}): area={Area():F2}";
+}
+
+class Square : Rectangle
+{
+    public Square(double side) : base(side, side) { Name = "Square"; }
+    public override string ToString() =&gt;
+        $"Square({Width}): area={Area():F2}";
+}
+
+var shapes = new List&lt;Shape&gt;
+{
+    new Rectangle(5, 3), new Circle(4), new Square(6),
+    new Rectangle(10, 2), new Circle(1)
+};
+
+shapes.ForEach(s =&gt; Console.WriteLine(s));
+double total = shapes.Sum(s =&gt; s.Area());
+Console.WriteLine($"\nTotal area: {total:F2}");</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 2: RPG Character System</h3>
+                    <p><strong>Objective:</strong> Build an RPG with inheritance <strong>and</strong> composition:</p>
+                    <ul>
+                        <li><code>Character</code> base class: <code>name</code>, <code>health</code>, <code>attack_power</code>, <code>attack(target)</code>, <code>is_alive()</code></li>
+                        <li><code>Warrior</code>: extra <code>armor</code> attribute, takes reduced damage</li>
+                        <li><code>Mage</code>: extra <code>mana</code> attribute, <code>cast_spell(target)</code> that costs mana but does double damage</li>
+                        <li><code>Archer</code>: extra <code>arrows</code> attribute, <code>shoot(target)</code> that costs an arrow</li>
+                        <li>Create a party vs. party battle simulation</li>
+                    </ul>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="RPG Character System">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">import random
+
+class Character:
+    def __init__(self, name, health, attack_power):
+        self.name = name
+        self.health = health
+        self.attack_power = attack_power
+
+    def is_alive(self):
+        return self.health &gt; 0
+
+    def take_damage(self, amount):
+        self.health -= amount
+        if self.health &lt; 0:
+            self.health = 0
+
+    def attack(self, target):
+        damage = random.randint(self.attack_power // 2, self.attack_power)
+        target.take_damage(damage)
+        print(f"  {self.name} attacks {target.name} for {damage} damage!")
+
+    def __str__(self):
+        status = f"HP:{self.health}" if self.is_alive() else "DEFEATED"
+        return f"{self.name} ({self.__class__.__name__}) [{status}]"
+
+class Warrior(Character):
+    def __init__(self, name, health=120, attack_power=20):
+        super().__init__(name, health, attack_power)
+        self.armor = 5
+
+    def take_damage(self, amount):
+        reduced = max(amount - self.armor, 0)
+        super().take_damage(reduced)
+
+class Mage(Character):
+    def __init__(self, name, health=80, attack_power=15):
+        super().__init__(name, health, attack_power)
+        self.mana = 50
+
+    def cast_spell(self, target):
+        if self.mana &gt;= 10:
+            self.mana -= 10
+            damage = self.attack_power * 2
+            target.take_damage(damage)
+            print(f"  🔥 {self.name} casts a spell on {target.name} for {damage} damage! (Mana: {self.mana})")
+        else:
+            print(f"  {self.name} is out of mana! Using basic attack.")
+            self.attack(target)
+
+class Archer(Character):
+    def __init__(self, name, health=90, attack_power=18):
+        super().__init__(name, health, attack_power)
+        self.arrows = 10
+
+    def shoot(self, target):
+        if self.arrows &gt; 0:
+            self.arrows -= 1
+            damage = self.attack_power + random.randint(5, 15)
+            target.take_damage(damage)
+            print(f"  🏹 {self.name} shoots {target.name} for {damage} damage! (Arrows: {self.arrows})")
+        else:
+            print(f"  {self.name} is out of arrows! Using basic attack.")
+            self.attack(target)
+
+# Battle simulation
+heroes = [Warrior("Alice"), Mage("Merlin"), Archer("Robin")]
+enemies = [Warrior("Orc Chief"), Mage("Dark Wizard"), Archer("Goblin Scout", 60, 12)]
+
+def battle_round(team_a, team_b, round_num):
+    print(f"\n=== Round {round_num} ===")
+    for attacker in team_a + team_b:
+        if not attacker.is_alive():
+            continue
+        # Pick a living target from the other team
+        if attacker in team_a:
+            targets = [t for t in team_b if t.is_alive()]
+        else:
+            targets = [t for t in team_a if t.is_alive()]
+        if not targets:
+            break
+        target = random.choice(targets)
+
+        # Use special ability or basic attack
+        if isinstance(attacker, Mage):
+            attacker.cast_spell(target)
+        elif isinstance(attacker, Archer):
+            attacker.shoot(target)
+        else:
+            attacker.attack(target)
+
+# Run the battle
+for round_num in range(1, 11):
+    battle_round(heroes, enemies, round_num)
+    alive_heroes = [h for h in heroes if h.is_alive()]
+    alive_enemies = [e for e in enemies if e.is_alive()]
+    if not alive_heroes or not alive_enemies:
+        break
+
+print("\n=== Final Status ===")
+for char in heroes + enemies:
+    print(f"  {char}")</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">class Character {
+    constructor(name, health, attackPower) {
+        this.name = name;
+        this.health = health;
+        this.attackPower = attackPower;
+    }
+
+    isAlive() { return this.health &gt; 0; }
+
+    takeDamage(amount) {
+        this.health -= amount;
+        if (this.health &lt; 0) this.health = 0;
+    }
+
+    attack(target) {
+        let damage = Math.floor(Math.random() * (this.attackPower / 2)) + Math.ceil(this.attackPower / 2);
+        target.takeDamage(damage);
+        console.log(`  ${this.name} attacks ${target.name} for ${damage} damage!`);
+    }
+
+    toString() {
+        let status = this.isAlive() ? `HP:${this.health}` : "DEFEATED";
+        return `${this.name} (${this.constructor.name}) [${status}]`;
+    }
+}
+
+class Warrior extends Character {
+    constructor(name, health = 120, attackPower = 20) {
+        super(name, health, attackPower);
+        this.armor = 5;
+    }
+    takeDamage(amount) { super.takeDamage(Math.max(amount - this.armor, 0)); }
+}
+
+class Mage extends Character {
+    constructor(name, health = 80, attackPower = 15) {
+        super(name, health, attackPower);
+        this.mana = 50;
+    }
+
+    castSpell(target) {
+        if (this.mana &gt;= 10) {
+            this.mana -= 10;
+            let damage = this.attackPower * 2;
+            target.takeDamage(damage);
+            console.log(`  🔥 ${this.name} casts spell on ${target.name} for ${damage}! (Mana: ${this.mana})`);
+        } else {
+            this.attack(target);
+        }
+    }
+}
+
+class Archer extends Character {
+    constructor(name, health = 90, attackPower = 18) {
+        super(name, health, attackPower);
+        this.arrows = 10;
+    }
+
+    shoot(target) {
+        if (this.arrows &gt; 0) {
+            this.arrows--;
+            let damage = this.attackPower + Math.floor(Math.random() * 11) + 5;
+            target.takeDamage(damage);
+            console.log(`  🏹 ${this.name} shoots ${target.name} for ${damage}! (Arrows: ${this.arrows})`);
+        } else {
+            this.attack(target);
+        }
+    }
+}
+
+let heroes = [new Warrior("Alice"), new Mage("Merlin"), new Archer("Robin")];
+let enemies = [new Warrior("Orc Chief"), new Mage("Dark Wizard"), new Archer("Goblin Scout", 60, 12)];
+
+console.log("=== Battle! ===");
+for (let char of [...heroes, ...enemies]) {
+    if (!char.isAlive()) continue;
+    let targets = (heroes.includes(char) ? enemies : heroes).filter(t =&gt; t.isAlive());
+    if (!targets.length) break;
+    let target = targets[Math.floor(Math.random() * targets.length)];
+    if (char instanceof Mage) char.castSpell(target);
+    else if (char instanceof Archer) char.shoot(target);
+    else char.attack(target);
+}
+
+console.log("\n=== Status ===");
+[...heroes, ...enemies].forEach(c =&gt; console.log(`  ${c}`));</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">class Character
+{
+    public string Name;
+    public int Health;
+    public int AttackPower;
+    private static Random rng = new();
+
+    public Character(string name, int health, int attackPower)
+    { Name = name; Health = health; AttackPower = attackPower; }
+
+    public bool IsAlive() =&gt; Health &gt; 0;
+
+    public virtual void TakeDamage(int amount)
+    { Health -= amount; if (Health &lt; 0) Health = 0; }
+
+    public virtual void Attack(Character target)
+    {
+        int damage = rng.Next(AttackPower / 2, AttackPower + 1);
+        target.TakeDamage(damage);
+        Console.WriteLine($"  {Name} attacks {target.Name} for {damage} damage!");
+    }
+
+    public override string ToString()
+    {
+        string status = IsAlive() ? $"HP:{Health}" : "DEFEATED";
+        return $"{Name} ({GetType().Name}) [{status}]";
+    }
+}
+
+class Warrior : Character
+{
+    public int Armor = 5;
+    public Warrior(string name, int hp = 120, int atk = 20) : base(name, hp, atk) { }
+    public override void TakeDamage(int amount) =&gt;
+        base.TakeDamage(Math.Max(amount - Armor, 0));
+}
+
+class Mage : Character
+{
+    public int Mana = 50;
+    public Mage(string name, int hp = 80, int atk = 15) : base(name, hp, atk) { }
+
+    public void CastSpell(Character target)
+    {
+        if (Mana &gt;= 10)
+        {
+            Mana -= 10;
+            int damage = AttackPower * 2;
+            target.TakeDamage(damage);
+            Console.WriteLine($"  🔥 {Name} casts spell for {damage}! (Mana: {Mana})");
+        }
+        else Attack(target);
+    }
+}
+
+class Archer : Character
+{
+    public int Arrows = 10;
+    public Archer(string name, int hp = 90, int atk = 18) : base(name, hp, atk) { }
+
+    public void Shoot(Character target)
+    {
+        if (Arrows &gt; 0)
+        {
+            Arrows--;
+            int damage = AttackPower + new Random().Next(5, 16);
+            target.TakeDamage(damage);
+            Console.WriteLine($"  🏹 {Name} shoots for {damage}! (Arrows: {Arrows})");
+        }
+        else Attack(target);
+    }
+}</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Exercise 1 (Shapes) is the classic OOP teaching example — it shows inheritance, method overriding, polymorphism (looping over mixed shapes), and multi-level inheritance (Square extends Rectangle). Exercise 2 (RPG) is the engaging capstone that combines inheritance with polymorphism and composition concepts. The battle simulation with random damage makes every run different — students love running it multiple times. Challenge fast students: add a <code>Healer</code> class that can heal allies instead of attacking, or add experience points that increase stats after each round.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong>Inheritance</strong> lets child classes reuse code from a parent class — "is-a" relationships</li>
+                        <li><strong>Syntax:</strong> Python <code>class Dog(Animal):</code>, JS <code>class Dog extends Animal</code>, C# <code>class Dog : Animal</code></li>
+                        <li><strong>super()</strong> calls the parent's constructor or methods — essential in child constructors</li>
+                        <li><strong>Method overriding</strong> lets children replace parent behavior (C# requires <code>virtual</code>/<code>override</code>)</li>
+                        <li><strong>Polymorphism:</strong> same method call, different behavior based on actual type — no <code>if</code>/<code>else</code> type checking needed</li>
+                        <li><strong>Type checking:</strong> Python <code>isinstance()</code>, JS <code>instanceof</code>, C# <code>is</code></li>
+                        <li><strong>Composition</strong> ("has-a") is often more flexible than inheritance — favor it when the relationship isn't a true subtype</li>
+                    </ul>
+                </div>
+
+                <h3>🚀 What's Next?</h3>
+                <p>That wraps up <strong>Module 6: Object-Oriented Programming!</strong> You now have a solid foundation in classes, objects, encapsulation, inheritance, and polymorphism. In Module 7, we tackle something every real program needs: <strong>error handling</strong> — writing code that gracefully handles the unexpected instead of crashing.</p>
+
+                <!-- Quiz -->
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Check</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> In JavaScript, how do you create a class that inherits from another?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="That's the Python syntax for inheritance (using parentheses).">A) class Dog(Animal)</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="JavaScript uses the 'extends' keyword: class Dog extends Animal { }. The child class automatically gets all of the parent's properties and methods.">B) class Dog extends Animal</button>
+                            <button class="quiz-option" data-correct="false" data-hint="That's the C# syntax for inheritance (using a colon).">C) class Dog : Animal</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 2:</strong> What does polymorphism allow you to do?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="That's encapsulation (private fields), not polymorphism.">A) Hide data inside a class</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Polymorphism means 'many forms' — the same method call (like speak()) produces different behavior depending on the actual object type. You can loop over a mixed list and each object responds in its own way.">B) Call the same method on different types with different results</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Creating instances from a class is basic OOP — polymorphism is about treating different types through a shared interface.">C) Create multiple objects from one class</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 3:</strong> In C#, what keywords are needed to override a parent method?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="C# requires 'virtual' on the parent method (to allow overriding) and 'override' on the child method. Without both keywords, the child creates a separate method that hides the parent's instead of replacing it.">A) virtual on parent, override on child</button>
+                            <button class="quiz-option" data-correct="false" data-hint="'abstract' is for methods with no body at all — 'virtual' allows overriding while still providing a default implementation.">B) abstract on parent, override on child</button>
+                            <button class="quiz-option" data-correct="false" data-hint="C# requires both keywords. Python and JavaScript allow overriding without any keywords, but C# is stricter.">C) No keywords needed</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_17.html" class="prev-lesson">← Previous: Properties, Methods, and Constructors</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_19.html" class="next-lesson">Next: Try, Catch, and Finally →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

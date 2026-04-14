@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Welcome to Programming Fundamentals — learn why comparing three languages builds deeper understanding.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 1.1: Welcome &amp; Course Overview - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <!-- Mermaid — initialized by course-enhancements.js for theme awareness -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">
+                ☰
+            </button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 1</a></li>
+            <li aria-current="page">Lesson 1.1: Welcome &amp; Course Overview</li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main-content">
+        <div class="container">
+            <!-- Lesson Header -->
+            <header>
+                <h1>👋 Lesson 1.1: Welcome &amp; Course Overview</h1>
+                <p class="lead">Discover why learning three languages at once is the fastest path to truly understanding programming.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Explain what programming is and why it matters</li>
+                        <li>Describe the three languages you'll learn and where each is used</li>
+                        <li>Understand the comparative approach and how to use the tabbed code viewer</li>
+                        <li>Navigate the course structure and find resources</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 30 minutes</p>
+                </div>
+            </header>
+
+            <!-- Sticky Table of Contents -->
+            <details class="card toc-card" open>
+                <summary>
+                    <h2 style="display: inline; margin: 0;">📑 In This Lesson</h2>
+                </summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#what-is-programming" class="toc-link">What Is Programming?</a></li>
+                        <li><a href="#why-three-languages" class="toc-link">Why Three Languages?</a></li>
+                        <li><a href="#meet-the-languages" class="toc-link">Meet the Languages</a></li>
+                        <li><a href="#how-this-course-works" class="toc-link">How This Course Works</a></li>
+                        <li><a href="#your-first-taste" class="toc-link">Your First Taste</a></li>
+                        <li><a href="#course-structure" class="toc-link">Course Structure</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Section 1: What Is Programming? -->
+            <section id="what-is-programming" class="lesson-section">
+                <h2>What Is Programming?</h2>
+                <p>At its core, <strong>programming</strong> is writing instructions that a computer can follow. Think of it like writing a recipe — except the cook (the computer) follows your instructions <em>exactly</em>, every single time, without any common sense.</p>
+
+                <p>If a recipe says "add salt to taste," a human cook adjusts. A computer would need something more like: "Add exactly 1/4 teaspoon of salt." Programming languages are how we write these precise instructions.</p>
+
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>💡 The Big Idea</h3>
+                    <p style="color: #fff; font-size: 1.1rem;">Programming is <strong>problem-solving with code</strong>. The language you use is just the tool — the thinking is what matters.</p>
+                </div>
+
+                <p>Every app on your phone, every website you visit, every game you play was built by someone writing instructions in a programming language. There are hundreds of programming languages, but they all share the same core ideas: storing data, making decisions, repeating actions, and organizing code. That's what this course teaches — the ideas that work <em>everywhere</em>.</p>
+            </section>
+
+            <!-- Section 2: Why Three Languages? -->
+            <section id="why-three-languages" class="lesson-section">
+                <h2>Why Three Languages?</h2>
+                <p>Most courses teach one language at a time. That works, but it has a downside: students often confuse the <em>language's way</em> of doing something with the <em>only way</em>. When you learn three languages side by side, something powerful happens:</p>
+
+                <ul>
+                    <li><strong>You see patterns.</strong> All three languages have variables, loops, and functions — but the syntax differs. Seeing the same concept in three forms helps it stick.</li>
+                    <li><strong>You understand trade-offs.</strong> Python is concise but dynamically typed. C# is verbose but catches errors at compile time. Neither is "better" — they're different tools.</li>
+                    <li><strong>You become language-agnostic.</strong> After this course, picking up a fourth language (Go, Ruby, Swift) becomes much easier because you already know the patterns.</li>
+                </ul>
+
+                <div class="mermaid">
+                    graph LR
+                    A["🧠 Learn<br/>the Concept"] --> B["🐍 See it in<br/>Python"]
+                    A --> C["⚡ See it in<br/>JavaScript"]
+                    A --> D["🔷 See it in<br/>C#"]
+                    B --> E["💡 Deeper<br/>Understanding"]
+                    C --> E
+                    D --> E
+                    style A fill:#3b82f6,stroke:#1e40af,color:#fff,stroke-width:2px
+                    style E fill:#22c55e,stroke:#15803d,color:#fff,stroke-width:2px
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>This is a good moment to ask students what languages they've heard of. Most will say Python or JavaScript. Use their responses to transition into "Meet the Languages." If anyone has prior experience, acknowledge it and explain that even experienced coders benefit from the comparative approach.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Section 3: Meet the Languages -->
+            <section id="meet-the-languages" class="lesson-section">
+                <h2>Meet the Languages</h2>
+
+                <h3>🐍 Python</h3>
+                <p>Created in 1991 by Guido van Rossum, Python was designed to be <strong>easy to read</strong>. Its philosophy is that code should almost read like English. Python is the most popular language for beginners, data science, machine learning, automation, and scientific computing.</p>
+
+                <div class="card card-success">
+                    <h4>✅ Python's Superpower</h4>
+                    <p>Clean, minimal syntax. You write less code to accomplish the same task. Great for rapid prototyping and scripting.</p>
+                </div>
+
+                <h3>⚡ JavaScript</h3>
+                <p>Created in 1995 by Brendan Eich (famously in just 10 days!), JavaScript was built for the web. Today it's the <strong>only language that runs natively in web browsers</strong>, and with Node.js, it also runs on servers. It's the most widely-used programming language in the world.</p>
+
+                <div class="card card-success">
+                    <h4>✅ JavaScript's Superpower</h4>
+                    <p>Ubiquity. If it runs in a browser, it uses JavaScript. Full-stack development (front-end and back-end) in one language.</p>
+                </div>
+
+                <h3>🔷 C# (C-Sharp)</h3>
+                <p>Created in 2000 by Anders Hejlsberg at Microsoft, C# combines the power of C++ with the simplicity of modern languages. It's <strong>statically typed</strong> — meaning you declare the type of every variable — which helps catch bugs before your code even runs. C# powers enterprise applications, Unity games, and cloud services.</p>
+
+                <div class="card card-success">
+                    <h4>✅ C#'s Superpower</h4>
+                    <p>Strong typing and compile-time error checking. The IDE catches mistakes as you type, before you even run the program.</p>
+                </div>
+
+                <h3>How They Compare at a Glance</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Typing</td>
+                                <td>Dynamic</td>
+                                <td>Dynamic</td>
+                                <td>Static</td>
+                            </tr>
+                            <tr>
+                                <td>Execution</td>
+                                <td>Interpreted</td>
+                                <td>Interpreted (JIT)</td>
+                                <td>Compiled (JIT)</td>
+                            </tr>
+                            <tr>
+                                <td>Syntax Style</td>
+                                <td>Indentation-based</td>
+                                <td>Curly-brace</td>
+                                <td>Curly-brace</td>
+                            </tr>
+                            <tr>
+                                <td>Run Command</td>
+                                <td><code>python file.py</code></td>
+                                <td><code>node file.js</code></td>
+                                <td><code>dotnet run</code></td>
+                            </tr>
+                            <tr>
+                                <td>Primary Use</td>
+                                <td>Data science, automation, web backends</td>
+                                <td>Web (front &amp; back), mobile apps</td>
+                                <td>Enterprise, games (Unity), cloud</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Don't Worry About Memorizing This Table</h4>
+                    <p>You'll internalize these differences naturally as you write code in each language throughout the course. This is just a preview!</p>
+                </div>
+            </section>
+
+            <!-- Section 4: How This Course Works -->
+            <section id="how-this-course-works" class="lesson-section">
+                <h2>How This Course Works</h2>
+
+                <h3>The Tabbed Code Viewer</h3>
+                <p>Throughout this course, you'll see code examples in a special <strong>tabbed viewer</strong>. Click a language tab to see that language's version. Click <strong>⊞ All</strong> to see all three side by side. Try it now:</p>
+
+                <div class="code-tabs" data-title="Greeting Example">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python: clean and simple
+message = "Hello, programmer!"
+print(message)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript: flexible and familiar
+const message = "Hello, programmer!";
+console.log(message);</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C#: explicit and structured
+string message = "Hello, programmer!";
+Console.WriteLine(message);</code></pre>
+                    </div>
+                </div>
+
+                <p>Notice a few things right away:</p>
+                <ul>
+                    <li><strong>Python</strong> doesn't need semicolons or type declarations — it's the most concise</li>
+                    <li><strong>JavaScript</strong> uses <code>const</code> to declare a variable and semicolons at line ends</li>
+                    <li><strong>C#</strong> requires you to state the type (<code>string</code>) — the most explicit</li>
+                    <li>All three achieve the same result: store a message and display it</li>
+                </ul>
+
+                <blockquote>
+                    <strong>💡 Key Insight:</strong> The <em>concept</em> is the same (store data, then display it). The <em>syntax</em> is different. This pattern repeats throughout the entire course.
+                </blockquote>
+
+                <p>Your selected language tab is <strong>remembered</strong> — once you pick a favorite, all code viewers on the page (and across sessions) will default to it. You can change it anytime.</p>
+
+                <h3>Lesson Format</h3>
+                <p>Every lesson follows the same structure:</p>
+                <ol>
+                    <li><strong>Learning Objectives</strong> — what you'll know by the end</li>
+                    <li><strong>Concept Explanation</strong> — the idea itself, language-independent</li>
+                    <li><strong>Code Comparison</strong> — see it in all three languages</li>
+                    <li><strong>Exercises</strong> — practice what you've learned</li>
+                    <li><strong>Quiz</strong> — check your understanding</li>
+                    <li><strong>Summary</strong> — key takeaways</li>
+                </ol>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Walk students through the tabbed viewer live. Show them clicking each tab, then clicking "All" for side-by-side. Point out how the selected tab persists. If projecting, use "All" view so the whole class can compare at once. For exercises, let students choose their preferred language — or challenge them to try all three.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Section 5: Your First Taste -->
+            <section id="your-first-taste" class="lesson-section">
+                <h2>Your First Taste</h2>
+                <p>Let's look at one more example to get you excited. Here's a simple program that asks for your name and greets you:</p>
+
+                <div class="code-tabs" data-title="Interactive Greeting">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Ask for the user's name and greet them
+name = input("What is your name? ")
+print(f"Nice to meet you, {name}!")</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// Ask for the user's name and greet them
+// (using Node.js readline for terminal input)
+const readline = require("readline");
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+
+rl.question("What is your name? ", (name) => {
+    console.log(`Nice to meet you, ${name}!`);
+    rl.close();
+});</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// Ask for the user's name and greet them
+Console.Write("What is your name? ");
+string name = Console.ReadLine();
+Console.WriteLine($"Nice to meet you, {name}!");</code></pre>
+                    </div>
+                </div>
+
+                <p>Same idea, three different approaches. Notice how <strong>Python</strong> does it in 2 lines, <strong>C#</strong> in 3, and <strong>JavaScript</strong> needs more setup for terminal input (it was originally designed for browsers, not terminals). These trade-offs are part of what makes comparing languages so valuable.</p>
+
+                <div class="card card-info">
+                    <h3>🏋️ Try It (Preview)</h3>
+                    <p>You don't have your environment set up yet (that's next lesson!), but you can try Python right now in your browser:</p>
+                    <ol>
+                        <li>Go to <a href="https://www.online-python.com/" target="_blank" rel="noopener">online-python.com</a></li>
+                        <li>Type the Python code from above</li>
+                        <li>Click <strong>Run</strong> and type your name when prompted</li>
+                    </ol>
+                    <p>For JavaScript, try <a href="https://replit.com/languages/nodejs" target="_blank" rel="noopener">replit.com</a>. For C#, try <a href="https://dotnetfiddle.net/" target="_blank" rel="noopener">dotnetfiddle.net</a>.</p>
+                </div>
+            </section>
+
+            <!-- Section 6: Course Structure -->
+            <section id="course-structure" class="lesson-section">
+                <h2>Course Structure</h2>
+                <p>The course is organized into <strong>9 modules</strong> with <strong>27 lessons</strong>, progressing from absolute basics to building complete projects:</p>
+
+                <div class="mermaid">
+                    graph TD
+                    M1["📦 Module 1<br/>Getting Started"] --> M2["📦 Module 2<br/>Variables &amp; Types"]
+                    M2 --> M3["📦 Module 3<br/>Control Flow"]
+                    M3 --> M4["📦 Module 4<br/>Functions"]
+                    M4 --> M5["📦 Module 5<br/>Collections"]
+                    M5 --> M6["📦 Module 6<br/>OOP"]
+                    M6 --> M7["📦 Module 7<br/>Error Handling"]
+                    M7 --> M8["📦 Module 8<br/>Files &amp; APIs"]
+                    M8 --> M9["🎓 Module 9<br/>Capstone Projects"]
+                    style M1 fill:#3b82f6,stroke:#1e40af,color:#fff,stroke-width:2px
+                    style M9 fill:#22c55e,stroke:#15803d,color:#fff,stroke-width:2px
+                </div>
+
+                <p>Each module builds on the previous one. We recommend going in order, but if you're using this as a reference, feel free to jump to any topic you need.</p>
+
+                <h3>Tips for Success</h3>
+                <ul>
+                    <li><strong>Type the code yourself.</strong> Don't just read it — typing builds muscle memory.</li>
+                    <li><strong>Try all three languages.</strong> Even if you gravitate toward one, the comparison deepens your understanding.</li>
+                    <li><strong>Make mistakes.</strong> Error messages are your friend. Every programmer sees them daily.</li>
+                    <li><strong>Use the exercises.</strong> Reading about code is like reading about swimming — you have to get in the water.</li>
+                </ul>
+            </section>
+
+            <!-- Section 7: Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>Programming is writing precise instructions for computers — the language is just the tool</li>
+                        <li>Learning three languages simultaneously builds deeper conceptual understanding</li>
+                        <li>Python excels at readability, JavaScript dominates the web, and C# brings strong typing and compile-time safety</li>
+                        <li>The tabbed code viewer lets you compare implementations side by side</li>
+                        <li>This course goes from zero to building complete projects across 9 modules</li>
+                    </ul>
+                </div>
+
+                <h3>🚀 What's Next?</h3>
+                <p>In the next lesson, we'll <strong>set up your development environment</strong> — installing VS Code, Python, Node.js, and the .NET SDK so you can write and run code in all three languages on your own machine.</p>
+
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 Welcome Aboard!</h3>
+                    <p style="color: #fff;">You've taken the first step. Let's set up your tools and start coding!</p>
+                </div>
+
+                <!-- Quiz -->
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Check</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> Which language requires you to declare the type of a variable (like <code>string</code> or <code>int</code>)?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Python is dynamically typed — it figures out the type automatically.">
+                                A) Python
+                            </button>
+                            <button class="quiz-option" data-correct="false" data-hint="JavaScript is also dynamically typed — you use let, const, or var without specifying a type.">
+                                B) JavaScript
+                            </button>
+                            <button class="quiz-option" data-correct="true" data-explanation="C# is statically typed. You must declare types like string, int, bool when creating variables.">
+                                C) C#
+                            </button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 2:</strong> What is the main benefit of learning three languages at once?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="While it's useful, knowing multiple syntaxes isn't the primary benefit.">
+                                A) You can memorize three times as much syntax
+                            </button>
+                            <button class="quiz-option" data-correct="true" data-explanation="By seeing the same concept in three languages, you understand the underlying principle — not just one language's way of doing it.">
+                                B) You understand programming concepts more deeply through comparison
+                            </button>
+                            <button class="quiz-option" data-correct="false" data-hint="The goal isn't to finish faster — it's to understand more deeply.">
+                                C) You finish learning to code three times faster
+                            </button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Lesson Navigation -->
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <span></span>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_02.html" class="next-lesson">Next: Setting Up Your Environment →</a>
+            </nav>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

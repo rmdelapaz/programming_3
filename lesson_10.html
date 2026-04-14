@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn to define and call functions in Python, JavaScript, and C# — organize your code into reusable, named blocks.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 4.1: Defining and Calling Functions - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 4</a></li>
+            <li aria-current="page">Lesson 4.1: Defining and Calling Functions</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>📦 Lesson 4.1: Defining and Calling Functions</h1>
+                <p class="lead">Functions are the building blocks of organized code. Instead of copying and pasting the same logic everywhere, you give it a name and call it whenever you need it.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Define functions in Python (<code>def</code>), JavaScript (<code>function</code>), and C# (method syntax)</li>
+                        <li>Call functions and understand the define-then-call pattern</li>
+                        <li>Write functions that accept parameters and return values</li>
+                        <li>Understand JavaScript's arrow functions as an alternative syntax</li>
+                        <li>Recognize the difference between functions and methods in C#</li>
+                        <li>Write functions that call other functions</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 45 minutes</p>
+                    <p><strong>Project:</strong> A temperature converter with functions for each conversion direction</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary><h2 style="display: inline; margin: 0;">📑 In This Lesson</h2></summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#why-functions" class="toc-link">Why Functions?</a></li>
+                        <li><a href="#defining-functions" class="toc-link">Defining a Function</a></li>
+                        <li><a href="#calling-functions" class="toc-link">Calling a Function</a></li>
+                        <li><a href="#parameters" class="toc-link">Functions with Parameters</a></li>
+                        <li><a href="#return-values" class="toc-link">Return Values</a></li>
+                        <li><a href="#arrow-functions" class="toc-link">Arrow Functions (JavaScript)</a></li>
+                        <li><a href="#csharp-methods" class="toc-link">Functions in C# — They're Called Methods</a></li>
+                        <li><a href="#functions-calling-functions" class="toc-link">Functions Calling Functions</a></li>
+                        <li><a href="#exercises" class="toc-link">Exercises</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Why Functions -->
+            <section id="why-functions" class="lesson-section">
+                <h2>Why Functions?</h2>
+                <p>Imagine you're writing a program that greets users in multiple places. Without functions, you'd repeat the greeting logic every time:</p>
+
+                <pre><code class="language-python"># Without functions — lots of repetition
+print("================================")
+print("Welcome, Alice!")
+print("Today is Monday.")
+print("================================")
+
+# ... later in the program ...
+print("================================")
+print("Welcome, Bob!")
+print("Today is Monday.")
+print("================================")
+
+# ... and again ...
+print("================================")
+print("Welcome, Charlie!")
+print("Today is Monday.")
+print("================================")</code></pre>
+
+                <p>Functions solve three problems at once:</p>
+                <ul>
+                    <li><strong>Don't Repeat Yourself (DRY):</strong> Write the logic once, call it many times</li>
+                    <li><strong>Readability:</strong> <code>greet_user("Alice")</code> is clearer than 4 lines of print statements</li>
+                    <li><strong>Maintainability:</strong> Need to change the greeting? Update one function, not twenty copy-pasted blocks</li>
+                </ul>
+
+                <div class="mermaid">
+                    graph LR
+                    A["Main Program"] --> B["greet_user('Alice')"]
+                    A --> C["greet_user('Bob')"]
+                    A --> D["greet_user('Charlie')"]
+                    B --> E["Function:<br/>greet_user(name)"]
+                    C --> E
+                    D --> E
+                    style E fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px
+                </div>
+            </section>
+
+            <!-- Defining a Function -->
+            <section id="defining-functions" class="lesson-section">
+                <h2>Defining a Function</h2>
+                <p>A function definition tells the computer: "Here's a block of code I want you to remember. I'll tell you when to run it." Defining a function does <strong>not</strong> run it — you need to call it separately.</p>
+
+                <div class="code-tabs" data-title="Defining a Simple Function">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python: def keyword + function name + colon
+def say_hello():
+    print("Hello, world!")
+    print("Functions are awesome!")
+
+# The function is defined but NOT run yet.
+# Nothing has been printed so far.</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript: function keyword + name + curly braces
+function sayHello() {
+    console.log("Hello, world!");
+    console.log("Functions are awesome!");
+}
+
+// The function is defined but NOT run yet.
+// Nothing has been logged so far.</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C#: return type + name + curly braces (inside a class)
+static void SayHello()
+{
+    Console.WriteLine("Hello, world!");
+    Console.WriteLine("Functions are awesome!");
+}
+
+// "static" = belongs to the class, not an instance (more on this later)
+// "void" = this function doesn't return a value
+// The function is defined but NOT run yet.</code></pre>
+                    </div>
+                </div>
+
+                <h3>Anatomy of a Function Definition</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Part</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Keyword</td>
+                                <td><code>def</code></td>
+                                <td><code>function</code></td>
+                                <td>(return type instead)</td>
+                            </tr>
+                            <tr>
+                                <td>Name</td>
+                                <td><code>snake_case</code></td>
+                                <td><code>camelCase</code></td>
+                                <td><code>PascalCase</code></td>
+                            </tr>
+                            <tr>
+                                <td>Parameters</td>
+                                <td>In parentheses <code>()</code></td>
+                                <td>In parentheses <code>()</code></td>
+                                <td>In parentheses with types</td>
+                            </tr>
+                            <tr>
+                                <td>Body</td>
+                                <td>Indented block</td>
+                                <td>Curly braces <code>{}</code></td>
+                                <td>Curly braces <code>{}</code></td>
+                            </tr>
+                            <tr>
+                                <td>Return type</td>
+                                <td>Not declared</td>
+                                <td>Not declared</td>
+                                <td>Required (<code>void</code>, <code>int</code>, etc.)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Naming Conventions Matter</h4>
+                    <p>Each language has its own naming style. Python uses <code>snake_case</code> (lowercase with underscores), JavaScript uses <code>camelCase</code> (lowercase start, capitalize each new word), and C# uses <code>PascalCase</code> (capitalize every word, including the first). Using the wrong convention won't break your code, but it will look wrong to experienced developers in that language.</p>
+                </div>
+            </section>
+
+            <!-- Calling a Function -->
+            <section id="calling-functions" class="lesson-section">
+                <h2>Calling a Function</h2>
+                <p>To actually <strong>run</strong> a function, you call it by name with parentheses. The parentheses are required even when there are no parameters.</p>
+
+                <div class="code-tabs" data-title="Defining and Calling">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">def say_hello():
+    print("Hello, world!")
+
+# Call it — now it runs!
+say_hello()          # Hello, world!
+
+# Call it again — it runs again!
+say_hello()          # Hello, world!
+
+# Common mistake: forgetting the parentheses
+# say_hello   ← This just references the function, doesn't call it
+# print(say_hello)  → &lt;function say_hello at 0x...&gt;</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">function sayHello() {
+    console.log("Hello, world!");
+}
+
+// Call it
+sayHello();          // Hello, world!
+
+// Call it again
+sayHello();          // Hello, world!
+
+// Without parentheses, you get the function itself:
+// console.log(sayHello);  → [Function: sayHello]</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// In C#, functions (methods) live inside a class
+class Program
+{
+    static void SayHello()
+    {
+        Console.WriteLine("Hello, world!");
+    }
+
+    static void Main(string[] args)
+    {
+        // Call it
+        SayHello();      // Hello, world!
+
+        // Call it again
+        SayHello();      // Hello, world!
+    }
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Define Before You Call (Usually)</h4>
+                    <p>In Python, you must define a function <em>before</em> you call it — Python reads top to bottom. JavaScript is more forgiving: regular <code>function</code> declarations are "hoisted" (moved to the top automatically). In C#, method order within a class doesn't matter. For clarity, it's best practice in all languages to define functions before using them.</p>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>The "define vs. call" distinction is the single most important concept here. Students frequently define a function and then wonder why nothing happened. Do a live demo: define a function, show that nothing prints, then add the call and watch it come alive. Also demonstrate the "forgot the parentheses" mistake — it's subtle and confusing for beginners. In Python it silently returns the function object; in JS it's similar. Only C# gives a compile error if you try to use a method name without calling it.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Functions with Parameters -->
+            <section id="parameters" class="lesson-section">
+                <h2>Functions with Parameters</h2>
+                <p>Parameters let you pass data <strong>into</strong> a function so it can work with different values each time. Think of parameters as placeholders that get filled in when the function is called.</p>
+
+                <div class="mermaid">
+                    graph LR
+                    A["greet('Alice')"] -->|"name = 'Alice'"| B["function greet(name)"]
+                    B --> C["'Hello, Alice!'"]
+                    D["greet('Bob')"] -->|"name = 'Bob'"| B
+                    style B fill:#3b82f6,stroke:#2563eb,color:#fff,stroke-width:2px
+                </div>
+
+                <div class="code-tabs" data-title="Functions with Parameters">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># One parameter
+def greet(name):
+    print(f"Hello, {name}!")
+
+greet("Alice")     # Hello, Alice!
+greet("Bob")       # Hello, Bob!
+
+# Multiple parameters
+def introduce(name, age, city):
+    print(f"I'm {name}, {age} years old, from {city}.")
+
+introduce("Alice", 30, "New York")
+introduce("Bob", 25, "London")</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// One parameter
+function greet(name) {
+    console.log(`Hello, ${name}!`);
+}
+
+greet("Alice");     // Hello, Alice!
+greet("Bob");       // Hello, Bob!
+
+// Multiple parameters
+function introduce(name, age, city) {
+    console.log(`I'm ${name}, ${age} years old, from ${city}.`);
+}
+
+introduce("Alice", 30, "New York");
+introduce("Bob", 25, "London");</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// One parameter — must declare the type
+static void Greet(string name)
+{
+    Console.WriteLine($"Hello, {name}!");
+}
+
+Greet("Alice");     // Hello, Alice!
+Greet("Bob");       // Hello, Bob!
+
+// Multiple parameters — each needs a type
+static void Introduce(string name, int age, string city)
+{
+    Console.WriteLine($"I'm {name}, {age} years old, from {city}.");
+}
+
+Introduce("Alice", 30, "New York");
+Introduce("Bob", 25, "London");</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Parameter vs. Argument</h4>
+                    <p>Technically, <strong>parameters</strong> are the names in the function definition (<code>name</code>, <code>age</code>). <strong>Arguments</strong> are the actual values you pass when calling the function (<code>"Alice"</code>, <code>30</code>). Most people use the terms interchangeably in conversation, and that's fine — but knowing the distinction helps when reading documentation.</p>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ C# Requires Types on Parameters</h4>
+                    <p>Python and JavaScript don't require type declarations for parameters — they accept any value. C# requires you to specify the type of each parameter (<code>string name</code>, <code>int age</code>). If you pass the wrong type, C# catches it at compile time. This is a trade-off: more typing upfront, but fewer bugs at runtime.</p>
+                </div>
+            </section>
+
+            <!-- Return Values -->
+            <section id="return-values" class="lesson-section">
+                <h2>Return Values</h2>
+                <p>Functions can <strong>send a value back</strong> to the code that called them. This is how you use a function to <em>compute</em> something rather than just <em>do</em> something.</p>
+
+                <div class="mermaid">
+                    graph LR
+                    A["result = add(3, 5)"] -->|"a=3, b=5"| B["function add(a, b)"]
+                    B -->|"return 8"| C["result = 8"]
+                    style B fill:#3b82f6,stroke:#2563eb,color:#fff,stroke-width:2px
+                    style C fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px
+                </div>
+
+                <div class="code-tabs" data-title="Return Values">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># A function that returns a value
+def add(a, b):
+    return a + b
+
+# Capture the return value in a variable
+result = add(3, 5)
+print(result)          # 8
+
+# Use the return value directly in expressions
+print(add(10, 20))     # 30
+total = add(1, 2) + add(3, 4)   # 3 + 7 = 10
+
+# A function without return gives None
+def say_hi():
+    print("Hi!")
+
+value = say_hi()       # Prints "Hi!"
+print(value)           # None</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// A function that returns a value
+function add(a, b) {
+    return a + b;
+}
+
+// Capture the return value
+let result = add(3, 5);
+console.log(result);       // 8
+
+// Use directly in expressions
+console.log(add(10, 20));  // 30
+let total = add(1, 2) + add(3, 4);  // 3 + 7 = 10
+
+// A function without return gives undefined
+function sayHi() {
+    console.log("Hi!");
+}
+
+let value = sayHi();       // Logs "Hi!"
+console.log(value);        // undefined</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// Return type goes before the function name
+static int Add(int a, int b)
+{
+    return a + b;
+}
+
+// Capture the return value
+int result = Add(3, 5);
+Console.WriteLine(result);       // 8
+
+// Use directly in expressions
+Console.WriteLine(Add(10, 20));  // 30
+int total = Add(1, 2) + Add(3, 4);  // 10
+
+// "void" means no return value
+static void SayHi()
+{
+    Console.WriteLine("Hi!");
+    // No return statement needed (or use: return;)
+}
+
+SayHi();  // Prints "Hi!"
+// int value = SayHi();  // ❌ Compile error — void can't be assigned</code></pre>
+                    </div>
+                </div>
+
+                <h3>Key Differences in Return Behavior</h3>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Behavior</th>
+                                <th>🐍 Python</th>
+                                <th>⚡ JavaScript</th>
+                                <th>🔷 C#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Declare return type?</td>
+                                <td>No</td>
+                                <td>No</td>
+                                <td>Yes (required)</td>
+                            </tr>
+                            <tr>
+                                <td>No return statement</td>
+                                <td>Returns <code>None</code></td>
+                                <td>Returns <code>undefined</code></td>
+                                <td>Must be <code>void</code></td>
+                            </tr>
+                            <tr>
+                                <td>Return multiple values?</td>
+                                <td>Yes (tuples)</td>
+                                <td>No (use objects/arrays)</td>
+                                <td>No (use tuples or out params)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="code-tabs" data-title="Returning Multiple Values">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python can return multiple values as a tuple
+def get_min_max(numbers):
+    return min(numbers), max(numbers)
+
+low, high = get_min_max([3, 1, 4, 1, 5, 9])
+print(f"Min: {low}, Max: {high}")   # Min: 1, Max: 9</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript: return an object or array
+function getMinMax(numbers) {
+    return {
+        min: Math.min(...numbers),
+        max: Math.max(...numbers)
+    };
+}
+
+let { min, max } = getMinMax([3, 1, 4, 1, 5, 9]);
+console.log(`Min: ${min}, Max: ${max}`);  // Min: 1, Max: 9</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C#: return a tuple
+static (int Min, int Max) GetMinMax(int[] numbers)
+{
+    return (numbers.Min(), numbers.Max());
+}
+
+var result = GetMinMax(new[] { 3, 1, 4, 1, 5, 9 });
+Console.WriteLine($"Min: {result.Min}, Max: {result.Max}");</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Arrow Functions -->
+            <section id="arrow-functions" class="lesson-section">
+                <h2>Arrow Functions (JavaScript)</h2>
+                <p>JavaScript has a second, more compact way to write functions: <strong>arrow functions</strong>. They're especially popular for short, one-line functions.</p>
+
+                <div class="code-tabs" data-title="Arrow Functions vs. Regular Functions">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python's equivalent: lambda (limited to one expression)
+add = lambda a, b: a + b
+print(add(3, 5))  # 8
+
+# Lambdas are limited — no multiple statements, no loops
+# Use def for anything more than a simple expression:
+def add(a, b):
+    return a + b
+
+# Lambdas are most useful in callbacks:
+numbers = [3, 1, 4, 1, 5]
+sorted_nums = sorted(numbers, key=lambda x: -x)
+print(sorted_nums)  # [5, 4, 3, 1, 1]</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// Regular function
+function add(a, b) {
+    return a + b;
+}
+
+// Arrow function (same thing, shorter)
+const add2 = (a, b) => {
+    return a + b;
+};
+
+// Arrow with implicit return (one expression — drop {} and return)
+const add3 = (a, b) => a + b;
+
+// Single parameter — parentheses optional
+const double = x => x * 2;
+console.log(double(5));  // 10
+
+// All three forms work the same:
+console.log(add(3, 5));   // 8
+console.log(add2(3, 5));  // 8
+console.log(add3(3, 5));  // 8
+
+// Arrow functions are everywhere in modern JavaScript:
+const numbers = [3, 1, 4, 1, 5];
+const sorted = [...numbers].sort((a, b) => a - b);
+console.log(sorted);  // [1, 1, 3, 4, 5]</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C# has lambda expressions (similar to JS arrow functions)
+// Used mainly with delegates and LINQ
+
+// Traditional method
+static int Add(int a, int b)
+{
+    return a + b;
+}
+
+// Lambda assigned to a Func variable
+Func&lt;int, int, int&gt; add2 = (a, b) => a + b;
+Console.WriteLine(add2(3, 5));  // 8
+
+// Lambda with a single parameter
+Func&lt;int, int&gt; doubleIt = x => x * 2;
+Console.WriteLine(doubleIt(5));  // 10
+
+// Lambdas shine in LINQ:
+int[] numbers = { 3, 1, 4, 1, 5 };
+var sorted = numbers.OrderBy(x => x).ToArray();
+// [1, 1, 3, 4, 5]</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ When to Use Arrow Functions (JS)</h4>
+                    <p>Use arrow functions for short, simple functions — especially callbacks and one-liners. Use regular <code>function</code> declarations for named, standalone functions that are the main building blocks of your code. As a beginner, start with regular functions and add arrows when you're comfortable.</p>
+                </div>
+            </section>
+
+            <!-- C# Methods -->
+            <section id="csharp-methods" class="lesson-section">
+                <h2>Functions in C# — They're Called Methods</h2>
+                <p>In C#, every function lives inside a <strong>class</strong>. Because of this, C# calls them "methods" instead of "functions." For now, we use <code>static</code> methods so we can call them without creating objects (we'll cover objects in Module 6).</p>
+
+                <div class="code-tabs" data-title="C# Method Structure">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Python: functions can live anywhere — no class required
+def calculate_area(width, height):
+    return width * height
+
+def calculate_perimeter(width, height):
+    return 2 * (width + height)
+
+# Just call them directly
+area = calculate_area(5, 3)
+perimeter = calculate_perimeter(5, 3)
+print(f"Area: {area}, Perimeter: {perimeter}")</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// JavaScript: functions can live anywhere too
+function calculateArea(width, height) {
+    return width * height;
+}
+
+function calculatePerimeter(width, height) {
+    return 2 * (width + height);
+}
+
+let area = calculateArea(5, 3);
+let perimeter = calculatePerimeter(5, 3);
+console.log(`Area: ${area}, Perimeter: ${perimeter}`);</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// C#: methods must live inside a class
+class Program
+{
+    // "static" lets us call without an object instance
+    // "double" is the return type
+    static double CalculateArea(double width, double height)
+    {
+        return width * height;
+    }
+
+    static double CalculatePerimeter(double width, double height)
+    {
+        return 2 * (width + height);
+    }
+
+    static void Main(string[] args)
+    {
+        double area = CalculateArea(5, 3);
+        double perimeter = CalculatePerimeter(5, 3);
+        Console.WriteLine($"Area: {area}, Perimeter: {perimeter}");
+    }
+}
+
+// Don't worry about "static" and "class" too much yet.
+// Just know: every C# function needs a class to live in.</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Top-Level Statements (C# 9+)</h4>
+                    <p>Modern C# (9 and later) lets you write simple programs without the <code>class</code> and <code>Main</code> boilerplate. The compiler wraps your code in a class behind the scenes. However, if you define methods, you'll still need to put them in a class or use local functions. We show the full structure here so you understand what's happening.</p>
+                </div>
+            </section>
+
+            <!-- Functions Calling Functions -->
+            <section id="functions-calling-functions" class="lesson-section">
+                <h2>Functions Calling Functions</h2>
+                <p>Functions can call other functions. This is how you break complex problems into smaller, manageable pieces — each function handles one job.</p>
+
+                <div class="code-tabs" data-title="Building with Functions">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">def celsius_to_fahrenheit(celsius):
+    return celsius * 9/5 + 32
+
+def fahrenheit_to_celsius(fahrenheit):
+    return (fahrenheit - 32) * 5/9
+
+def format_temperature(value, unit):
+    return f"{value:.1f}°{unit}"
+
+def convert_and_display(temp, from_unit):
+    """Convert a temperature and display both forms."""
+    if from_unit == "C":
+        converted = celsius_to_fahrenheit(temp)
+        print(f"{format_temperature(temp, 'C')} = {format_temperature(converted, 'F')}")
+    else:
+        converted = fahrenheit_to_celsius(temp)
+        print(f"{format_temperature(temp, 'F')} = {format_temperature(converted, 'C')}")
+
+# Each function does one small job
+convert_and_display(100, "C")    # 100.0°C = 212.0°F
+convert_and_display(72, "F")     # 72.0°F = 22.2°C</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">function celsiusToFahrenheit(celsius) {
+    return celsius * 9/5 + 32;
+}
+
+function fahrenheitToCelsius(fahrenheit) {
+    return (fahrenheit - 32) * 5/9;
+}
+
+function formatTemperature(value, unit) {
+    return `${value.toFixed(1)}°${unit}`;
+}
+
+function convertAndDisplay(temp, fromUnit) {
+    if (fromUnit === "C") {
+        let converted = celsiusToFahrenheit(temp);
+        console.log(`${formatTemperature(temp, "C")} = ${formatTemperature(converted, "F")}`);
+    } else {
+        let converted = fahrenheitToCelsius(temp);
+        console.log(`${formatTemperature(temp, "F")} = ${formatTemperature(converted, "C")}`);
+    }
+}
+
+convertAndDisplay(100, "C");    // 100.0°C = 212.0°F
+convertAndDisplay(72, "F");     // 72.0°F = 22.2°C</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">static double CelsiusToFahrenheit(double celsius)
+{
+    return celsius * 9.0 / 5.0 + 32;
+}
+
+static double FahrenheitToCelsius(double fahrenheit)
+{
+    return (fahrenheit - 32) * 5.0 / 9.0;
+}
+
+static string FormatTemperature(double value, string unit)
+{
+    return $"{value:F1}°{unit}";
+}
+
+static void ConvertAndDisplay(double temp, string fromUnit)
+{
+    if (fromUnit == "C")
+    {
+        double converted = CelsiusToFahrenheit(temp);
+        Console.WriteLine($"{FormatTemperature(temp, "C")} = {FormatTemperature(converted, "F")}");
+    }
+    else
+    {
+        double converted = FahrenheitToCelsius(temp);
+        Console.WriteLine($"{FormatTemperature(temp, "F")} = {FormatTemperature(converted, "C")}");
+    }
+}
+
+ConvertAndDisplay(100, "C");    // 100.0°C = 212.0°F
+ConvertAndDisplay(72, "F");     // 72.0°F = 22.2°C</code></pre>
+                    </div>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>The temperature converter is a great example because each function is small, testable, and has a clear purpose. Walk through the call chain: <code>convert_and_display</code> calls <code>celsius_to_fahrenheit</code> which does the math, then calls <code>format_temperature</code> which handles display. This "decomposition" skill — breaking a problem into functions — is arguably more important than the syntax. Ask students: "What if we wanted to add Kelvin? How many functions would need to change?" (Answer: just add new converter functions and a case in the display function.)</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Exercises -->
+            <section id="exercises" class="lesson-section">
+                <h2>Exercises</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 1: Greeting Generator</h3>
+                    <p><strong>Objective:</strong> Write a function that takes a name and a time of day ("morning", "afternoon", "evening") and returns an appropriate greeting.</p>
+                    <ul>
+                        <li>Morning → "Good morning, {name}!"</li>
+                        <li>Afternoon → "Good afternoon, {name}!"</li>
+                        <li>Evening → "Good evening, {name}!"</li>
+                        <li>Anything else → "Hello, {name}!"</li>
+                    </ul>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Greeting Generator">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">def greet(name, time_of_day):
+    match time_of_day.lower():
+        case "morning":
+            return f"Good morning, {name}!"
+        case "afternoon":
+            return f"Good afternoon, {name}!"
+        case "evening":
+            return f"Good evening, {name}!"
+        case _:
+            return f"Hello, {name}!"
+
+print(greet("Alice", "morning"))     # Good morning, Alice!
+print(greet("Bob", "evening"))       # Good evening, Bob!
+print(greet("Charlie", "midnight"))  # Hello, Charlie!</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">function greet(name, timeOfDay) {
+    switch (timeOfDay.toLowerCase()) {
+        case "morning":
+            return `Good morning, ${name}!`;
+        case "afternoon":
+            return `Good afternoon, ${name}!`;
+        case "evening":
+            return `Good evening, ${name}!`;
+        default:
+            return `Hello, ${name}!`;
+    }
+}
+
+console.log(greet("Alice", "morning"));
+console.log(greet("Bob", "evening"));
+console.log(greet("Charlie", "midnight"));</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">static string Greet(string name, string timeOfDay)
+{
+    return timeOfDay.ToLower() switch
+    {
+        "morning" => $"Good morning, {name}!",
+        "afternoon" => $"Good afternoon, {name}!",
+        "evening" => $"Good evening, {name}!",
+        _ => $"Hello, {name}!"
+    };
+}
+
+Console.WriteLine(Greet("Alice", "morning"));
+Console.WriteLine(Greet("Bob", "evening"));
+Console.WriteLine(Greet("Charlie", "midnight"));</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 2: Calculator Functions</h3>
+                    <p><strong>Objective:</strong> Write four functions — <code>add</code>, <code>subtract</code>, <code>multiply</code>, <code>divide</code> — each taking two numbers and returning the result. The <code>divide</code> function should handle division by zero gracefully.</p>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Calculator">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">def add(a, b):
+    return a + b
+
+def subtract(a, b):
+    return a - b
+
+def multiply(a, b):
+    return a * b
+
+def divide(a, b):
+    if b == 0:
+        return "Error: Division by zero!"
+    return a / b
+
+# Test them
+print(f"10 + 3 = {add(10, 3)}")        # 13
+print(f"10 - 3 = {subtract(10, 3)}")    # 7
+print(f"10 * 3 = {multiply(10, 3)}")    # 30
+print(f"10 / 3 = {divide(10, 3):.2f}")  # 3.33
+print(f"10 / 0 = {divide(10, 0)}")      # Error: Division by zero!</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">function add(a, b) { return a + b; }
+function subtract(a, b) { return a - b; }
+function multiply(a, b) { return a * b; }
+
+function divide(a, b) {
+    if (b === 0) return "Error: Division by zero!";
+    return a / b;
+}
+
+console.log(`10 + 3 = ${add(10, 3)}`);
+console.log(`10 - 3 = ${subtract(10, 3)}`);
+console.log(`10 * 3 = ${multiply(10, 3)}`);
+console.log(`10 / 3 = ${divide(10, 3).toFixed(2)}`);
+console.log(`10 / 0 = ${divide(10, 0)}`);</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">static double Add(double a, double b) => a + b;
+static double Subtract(double a, double b) => a - b;
+static double Multiply(double a, double b) => a * b;
+
+static string Divide(double a, double b)
+{
+    if (b == 0) return "Error: Division by zero!";
+    return (a / b).ToString("F2");
+}
+
+Console.WriteLine($"10 + 3 = {Add(10, 3)}");
+Console.WriteLine($"10 - 3 = {Subtract(10, 3)}");
+Console.WriteLine($"10 * 3 = {Multiply(10, 3)}");
+Console.WriteLine($"10 / 3 = {Divide(10, 3)}");
+Console.WriteLine($"10 / 0 = {Divide(10, 0)}");</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise 3: Password Strength Checker</h3>
+                    <p><strong>Objective:</strong> Write a function that takes a password string and returns its strength: "Weak", "Medium", or "Strong".</p>
+                    <ul>
+                        <li><strong>Weak:</strong> Less than 8 characters</li>
+                        <li><strong>Medium:</strong> 8+ characters but missing uppercase, lowercase, or digits</li>
+                        <li><strong>Strong:</strong> 8+ characters with uppercase, lowercase, AND digits</li>
+                    </ul>
+                    <p>Hint: Break this into helper functions — one for each check.</p>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <div class="code-tabs" data-title="Password Strength">
+                            <div class="tab-panel" data-lang="python" data-label="Python">
+                                <pre><code class="language-python">def has_uppercase(text):
+    return any(c.isupper() for c in text)
+
+def has_lowercase(text):
+    return any(c.islower() for c in text)
+
+def has_digit(text):
+    return any(c.isdigit() for c in text)
+
+def check_strength(password):
+    if len(password) < 8:
+        return "Weak"
+
+    has_all = has_uppercase(password) and has_lowercase(password) and has_digit(password)
+
+    if has_all:
+        return "Strong"
+    return "Medium"
+
+# Test
+passwords = ["hi", "password", "Password1", "ALLCAPS123"]
+for pw in passwords:
+    print(f"'{pw}' → {check_strength(pw)}")
+# 'hi' → Weak
+# 'password' → Medium
+# 'Password1' → Strong
+# 'ALLCAPS123' → Medium</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                                <pre><code class="language-javascript">function hasUppercase(text) {
+    return /[A-Z]/.test(text);
+}
+
+function hasLowercase(text) {
+    return /[a-z]/.test(text);
+}
+
+function hasDigit(text) {
+    return /[0-9]/.test(text);
+}
+
+function checkStrength(password) {
+    if (password.length < 8) return "Weak";
+
+    let hasAll = hasUppercase(password) && hasLowercase(password) && hasDigit(password);
+    return hasAll ? "Strong" : "Medium";
+}
+
+let passwords = ["hi", "password", "Password1", "ALLCAPS123"];
+for (let pw of passwords) {
+    console.log(`'${pw}' → ${checkStrength(pw)}`);
+}</code></pre>
+                            </div>
+                            <div class="tab-panel" data-lang="csharp" data-label="C#">
+                                <pre><code class="language-csharp">static bool HasUppercase(string text) => text.Any(char.IsUpper);
+static bool HasLowercase(string text) => text.Any(char.IsLower);
+static bool HasDigit(string text) => text.Any(char.IsDigit);
+
+static string CheckStrength(string password)
+{
+    if (password.Length < 8) return "Weak";
+
+    bool hasAll = HasUppercase(password) && HasLowercase(password) && HasDigit(password);
+    return hasAll ? "Strong" : "Medium";
+}
+
+string[] passwords = { "hi", "password", "Password1", "ALLCAPS123" };
+foreach (string pw in passwords)
+{
+    Console.WriteLine($"'{pw}' → {CheckStrength(pw)}");
+}</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Delivery Guidance</summary>
+                    <div class="note-content">
+                        <p>Exercise 1 is a quick win — it combines functions with the switch/match from Lesson 7. Exercise 2 introduces the idea that functions <em>compute and return</em>, not just print. The division-by-zero handling previews error handling (Module 7). Exercise 3 is the star: it demonstrates <strong>decomposition</strong> — breaking a complex check into small helper functions. Ask students to add the helpers first, then compose them in the main function. If time allows, challenge them to add a "Very Strong" level that also requires special characters.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>Python uses <code>def</code>, JavaScript uses <code>function</code>, C# declares a return type — but the concept is the same everywhere</li>
+                        <li><strong>Defining</strong> a function doesn't run it — you must <strong>call</strong> it with parentheses</li>
+                        <li><strong>Parameters</strong> let functions accept input; <strong>return values</strong> let functions send output back</li>
+                        <li>C# requires type declarations for parameters and return values; Python and JS don't</li>
+                        <li>JavaScript has <strong>arrow functions</strong> (<code>=&gt;</code>) as a compact alternative; C# has similar <strong>lambda expressions</strong></li>
+                        <li>In C#, all functions live inside classes and are called <strong>methods</strong></li>
+                        <li>Functions calling other functions is how you decompose complex problems into simple, testable pieces</li>
+                        <li>Naming conventions: <code>snake_case</code> (Python), <code>camelCase</code> (JS), <code>PascalCase</code> (C#)</li>
+                    </ul>
+                </div>
+
+                <h3>🚀 What's Next?</h3>
+                <p>Now that you can define and call functions, the next lesson dives deeper: <strong>parameters, arguments, and return values</strong> — including default values, keyword arguments, and how to make your functions more flexible.</p>
+
+                <!-- Quiz -->
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Check</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What happens when you define a function but don't call it?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Defining a function just stores it in memory. The code inside doesn't execute until you call the function with parentheses.">A) Nothing — the code inside doesn't run</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Functions don't run automatically. You must call them explicitly.">B) It runs once automatically</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Defining a function is perfectly valid — it just doesn't produce output until called.">C) You get an error</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question" style="margin-top: var(--spacing-lg);">
+                        <p><strong>Question 2:</strong> What does a Python function return if it has no <code>return</code> statement?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="0 is a specific integer value. Python's default is different.">A) 0</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Functions without a return statement (or with a bare 'return') return None in Python. JavaScript returns undefined. C# requires you to declare the function as void.">B) None</button>
+                            <button class="quiz-option" data-correct="false" data-hint="An empty string is a specific value. Python uses None to represent 'nothing.'">C) An empty string ""</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_09.html" class="prev-lesson">← Previous: Logical Operators and Truthiness</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_11.html" class="next-lesson">Next: Parameters, Arguments, and Return Values →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>
