@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A guide to the most common beginner programming errors in Python, JavaScript, and C#. Each error includes what it looks like, why it happens, and how to fix it.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Common Errors Guide - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li aria-current="page">Common Errors Guide</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🐛 Common Errors Guide</h1>
+                <p class="lead">Every programmer makes mistakes — even experienced ones. The difference is knowing how to read error messages and fix them fast. This guide covers the errors you'll hit most often as a beginner, with clear explanations and fixes.</p>
+                <div class="card card-info">
+                    <h4>💡 How to Use This Page</h4>
+                    <p>When you see an error message you don't understand, use <kbd>Ctrl+F</kbd> (or <kbd>Cmd+F</kbd> on Mac) to search for the error name on this page. Each entry tells you what the error means, shows an example of broken code, and gives you the fix.</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary><h2 style="display: inline; margin: 0;">📑 Jump To</h2></summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#python-errors" class="toc-link">Python Errors</a></li>
+                        <li><a href="#javascript-errors" class="toc-link">JavaScript Errors</a></li>
+                        <li><a href="#csharp-errors" class="toc-link">C# Errors</a></li>
+                        <li><a href="#universal" class="toc-link">Universal Mistakes</a></li>
+                        <li><a href="#reading-errors" class="toc-link">How to Read Error Messages</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Python Errors -->
+            <section id="python-errors" class="lesson-section">
+                <h2>🐍 Python Errors</h2>
+
+                <div class="card card-warning">
+                    <h3>IndentationError: unexpected indent</h3>
+                    <p><strong>What it means:</strong> Python uses indentation to define code blocks. Your indentation is inconsistent — either you mixed tabs and spaces, or a line is indented when it shouldn't be.</p>
+                    <pre><code class="language-python"># ❌ Broken
+def greet():
+    print("Hello")
+      print("World")   # Extra indent!
+
+# ✅ Fixed
+def greet():
+    print("Hello")
+    print("World")     # Same indent level</code></pre>
+                    <p><strong>Fix:</strong> Make sure every line in the same block has the same indentation. Use 4 spaces (not tabs). In VS Code, turn on "Render Whitespace" to see invisible characters.</p>
+                </div>
+
+                <div class="card card-warning">
+                    <h3>NameError: name 'x' is not defined</h3>
+                    <p><strong>What it means:</strong> You're using a variable that doesn't exist yet — either you misspelled it, forgot to create it, or it's out of scope.</p>
+                    <pre><code class="language-python"># ❌ Broken
+print(username)        # Never defined!
+
+user_name = "Alice"
+print(username)        # Misspelled! (underscore)
+
+# ✅ Fixed
+user_name = "Alice"
+print(user_name)       # Matches exactly</code></pre>
+                    <p><strong>Fix:</strong> Check the spelling carefully — Python is case-sensitive. <code>Name</code> and <code>name</code> are different variables.</p>
+                </div>
+
+                <div class="card card-warning">
+                    <h3>TypeError: can only concatenate str (not "int") to str</h3>
+                    <p><strong>What it means:</strong> You tried to combine a string and a number with <code>+</code>. Python won't auto-convert.</p>
+                    <pre><code class="language-python"># ❌ Broken
+age = 25
+print("I am " + age + " years old")
+
+# ✅ Fix 1: Convert to string
+print("I am " + str(age) + " years old")
+
+# ✅ Fix 2: Use f-string (better!)
+print(f"I am {age} years old")</code></pre>
+                </div>
+
+                <div class="card card-warning">
+                    <h3>TypeError: 'str' object is not callable</h3>
+                    <p><strong>What it means:</strong> You accidentally used a built-in function name as a variable, then tried to call it.</p>
+                    <pre><code class="language-python"># ❌ Broken
+list = [1, 2, 3]       # Overwrote the built-in list()!
+new_list = list("abc") # Now list is a variable, not a function
+
+input = "hello"        # Overwrote input()!
+name = input("Name: ") # Crash!
+
+# ✅ Fixed: Don't use built-in names as variables
+my_list = [1, 2, 3]
+user_input = "hello"</code></pre>
+                    <p><strong>Fix:</strong> Never name variables <code>list</code>, <code>dict</code>, <code>str</code>, <code>int</code>, <code>input</code>, <code>print</code>, <code>type</code>, or <code>id</code>.</p>
+                </div>
+
+                <div class="card card-warning">
+                    <h3>KeyError: 'name'</h3>
+                    <p><strong>What it means:</strong> You tried to access a dictionary key that doesn't exist.</p>
+                    <pre><code class="language-python"># ❌ Broken
+user = {"email": "a@b.com"}
+print(user["name"])        # Key doesn't exist!
+
+# ✅ Fix 1: Use .get() with a default
+print(user.get("name", "Unknown"))
+
+# ✅ Fix 2: Check first
+if "name" in user:
+    print(user["name"])</code></pre>
+                </div>
+
+                <div class="card card-warning">
+                    <h3>IndexError: list index out of range</h3>
+                    <p><strong>What it means:</strong> You tried to access an index that doesn't exist in the list.</p>
+                    <pre><code class="language-python"># ❌ Broken
+items = ["a", "b", "c"]
+print(items[3])    # Only indices 0, 1, 2 exist!
+
+# ✅ Fixed: Check length first
+if len(items) > 3:
+    print(items[3])
+
+# Remember: last item is items[len(items) - 1] or items[-1]</code></pre>
+                </div>
+
+                <div class="card card-warning">
+                    <h3>ModuleNotFoundError: No module named 'requests'</h3>
+                    <p><strong>What it means:</strong> You're importing a package that isn't installed.</p>
+                    <pre><code class="language-python"># ❌ Error: import requests → ModuleNotFoundError
+
+# ✅ Fix: Install it first
+# pip install requests
+# (or: pip install requests --break-system-packages)</code></pre>
+                    <p><strong>Fix:</strong> Run <code>pip install &lt;package_name&gt;</code> in your terminal. Make sure you're using the same Python that your script runs with (<code>python -m pip install requests</code> is safest).</p>
+                </div>
+            </section>
+
+            <!-- JavaScript Errors -->
+            <section id="javascript-errors" class="lesson-section">
+                <h2>⚡ JavaScript Errors</h2>
+
+                <div class="card card-warning">
+                    <h3>ReferenceError: x is not defined</h3>
+                    <p><strong>What it means:</strong> Same as Python's NameError — the variable doesn't exist.</p>
+                    <pre><code class="language-javascript">// ❌ Broken
+console.log(userName);   // Never declared!
+
+// ✅ Fixed
+let userName = "Alice";
+console.log(userName);</code></pre>
+                    <p><strong>Common cause:</strong> Misspelling, or accessing a variable outside its <code>let</code>/<code>const</code> block scope.</p>
+                </div>
+
+                <div class="card card-warning">
+                    <h3>TypeError: Cannot read properties of undefined (reading 'x')</h3>
+                    <p><strong>What it means:</strong> You're trying to access a property on something that is <code>undefined</code>. This is the #1 JavaScript error.</p>
+                    <pre><code class="language-javascript">// ❌ Broken
+let user = undefined;
+console.log(user.name);   // Can't read .name on undefined!
+
+let data = { user: null };
+console.log(data.user.name);  // Can't read .name on null!
+
+// ✅ Fix 1: Optional chaining
+console.log(data.user?.name);   // undefined (no crash)
+
+// ✅ Fix 2: Check first
+if (data.user) {
+    console.log(data.user.name);
+}</code></pre>
+                    <p><strong>Fix:</strong> Use optional chaining (<code>?.</code>) or check that the object exists before accessing properties.</p>
+                </div>
+
+                <div class="card card-warning">
+                    <h3>TypeError: x is not a function</h3>
+                    <p><strong>What it means:</strong> You're trying to call something that isn't a function — often because you overwrote it or misspelled it.</p>
+                    <pre><code class="language-javascript">// ❌ Broken
+let greet = "hello";
+greet();   // "hello" is a string, not a function!
+
+// Also common: forgetting await on async functions
+const data = fetch(url);    // data is a Promise, not the response!
+data.json();                // TypeError!
+
+// ✅ Fixed
+const response = await fetch(url);  // await the Promise
+const data = await response.json();</code></pre>
+                </div>
+
+                <div class="card card-warning">
+                    <h3>SyntaxError: Unexpected token</h3>
+                    <p><strong>What it means:</strong> JavaScript found a character it didn't expect — usually a missing bracket, parenthesis, or comma.</p>
+                    <pre><code class="language-javascript">// ❌ Missing closing brace
+function greet() {
+    console.log("hi");
+// } ← forgot this!
+
+// ❌ Missing comma in object
+const user = {
+    name: "Alice"
+    email: "a@b.com"   // Missing comma after "Alice"!
+};
+
+// ✅ Fixed
+const user = {
+    name: "Alice",
+    email: "a@b.com"
+};</code></pre>
+                    <p><strong>Fix:</strong> The error message tells you the line number. Look at that line and the line above for missing <code>{</code>, <code>}</code>, <code>(</code>, <code>)</code>, or <code>,</code>.</p>
+                </div>
+
+                <div class="card card-warning">
+                    <h3>== vs === (Silent Logic Bug)</h3>
+                    <p><strong>What it means:</strong> Not an error message — but a constant source of bugs. <code>==</code> does type coercion; <code>===</code> does not.</p>
+                    <pre><code class="language-javascript">// ❌ Surprising behavior with ==
+"5" == 5       // true (string "5" coerced to number!)
+0 == false     // true
+"" == false    // true
+null == undefined  // true
+
+// ✅ Always use ===
+"5" === 5      // false (different types)
+0 === false    // false
+"" === false   // false</code></pre>
+                    <p><strong>Rule:</strong> Always use <code>===</code> and <code>!==</code> in JavaScript. There's almost never a reason to use <code>==</code>.</p>
+                </div>
+
+                <div class="card card-warning">
+                    <h3>SyntaxError: await is only valid in async functions</h3>
+                    <p><strong>What it means:</strong> You used <code>await</code> outside an <code>async</code> function.</p>
+                    <pre><code class="language-javascript">// ❌ Broken
+function fetchData() {
+    const response = await fetch(url);  // Can't use await here!
+}
+
+// ✅ Fixed: Add the async keyword
+async function fetchData() {
+    const response = await fetch(url);  // Now it works
+}</code></pre>
+                </div>
+            </section>
+
+            <!-- C# Errors -->
+            <section id="csharp-errors" class="lesson-section">
+                <h2>🔷 C# Errors</h2>
+
+                <div class="card card-warning">
+                    <h3>CS0029: Cannot implicitly convert type 'string' to 'int'</h3>
+                    <p><strong>What it means:</strong> C# is strictly typed — you can't assign a string to an int variable without explicit conversion.</p>
+                    <pre><code class="language-csharp">// ❌ Broken
+int age = Console.ReadLine();  // ReadLine returns string!
+
+// ✅ Fixed
+int age = int.Parse(Console.ReadLine()!);
+
+// ✅ Safer: TryParse
+if (int.TryParse(Console.ReadLine(), out int age))
+    Console.WriteLine($"Age: {age}");
+else
+    Console.WriteLine("That's not a number!");</code></pre>
+                </div>
+
+                <div class="card card-warning">
+                    <h3>NullReferenceException: Object reference not set to an instance of an object</h3>
+                    <p><strong>What it means:</strong> You tried to use a variable that is <code>null</code>. C#'s equivalent of JavaScript's "Cannot read properties of undefined."</p>
+                    <pre><code class="language-csharp">// ❌ Broken
+string? name = null;
+Console.WriteLine(name.Length);  // Crash! name is null!
+
+// ✅ Fix 1: Null check
+if (name != null)
+    Console.WriteLine(name.Length);
+
+// ✅ Fix 2: Null-conditional operator
+Console.WriteLine(name?.Length ?? 0);  // 0 if null</code></pre>
+                </div>
+
+                <div class="card card-warning">
+                    <h3>CS0103: The name 'x' does not exist in the current context</h3>
+                    <p><strong>What it means:</strong> The variable is out of scope or was never declared.</p>
+                    <pre><code class="language-csharp">// ❌ Broken: Variable declared inside if block
+if (true)
+{
+    string message = "Hello";
+}
+Console.WriteLine(message);  // message doesn't exist here!
+
+// ✅ Fixed: Declare in the outer scope
+string message = "";
+if (true)
+{
+    message = "Hello";
+}
+Console.WriteLine(message);</code></pre>
+                </div>
+
+                <div class="card card-warning">
+                    <h3>FormatException: Input string was not in a correct format</h3>
+                    <p><strong>What it means:</strong> You called <code>int.Parse()</code> or <code>double.Parse()</code> on a string that isn't a valid number.</p>
+                    <pre><code class="language-csharp">// ❌ Crashes if user types "abc"
+int num = int.Parse(Console.ReadLine()!);
+
+// ✅ Fixed: Use TryParse
+if (int.TryParse(Console.ReadLine(), out int num))
+    Console.WriteLine($"Number: {num}");
+else
+    Console.WriteLine("Invalid number!");</code></pre>
+                </div>
+
+                <div class="card card-warning">
+                    <h3>CS1503: Cannot convert from 'string' to 'char'</h3>
+                    <p><strong>What it means:</strong> C# distinguishes between <code>string</code> (double quotes) and <code>char</code> (single quotes). Some methods need a <code>char</code>.</p>
+                    <pre><code class="language-csharp">// ❌ Broken
+string[] parts = text.Split(",");  // Split wants a char!
+
+// ✅ Fixed: Use single quotes for char
+string[] parts = text.Split(',');  // char ','
+
+// Or use the string overload explicitly
+string[] parts = text.Split(",", StringSplitOptions.None);</code></pre>
+                </div>
+
+                <div class="card card-warning">
+                    <h3>CS8600/CS8602: Possible null reference</h3>
+                    <p><strong>What it means:</strong> The compiler warns that a value might be <code>null</code> and you're using it without checking. This is a warning, not an error, but ignoring it leads to runtime crashes.</p>
+                    <pre><code class="language-csharp">// ⚠️ Warning: ReadLine() might return null
+string name = Console.ReadLine();  // CS8600
+
+// ✅ Fix 1: Null-forgiving operator (you know it won't be null)
+string name = Console.ReadLine()!;
+
+// ✅ Fix 2: Handle the null case
+string? name = Console.ReadLine();
+if (!string.IsNullOrEmpty(name))
+    Console.WriteLine(name.ToUpper());</code></pre>
+                </div>
+            </section>
+
+            <!-- Universal Mistakes -->
+            <section id="universal" class="lesson-section">
+                <h2>Universal Mistakes (All Languages)</h2>
+
+                <div class="card card-warning">
+                    <h3>Off-By-One Error</h3>
+                    <p><strong>What it is:</strong> Accessing one past the end of a collection, or looping one too many/few times.</p>
+                    <pre><code class="language-python"># All languages: indices start at 0, not 1!
+items = ["a", "b", "c"]   # indices: 0, 1, 2
+# items[3] → ERROR (only 0-2 exist)
+# Last item: items[len(items) - 1] or items[-1] (Python)</code></pre>
+                    <p><strong>Rule:</strong> If a list has N items, valid indices are 0 through N-1.</p>
+                </div>
+
+                <div class="card card-warning">
+                    <h3>Infinite Loop</h3>
+                    <p><strong>What it is:</strong> A <code>while</code> loop whose condition never becomes false. Your program freezes.</p>
+                    <pre><code class="language-python"># ❌ Infinite! count never changes
+count = 0
+while count &lt; 10:
+    print(count)
+    # Forgot: count += 1
+
+# ✅ Fixed
+count = 0
+while count &lt; 10:
+    print(count)
+    count += 1          # This makes the loop eventually end</code></pre>
+                    <p><strong>Fix:</strong> Make sure your loop condition will eventually become false. If stuck, press <kbd>Ctrl+C</kbd> to kill the program.</p>
+                </div>
+
+                <div class="card card-warning">
+                    <h3>Modifying a List While Iterating</h3>
+                    <p><strong>What it is:</strong> Removing items from a list while looping over it causes skipped items or crashes.</p>
+                    <pre><code class="language-python"># ❌ Broken (Python) — skips items!
+items = [1, 2, 3, 4, 5]
+for item in items:
+    if item % 2 == 0:
+        items.remove(item)   # Don't do this!
+
+# ✅ Fixed: Create a new filtered list
+items = [x for x in items if x % 2 != 0]
+
+# Or iterate over a copy
+for item in items[:]:          # [:] makes a copy
+    if item % 2 == 0:
+        items.remove(item)</code></pre>
+                </div>
+
+                <div class="card card-warning">
+                    <h3>Assignment (=) vs Comparison (==)</h3>
+                    <p><strong>What it is:</strong> Using <code>=</code> (assign) when you meant <code>==</code> (compare). In Python this is a SyntaxError in <code>if</code> statements. In JS/C# it can silently do the wrong thing.</p>
+                    <pre><code class="language-javascript">// ❌ JavaScript: This ASSIGNS, doesn't compare!
+if (x = 5) {       // Always true! Sets x to 5
+    // ...
+}
+
+// ✅ Fixed
+if (x === 5) {     // Compares x to 5
+    // ...
+}</code></pre>
+                </div>
+            </section>
+
+            <!-- How to Read Error Messages -->
+            <section id="reading-errors" class="lesson-section">
+                <h2>How to Read Error Messages</h2>
+                <p>Error messages look scary, but they follow a pattern. Here's how to decode them:</p>
+
+                <div class="card card-success">
+                    <h3>✅ The Three Things Every Error Message Tells You</h3>
+                    <ol>
+                        <li><strong>The error type</strong> — What kind of mistake (NameError, TypeError, SyntaxError)</li>
+                        <li><strong>The message</strong> — A description of what went wrong</li>
+                        <li><strong>The location</strong> — The file name and line number where it happened</li>
+                    </ol>
+                    <p>Always start by reading the <strong>last line</strong> of the error (that's the actual error). Then look at the <strong>line number</strong>. The bug is usually on that line or the line above it.</p>
+                </div>
+
+                <div class="code-tabs" data-title="Reading a Stack Trace">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># A Python traceback reads BOTTOM to TOP:
+#
+# Traceback (most recent call last):        ← "here's what happened"
+#   File "app.py", line 15, in main         ← called from main(), line 15
+#     result = process(data)                ← which called process()
+#   File "app.py", line 8, in process       ← process() is where it crashed
+#     return data["name"]                   ← this is the actual broken line
+# KeyError: 'name'                          ← THIS is the error
+#
+# Read: "On line 8, inside process(), I tried to access
+# the key 'name' but it doesn't exist in the dictionary."</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// A JavaScript error reads TOP to BOTTOM:
+//
+// TypeError: Cannot read properties of undefined (reading 'name')
+//     at process (app.js:8:15)       ← crashed here
+//     at main (app.js:15:20)         ← called from here
+//     at Object.&lt;anonymous&gt; (app.js:20:1)
+//
+// Read: "On line 8 of app.js, inside process(), I tried
+// to read .name on something that was undefined."</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// A C# exception reads TOP to BOTTOM:
+//
+// Unhandled exception. System.NullReferenceException:
+//   Object reference not set to an instance of an object.
+//    at Program.Process(String data) in Program.cs:line 8
+//    at Program.Main() in Program.cs:line 15
+//
+// Read: "On line 8 of Program.cs, inside Process(),
+// I tried to use a variable that was null."</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 The Debugging Checklist</h4>
+                    <ol>
+                        <li><strong>Read the error message.</strong> It tells you what's wrong.</li>
+                        <li><strong>Find the line number.</strong> Go to that line in your code.</li>
+                        <li><strong>Check the line above too.</strong> The real problem is often there.</li>
+                        <li><strong>Add a print statement</strong> before the broken line to see what the variables actually contain.</li>
+                        <li><strong>Google the error message.</strong> Someone has had the exact same problem. Stack Overflow is your friend.</li>
+                    </ol>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Page Navigation">
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

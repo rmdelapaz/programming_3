@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="10 bonus project ideas organized by difficulty to practice Python, JavaScript, and C# skills beyond the capstone. Build a calculator, quiz app, web scraper, and more.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Bonus Projects - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li aria-current="page">Bonus Projects</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🚀 Bonus Project Ideas</h1>
+                <p class="lead">Finished the capstone? Keep building! Here are 10 project ideas organized by difficulty. Try each one in all three languages — or pick your favorite and go deep.</p>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary><h2 style="display: inline; margin: 0;">📑 Jump To</h2></summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#how-to-use" class="toc-link">How to Use This Page</a></li>
+                        <li><a href="#beginner" class="toc-link">Beginner Projects (1–3)</a></li>
+                        <li><a href="#intermediate" class="toc-link">Intermediate Projects (4–7)</a></li>
+                        <li><a href="#advanced" class="toc-link">Advanced Projects (8–10)</a></li>
+                        <li><a href="#tips" class="toc-link">General Tips</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- How To Use -->
+            <section id="how-to-use" class="lesson-section card">
+                <h2>📋 How to Use This Page</h2>
+                <p>Each project lists the <strong>concepts practiced</strong>, a <strong>description</strong>, and <strong>stretch goals</strong> to push yourself further. The difficulty levels build on each other:</p>
+                <ul>
+                    <li><strong>⭐ Beginner</strong> — Uses concepts from Modules 1–4 (variables, control flow, functions).</li>
+                    <li><strong>⭐⭐ Intermediate</strong> — Adds collections, classes, and file I/O from Modules 5–8.</li>
+                    <li><strong>⭐⭐⭐ Advanced</strong> — Combines everything, including APIs and multi-file architecture.</li>
+                </ul>
+                <p>For maximum learning, try building each project in all three languages. You'll be amazed at how different — and how similar — the solutions feel.</p>
+            </section>
+
+            <!-- Beginner -->
+            <section id="beginner" class="lesson-section">
+                <h2>⭐ Beginner Projects</h2>
+
+                <div class="card">
+                    <h3>Project 1: Number Guessing Game</h3>
+                    <p><strong>Concepts:</strong> Variables, conditionals, loops, user input, random numbers</p>
+                    <p>The computer picks a random number between 1 and 100. The player guesses until they get it right, with "too high" / "too low" hints after each guess. Track the number of attempts and display it at the end.</p>
+                    <p><strong>Stretch goals:</strong></p>
+                    <ul>
+                        <li>Add difficulty levels (1–50, 1–100, 1–1000)</li>
+                        <li>Limit the number of guesses and add a "game over" condition</li>
+                        <li>Track high scores across multiple rounds</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Project 2: Unit Converter</h3>
+                    <p><strong>Concepts:</strong> Functions, parameters/return values, conditionals, string formatting</p>
+                    <p>Build a converter that handles at least three categories: temperature (°F ↔ °C ↔ K), distance (miles ↔ km ↔ meters), and weight (lbs ↔ kg ↔ grams). Present a menu and let the user pick the conversion.</p>
+                    <p><strong>Stretch goals:</strong></p>
+                    <ul>
+                        <li>Add currency conversion using hardcoded rates</li>
+                        <li>Let the user chain conversions (e.g., convert result again)</li>
+                        <li>Format output with the right number of decimal places</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Project 3: Mad Libs Generator</h3>
+                    <p><strong>Concepts:</strong> Strings, string interpolation, user input, functions</p>
+                    <p>Create 3–5 story templates with blanks for nouns, verbs, adjectives, etc. Prompt the user for each word, then display the completed (and hilarious) story. Use string interpolation to build the final text.</p>
+                    <p><strong>Stretch goals:</strong></p>
+                    <ul>
+                        <li>Store templates in a separate data structure (list/array)</li>
+                        <li>Let the user pick which story to fill in</li>
+                        <li>Save completed stories to a file</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Intermediate -->
+            <section id="intermediate" class="lesson-section">
+                <h2>⭐⭐ Intermediate Projects</h2>
+
+                <div class="card">
+                    <h3>Project 4: Contact Book</h3>
+                    <p><strong>Concepts:</strong> Collections (lists + dictionaries), file I/O, JSON, CRUD operations</p>
+                    <p>Build a contact manager that stores names, phone numbers, and emails. Support adding, viewing, searching, editing, and deleting contacts. Save data to a JSON file so contacts persist between runs.</p>
+                    <p><strong>Stretch goals:</strong></p>
+                    <ul>
+                        <li>Add input validation (email format, phone number format)</li>
+                        <li>Sort contacts alphabetically</li>
+                        <li>Export contacts to CSV format</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Project 5: Quiz App</h3>
+                    <p><strong>Concepts:</strong> Classes/OOP, collections, file I/O, error handling</p>
+                    <p>Create a quiz engine with a <code>Question</code> class that holds the prompt, choices, and correct answer. Load questions from a JSON file. Present them one at a time, score the results, and display a summary with the percentage correct.</p>
+                    <p><strong>Stretch goals:</strong></p>
+                    <ul>
+                        <li>Shuffle question order and answer order each time</li>
+                        <li>Add a timer per question</li>
+                        <li>Support multiple quiz files (pick your topic)</li>
+                        <li>Track high scores in a separate JSON file</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Project 6: Expense Tracker</h3>
+                    <p><strong>Concepts:</strong> Classes, collections, file I/O, JSON, string formatting</p>
+                    <p>Track daily expenses with a date, category (food, transport, entertainment, etc.), amount, and description. Store entries in a JSON file. Display totals by category, daily summaries, and a running balance.</p>
+                    <p><strong>Stretch goals:</strong></p>
+                    <ul>
+                        <li>Add monthly reports with category breakdowns</li>
+                        <li>Set budget limits per category and warn when exceeded</li>
+                        <li>Export data to CSV</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Project 7: Hangman Game</h3>
+                    <p><strong>Concepts:</strong> Strings, collections (sets for guessed letters), loops, conditionals, functions</p>
+                    <p>Pick a random word from a list. Display blanks for each letter. Let the player guess one letter at a time — reveal correct letters, track wrong guesses, and draw (in text) a hangman figure that progresses with each mistake. Game over after 6 wrong guesses.</p>
+                    <p><strong>Stretch goals:</strong></p>
+                    <ul>
+                        <li>Load words from a file organized by category</li>
+                        <li>Add difficulty levels (shorter/longer words)</li>
+                        <li>Display ASCII art that updates with each wrong guess</li>
+                        <li>Track win/loss record across games</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Advanced -->
+            <section id="advanced" class="lesson-section">
+                <h2>⭐⭐⭐ Advanced Projects</h2>
+
+                <div class="card">
+                    <h3>Project 8: Weather Dashboard (API)</h3>
+                    <p><strong>Concepts:</strong> API requests, JSON parsing, error handling, string formatting, classes</p>
+                    <p>Use a free weather API (like <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> — no API key required) to fetch current weather for a city. Display temperature, humidity, wind speed, and conditions. Handle errors gracefully (city not found, network issues).</p>
+                    <p><strong>Stretch goals:</strong></p>
+                    <ul>
+                        <li>Add a 5-day forecast view</li>
+                        <li>Save favorite cities to a JSON file</li>
+                        <li>Compare weather between two cities side by side</li>
+                        <li>Cache results to avoid repeated API calls</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Project 9: Task Manager with Persistence</h3>
+                    <p><strong>Concepts:</strong> OOP (multiple classes), inheritance, file I/O, JSON, error handling, CRUD</p>
+                    <p>Build a to-do app with a <code>Task</code> base class and subclasses for different types (e.g., <code>DeadlineTask</code>, <code>RecurringTask</code>). Support creating, listing, completing, and deleting tasks. Save all data to a JSON file. Include filtering (by status, due date, or priority) and a simple text-based menu.</p>
+                    <p><strong>Stretch goals:</strong></p>
+                    <ul>
+                        <li>Add priority levels (low, medium, high) with color-coded output</li>
+                        <li>Implement undo for the last action</li>
+                        <li>Add search functionality across task titles and descriptions</li>
+                        <li>Generate a daily summary report</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Project 10: Multi-Language Code Snippet Library</h3>
+                    <p><strong>Concepts:</strong> Everything — OOP, collections, file I/O, JSON, error handling, API (optional)</p>
+                    <p>Build a personal code snippet manager. Each snippet has a title, description, language tag (Python/JS/C#), the code itself, and tags for searching. Store everything in a JSON file. Support add, search (by tag or keyword), list, edit, and delete operations.</p>
+                    <p><strong>Stretch goals:</strong></p>
+                    <ul>
+                        <li>Syntax-highlight output in the terminal (using ANSI escape codes)</li>
+                        <li>Import/export snippets as JSON or Markdown files</li>
+                        <li>Add a "copy to clipboard" feature</li>
+                        <li>Use the GitHub Gist API to publish snippets online</li>
+                    </ul>
+                    <details class="instructor-note">
+                        <summary>🎓 Instructor Note: Assigning Projects</summary>
+                        <div class="note-content">
+                            <p>Consider letting students choose one project from each tier for a portfolio. Beginner projects can be due early in the course, intermediate projects mid-way, and the advanced project as a final. Encourage building in at least two languages to reinforce the comparison approach.</p>
+                        </div>
+                    </details>
+                </div>
+            </section>
+
+            <!-- Tips -->
+            <section id="tips" class="lesson-section card">
+                <h2>💡 General Tips for All Projects</h2>
+                <ol>
+                    <li><strong>Plan before you code.</strong> Sketch out the features, data structures, and flow before writing a single line. Revisit <a href="lesson_25.html">Lesson 9.1: Project Planning</a> if you need a refresher.</li>
+                    <li><strong>Start small, then iterate.</strong> Get the simplest version working first (no stretch goals). Then add features one at a time.</li>
+                    <li><strong>Build in all three languages.</strong> The first language will be the hardest. By the third, you'll be translating patterns, not re-learning concepts.</li>
+                    <li><strong>Use version control.</strong> Even if it's just copying your project folder before making big changes. Better yet, learn <code>git init</code> and <code>git commit</code>.</li>
+                    <li><strong>Read your error messages.</strong> They're trying to help you. Check the <a href="troubleshooting.html">Troubleshooting Guide</a> and <a href="common-errors.html">Common Errors</a> page if you get stuck.</li>
+                    <li><strong>Have fun.</strong> Modify these ideas to match your interests. A quiz about your favorite topic, an expense tracker for a hobby budget, a snippet library for recipes — make it yours.</li>
+                </ol>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Page Navigation">
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

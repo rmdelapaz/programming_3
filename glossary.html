@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Glossary of programming terms used in the Programming Fundamentals: Three Language Approach course. Each term includes a plain-English definition and syntax examples in Python, JavaScript, and C#.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Glossary - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li aria-current="page">Glossary</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>📖 Glossary</h1>
+                <p class="lead">Every programming term from this course, defined in plain English with examples in all three languages. Use <kbd>Ctrl+F</kbd> / <kbd>Cmd+F</kbd> to search.</p>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary><h2 style="display: inline; margin: 0;">📑 Jump To</h2></summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#a-d" class="toc-link">A – D</a></li>
+                        <li><a href="#e-i" class="toc-link">E – I</a></li>
+                        <li><a href="#j-o" class="toc-link">J – O</a></li>
+                        <li><a href="#p-s" class="toc-link">P – S</a></li>
+                        <li><a href="#t-z" class="toc-link">T – Z</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <section id="a-d" class="lesson-section">
+                <h2>A – D</h2>
+
+                <div class="card">
+                    <h3 id="api">API (Application Programming Interface)</h3>
+                    <p>A way for programs to talk to each other over the internet. Your program sends a request to a server and gets back data (usually JSON). Example: fetching weather data from <code>wttr.in</code>.</p>
+                    <p><strong>Lesson:</strong> <a href="lesson_24.html">8.3 — Making API Requests</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="argument">Argument</h3>
+                    <p>The actual value you pass to a function when you call it. Often confused with <strong>parameter</strong> — the parameter is the placeholder in the function definition; the argument is the real value.</p>
+                    <p><code>greet("Alice")</code> — <code>"Alice"</code> is the argument. In <code>def greet(name)</code>, <code>name</code> is the parameter.</p>
+                    <p><strong>Lesson:</strong> <a href="lesson_11.html">4.2 — Parameters, Arguments, and Return Values</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="array">Array / List</h3>
+                    <p>An ordered collection of values, accessed by index (starting at 0). Python calls them <strong>lists</strong>, JavaScript and C# call them <strong>arrays</strong> (C# also has <code>List&lt;T&gt;</code>).</p>
+                    <p>Python: <code>[1, 2, 3]</code> · JS: <code>[1, 2, 3]</code> · C#: <code>new List&lt;int&gt; {1, 2, 3}</code></p>
+                    <p><strong>Lesson:</strong> <a href="lesson_13.html">5.1 — Arrays and Lists</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="async">Async / Await</h3>
+                    <p>A pattern for writing code that waits for slow operations (API calls, file reads) without freezing the program. The function is marked <code>async</code>, and you <code>await</code> the slow operation.</p>
+                    <p>Python: <code>async def</code> / <code>await</code> · JS: <code>async function</code> / <code>await</code> · C#: <code>async Task</code> / <code>await</code></p>
+                    <p><strong>Lesson:</strong> <a href="lesson_24.html">8.3 — Making API Requests</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="boolean">Boolean</h3>
+                    <p>A data type with only two values: true or false. Used in conditions and comparisons.</p>
+                    <p>Python: <code>True</code> / <code>False</code> (capitalized!) · JS: <code>true</code> / <code>false</code> · C#: <code>true</code> / <code>false</code></p>
+                    <p><strong>Lesson:</strong> <a href="lesson_05.html">2.2 — Data Types</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="class">Class</h3>
+                    <p>A blueprint for creating objects. Defines what properties (data) and methods (behavior) an object will have. Like a cookie cutter — the class is the cutter, each object is a cookie.</p>
+                    <p><strong>Lesson:</strong> <a href="lesson_16.html">6.1 — Classes and Objects</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="closure">Closure</h3>
+                    <p>A function that "remembers" variables from the scope where it was created, even after that scope has ended. All three languages support closures.</p>
+                    <p><strong>Lesson:</strong> <a href="lesson_12.html">4.3 — Scope and Closures</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="concatenation">Concatenation</h3>
+                    <p>Joining strings together with the <code>+</code> operator. <code>"Hello" + " " + "World"</code> → <code>"Hello World"</code>. String interpolation (f-strings, template literals, $-strings) is usually preferred.</p>
+                    <p><strong>Lesson:</strong> <a href="lesson_05.html">2.2 — Data Types</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="conditional">Conditional</h3>
+                    <p>Code that runs only when a condition is true. Uses <code>if</code>, <code>else if</code>/<code>elif</code>, and <code>else</code> keywords.</p>
+                    <p><strong>Lesson:</strong> <a href="lesson_07.html">3.1 — Conditionals</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="constant">Constant</h3>
+                    <p>A variable whose value should never change after it's set. Python uses ALL_CAPS by convention. JS uses <code>const</code>. C# uses <code>const</code> or <code>readonly</code>.</p>
+                    <p><strong>Lesson:</strong> <a href="lesson_04.html">2.1 — Variables and Constants</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="constructor">Constructor</h3>
+                    <p>A special method that runs when you create a new object from a class. It sets up the object's initial state.</p>
+                    <p>Python: <code>__init__(self)</code> · JS: <code>constructor()</code> · C#: method with same name as the class</p>
+                    <p><strong>Lesson:</strong> <a href="lesson_17.html">6.2 — Properties, Methods, and Constructors</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="dictionary">Dictionary / Object / Map</h3>
+                    <p>A collection of key-value pairs. Look up values by their key (like a real dictionary: look up a word to find its definition).</p>
+                    <p>Python: <code>dict</code> · JS: plain object <code>{}</code> or <code>Map</code> · C#: <code>Dictionary&lt;K,V&gt;</code></p>
+                    <p><strong>Lesson:</strong> <a href="lesson_14.html">5.2 — Dictionaries, Objects, and Maps</a></p>
+                </div>
+            </section>
+
+            <section id="e-i" class="lesson-section">
+                <h2>E – I</h2>
+
+                <div class="card">
+                    <h3 id="exception">Exception / Error</h3>
+                    <p>A problem that occurs while the program is running (not a syntax error — the code is valid, but something went wrong). Handled with <code>try</code>/<code>catch</code>/<code>except</code>.</p>
+                    <p><strong>Lesson:</strong> <a href="lesson_19.html">7.1 — Try, Catch, and Finally</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="expression">Expression</h3>
+                    <p>Any piece of code that produces a value. <code>2 + 3</code>, <code>"hi".upper()</code>, <code>x > 5</code> are all expressions. A <strong>statement</strong> does something (like <code>print()</code>); an expression <em>is</em> something.</p>
+                </div>
+
+                <div class="card">
+                    <h3 id="float">Float / Double</h3>
+                    <p>A number with a decimal point. Python: <code>float</code> · JS: <code>number</code> (all numbers are floats) · C#: <code>double</code> or <code>float</code>.</p>
+                    <p><strong>Lesson:</strong> <a href="lesson_05.html">2.2 — Data Types</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="function">Function / Method</h3>
+                    <p>A reusable block of code that takes input (parameters), does something, and optionally returns output. A <strong>method</strong> is a function that belongs to a class or object.</p>
+                    <p>Python: <code>def greet():</code> · JS: <code>function greet()</code> · C#: <code>static void Greet()</code></p>
+                    <p><strong>Lesson:</strong> <a href="lesson_10.html">4.1 — Defining and Calling Functions</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="http">HTTP (HyperText Transfer Protocol)</h3>
+                    <p>The protocol used by the web. Your program sends an HTTP request (GET, POST, etc.) to a server and gets back an HTTP response with a status code and data.</p>
+                    <p><strong>Lesson:</strong> <a href="lesson_24.html">8.3 — Making API Requests</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="immutable">Immutable</h3>
+                    <p>A value that can't be changed after it's created. Strings are immutable in all three languages — <code>"hello".upper()</code> creates a <em>new</em> string; it doesn't modify the original.</p>
+                </div>
+
+                <div class="card">
+                    <h3 id="index">Index</h3>
+                    <p>The position of an item in a list/array, starting at 0. In <code>["a", "b", "c"]</code>, <code>"a"</code> is at index 0, <code>"b"</code> at index 1, <code>"c"</code> at index 2.</p>
+                    <p><strong>Lesson:</strong> <a href="lesson_13.html">5.1 — Arrays and Lists</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="inheritance">Inheritance</h3>
+                    <p>A class that "inherits" properties and methods from a parent class. The child class gets everything the parent has, plus can add or override behavior.</p>
+                    <p>Python: <code>class Dog(Animal):</code> · JS: <code>class Dog extends Animal</code> · C#: <code>class Dog : Animal</code></p>
+                    <p><strong>Lesson:</strong> <a href="lesson_18.html">6.3 — Inheritance and Polymorphism</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="integer">Integer</h3>
+                    <p>A whole number without a decimal point. <code>42</code>, <code>-7</code>, <code>0</code> are integers.</p>
+                    <p>Python: <code>int</code> · JS: <code>number</code> · C#: <code>int</code></p>
+                    <p><strong>Lesson:</strong> <a href="lesson_05.html">2.2 — Data Types</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="iteration">Iteration</h3>
+                    <p>Going through items in a collection one by one. A <code>for</code> loop iterates over a list. Something you can iterate over is called an <strong>iterable</strong>.</p>
+                    <p><strong>Lesson:</strong> <a href="lesson_15.html">5.3 — Iterating Over Collections</a></p>
+                </div>
+            </section>
+
+            <section id="j-o" class="lesson-section">
+                <h2>J – O</h2>
+
+                <div class="card">
+                    <h3 id="json">JSON (JavaScript Object Notation)</h3>
+                    <p>A text format for storing and exchanging data. Looks like JavaScript objects but is language-independent. Most APIs return JSON. Keys must be quoted strings.</p>
+                    <p><code>{"name": "Alice", "age": 30, "hobbies": ["reading", "coding"]}</code></p>
+                    <p><strong>Lesson:</strong> <a href="lesson_23.html">8.2 — Working with JSON</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="loop">Loop</h3>
+                    <p>Code that repeats. A <code>for</code> loop runs a set number of times. A <code>while</code> loop runs until a condition becomes false.</p>
+                    <p><strong>Lesson:</strong> <a href="lesson_08.html">3.2 — Loops: for and while</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="method">Method</h3>
+                    <p>A function that belongs to an object or class. <code>"hello".upper()</code> — <code>upper()</code> is a method of the string object. See also: <a href="#function">Function</a>.</p>
+                    <p><strong>Lesson:</strong> <a href="lesson_17.html">6.2 — Properties, Methods, and Constructors</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="mutable">Mutable</h3>
+                    <p>A value that <em>can</em> be changed after creation. Lists/arrays are mutable — you can add, remove, and modify items. Contrast with <a href="#immutable">immutable</a>.</p>
+                </div>
+
+                <div class="card">
+                    <h3 id="null">Null / None / Undefined</h3>
+                    <p>Represents "no value" or "nothing." Python: <code>None</code>. JS: <code>null</code> (intentional absence) and <code>undefined</code> (never assigned). C#: <code>null</code>.</p>
+                    <p><strong>Lesson:</strong> <a href="lesson_04.html">2.1 — Variables and Constants</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="object">Object</h3>
+                    <p>An instance of a class. If <code>Dog</code> is the class (blueprint), then <code>rex = Dog("Rex")</code> creates an object (one specific dog). Also used loosely in JS to mean a key-value collection (<code>{name: "Alice"}</code>).</p>
+                    <p><strong>Lesson:</strong> <a href="lesson_16.html">6.1 — Classes and Objects</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="operator">Operator</h3>
+                    <p>A symbol that performs an operation. Arithmetic: <code>+</code> <code>-</code> <code>*</code> <code>/</code>. Comparison: <code>==</code> <code>!=</code> <code>&lt;</code> <code>&gt;</code>. Logical: <code>and</code>/<code>&amp;&amp;</code> <code>or</code>/<code>||</code> <code>not</code>/<code>!</code>.</p>
+                </div>
+
+                <div class="card">
+                    <h3 id="override">Override</h3>
+                    <p>When a child class replaces a method from its parent class with its own version.</p>
+                    <p>Python: just redefine it · JS: just redefine it · C#: requires <code>virtual</code> on parent and <code>override</code> on child</p>
+                    <p><strong>Lesson:</strong> <a href="lesson_18.html">6.3 — Inheritance and Polymorphism</a></p>
+                </div>
+            </section>
+
+            <section id="p-s" class="lesson-section">
+                <h2>P – S</h2>
+
+                <div class="card">
+                    <h3 id="parameter">Parameter</h3>
+                    <p>A placeholder variable in a function definition. When you call the function, you pass an <strong>argument</strong> that fills in the parameter.</p>
+                    <p><code>def greet(name):</code> — <code>name</code> is the parameter. <code>greet("Alice")</code> — <code>"Alice"</code> is the argument.</p>
+                    <p><strong>Lesson:</strong> <a href="lesson_11.html">4.2 — Parameters, Arguments, and Return Values</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="polymorphism">Polymorphism</h3>
+                    <p>"Many forms" — the ability to call the same method on different types and get type-specific behavior. If <code>Dog</code> and <code>Cat</code> both have a <code>speak()</code> method, calling <code>animal.speak()</code> does the right thing regardless of which type <code>animal</code> is.</p>
+                    <p><strong>Lesson:</strong> <a href="lesson_18.html">6.3 — Inheritance and Polymorphism</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="property">Property</h3>
+                    <p>A piece of data stored in an object. <code>dog.name</code> — <code>name</code> is a property of the <code>dog</code> object. Also called an attribute (Python) or field (C#).</p>
+                    <p><strong>Lesson:</strong> <a href="lesson_17.html">6.2 — Properties, Methods, and Constructors</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="pseudocode">Pseudocode</h3>
+                    <p>A plain-English description of a program's logic. Looks like code but uses human language. Helps you think through logic before writing real code.</p>
+                    <p><strong>Lesson:</strong> <a href="lesson_25.html">9.1 — Project Planning and Design</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="refactoring">Refactoring</h3>
+                    <p>Improving the structure of code without changing what it does. Examples: renaming variables, extracting helper functions, replacing deep nesting with early returns.</p>
+                    <p><strong>Lesson:</strong> <a href="lesson_27.html">9.3 — Code Review and Next Steps</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="return">Return Value</h3>
+                    <p>The value a function sends back to the code that called it. Uses the <code>return</code> keyword. A function without a <code>return</code> returns <code>None</code> (Python), <code>undefined</code> (JS), or is <code>void</code> (C#).</p>
+                    <p><strong>Lesson:</strong> <a href="lesson_11.html">4.2 — Parameters, Arguments, and Return Values</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="scope">Scope</h3>
+                    <p>Where a variable is visible and accessible. A variable declared inside a function is "local" to that function — it doesn't exist outside it. "Global" variables are accessible everywhere.</p>
+                    <p><strong>Lesson:</strong> <a href="lesson_12.html">4.3 — Scope and Closures</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="serialization">Serialization</h3>
+                    <p>Converting an object into a format that can be saved (like JSON) or sent over a network. <strong>Deserialization</strong> is the reverse — creating an object from saved data.</p>
+                    <p><strong>Lesson:</strong> <a href="lesson_23.html">8.2 — Working with JSON</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="statement">Statement</h3>
+                    <p>A line of code that <em>does</em> something (assigns a variable, calls a function, loops). Contrast with an <a href="#expression">expression</a>, which <em>produces</em> a value.</p>
+                </div>
+
+                <div class="card">
+                    <h3 id="string">String</h3>
+                    <p>A sequence of text characters. Created with quotes: <code>"Hello"</code> or <code>'Hello'</code>. Strings are <a href="#immutable">immutable</a> in all three languages.</p>
+                    <p><strong>Lesson:</strong> <a href="lesson_05.html">2.2 — Data Types</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="string-interpolation">String Interpolation</h3>
+                    <p>Embedding variables directly inside a string instead of concatenating with <code>+</code>.</p>
+                    <p>Python: <code>f"Hello, {name}"</code> · JS: <code>`Hello, ${name}`</code> · C#: <code>$"Hello, {name}"</code></p>
+                    <p><strong>Lesson:</strong> <a href="lesson_05.html">2.2 — Data Types</a></p>
+                </div>
+            </section>
+
+            <section id="t-z" class="lesson-section">
+                <h2>T – Z</h2>
+
+                <div class="card">
+                    <h3 id="truthy">Truthy / Falsy</h3>
+                    <p>Values that act like <code>true</code> or <code>false</code> in a condition, even though they aren't boolean. Falsy values include: <code>0</code>, <code>""</code>, <code>None</code>/<code>null</code>/<code>undefined</code>, empty collections. Everything else is truthy.</p>
+                    <p><strong>Lesson:</strong> <a href="lesson_09.html">3.3 — Logical Operators and Truthiness</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="try-catch">Try / Catch / Except</h3>
+                    <p>The error-handling structure. Code in the <code>try</code> block runs normally. If an error occurs, execution jumps to the <code>catch</code>/<code>except</code> block instead of crashing.</p>
+                    <p>Python: <code>try: / except:</code> · JS: <code>try {} catch {}</code> · C#: <code>try {} catch {}</code></p>
+                    <p><strong>Lesson:</strong> <a href="lesson_19.html">7.1 — Try, Catch, and Finally</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="type-coercion">Type Coercion</h3>
+                    <p>When a language automatically converts one type to another. JavaScript does this aggressively (<code>"5" == 5</code> is <code>true</code>!). Python and C# are stricter and usually require explicit conversion.</p>
+                    <p><strong>Lesson:</strong> <a href="lesson_06.html">2.3 — Type Conversion and Coercion</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="type-conversion">Type Conversion (Casting)</h3>
+                    <p>Explicitly converting a value from one type to another.</p>
+                    <p>Python: <code>int("42")</code>, <code>str(42)</code> · JS: <code>parseInt("42")</code>, <code>String(42)</code> · C#: <code>int.Parse("42")</code>, <code>42.ToString()</code></p>
+                    <p><strong>Lesson:</strong> <a href="lesson_06.html">2.3 — Type Conversion and Coercion</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="variable">Variable</h3>
+                    <p>A named container that stores a value. You can read it, change it, and pass it to functions.</p>
+                    <p>Python: <code>name = "Alice"</code> · JS: <code>let name = "Alice";</code> · C#: <code>string name = "Alice";</code></p>
+                    <p><strong>Lesson:</strong> <a href="lesson_04.html">2.1 — Variables and Constants</a></p>
+                </div>
+
+                <div class="card">
+                    <h3 id="version-control">Version Control (Git)</h3>
+                    <p>A system that tracks every change to your code. Lets you undo mistakes, experiment safely, and collaborate with others. Git is the most popular version control system.</p>
+                    <p><strong>Lesson:</strong> <a href="lesson_27.html">9.3 — Code Review and Next Steps</a></p>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Page Navigation">
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

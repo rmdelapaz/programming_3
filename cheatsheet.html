@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Quick-reference syntax cheat sheet comparing Python, JavaScript, and C# side by side. Covers variables, types, control flow, functions, collections, classes, error handling, file I/O, and APIs.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Syntax Cheat Sheet - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li aria-current="page">Syntax Cheat Sheet</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>📋 Syntax Cheat Sheet</h1>
+                <p class="lead">Your Rosetta Stone for Python, JavaScript, and C#. Bookmark this page — you'll come back to it constantly.</p>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary><h2 style="display: inline; margin: 0;">📑 Jump To</h2></summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#basics" class="toc-link">Basics &amp; Output</a></li>
+                        <li><a href="#variables" class="toc-link">Variables &amp; Constants</a></li>
+                        <li><a href="#types" class="toc-link">Data Types</a></li>
+                        <li><a href="#strings" class="toc-link">Strings &amp; Interpolation</a></li>
+                        <li><a href="#conditionals" class="toc-link">Conditionals</a></li>
+                        <li><a href="#loops" class="toc-link">Loops</a></li>
+                        <li><a href="#functions" class="toc-link">Functions</a></li>
+                        <li><a href="#collections" class="toc-link">Collections</a></li>
+                        <li><a href="#classes" class="toc-link">Classes &amp; OOP</a></li>
+                        <li><a href="#errors" class="toc-link">Error Handling</a></li>
+                        <li><a href="#fileio" class="toc-link">File I/O &amp; JSON</a></li>
+                        <li><a href="#apis" class="toc-link">API Requests</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Basics -->
+            <section id="basics" class="lesson-section">
+                <h2>Basics &amp; Output</h2>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead><tr><th>Operation</th><th>🐍 Python</th><th>⚡ JavaScript</th><th>🔷 C#</th></tr></thead>
+                        <tbody>
+                            <tr><td>Print output</td><td><code>print("Hello")</code></td><td><code>console.log("Hello")</code></td><td><code>Console.WriteLine("Hello")</code></td></tr>
+                            <tr><td>Read input</td><td><code>input("Name: ")</code></td><td><code>readline</code> (Node.js)</td><td><code>Console.ReadLine()</code></td></tr>
+                            <tr><td>Comments</td><td><code># single line</code></td><td><code>// single line</code></td><td><code>// single line</code></td></tr>
+                            <tr><td>Multi-line comment</td><td><code>"""docstring"""</code></td><td><code>/* block */</code></td><td><code>/* block */</code></td></tr>
+                            <tr><td>Line ending</td><td>Newline (no semicolons)</td><td><code>;</code> (optional)</td><td><code>;</code> (required)</td></tr>
+                            <tr><td>Code blocks</td><td>Indentation</td><td><code>{ }</code></td><td><code>{ }</code></td></tr>
+                            <tr><td>Run a file</td><td><code>python file.py</code></td><td><code>node file.js</code></td><td><code>dotnet run</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Variables -->
+            <section id="variables" class="lesson-section">
+                <h2>Variables &amp; Constants</h2>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead><tr><th>Operation</th><th>🐍 Python</th><th>⚡ JavaScript</th><th>🔷 C#</th></tr></thead>
+                        <tbody>
+                            <tr><td>Declare variable</td><td><code>x = 10</code></td><td><code>let x = 10;</code></td><td><code>int x = 10;</code></td></tr>
+                            <tr><td>Constant</td><td><code>MAX = 100</code> (convention)</td><td><code>const MAX = 100;</code></td><td><code>const int MAX = 100;</code></td></tr>
+                            <tr><td>Type inference</td><td>Always (dynamic)</td><td>Always (dynamic)</td><td><code>var x = 10;</code></td></tr>
+                            <tr><td>Null / None</td><td><code>None</code></td><td><code>null</code> / <code>undefined</code></td><td><code>null</code></td></tr>
+                            <tr><td>Check null</td><td><code>x is None</code></td><td><code>x === null</code></td><td><code>x == null</code> or <code>x is null</code></td></tr>
+                            <tr><td>Type check</td><td><code>type(x)</code></td><td><code>typeof x</code></td><td><code>x.GetType()</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Data Types -->
+            <section id="types" class="lesson-section">
+                <h2>Data Types</h2>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead><tr><th>Type</th><th>🐍 Python</th><th>⚡ JavaScript</th><th>🔷 C#</th></tr></thead>
+                        <tbody>
+                            <tr><td>Integer</td><td><code>int</code> → <code>42</code></td><td><code>number</code> → <code>42</code></td><td><code>int</code> → <code>42</code></td></tr>
+                            <tr><td>Float / Decimal</td><td><code>float</code> → <code>3.14</code></td><td><code>number</code> → <code>3.14</code></td><td><code>double</code> → <code>3.14</code></td></tr>
+                            <tr><td>String</td><td><code>str</code> → <code>"hi"</code></td><td><code>string</code> → <code>"hi"</code></td><td><code>string</code> → <code>"hi"</code></td></tr>
+                            <tr><td>Boolean</td><td><code>True</code> / <code>False</code></td><td><code>true</code> / <code>false</code></td><td><code>true</code> / <code>false</code></td></tr>
+                            <tr><td>Convert to int</td><td><code>int("42")</code></td><td><code>parseInt("42")</code></td><td><code>int.Parse("42")</code></td></tr>
+                            <tr><td>Convert to string</td><td><code>str(42)</code></td><td><code>String(42)</code></td><td><code>42.ToString()</code></td></tr>
+                            <tr><td>Convert to float</td><td><code>float("3.14")</code></td><td><code>parseFloat("3.14")</code></td><td><code>double.Parse("3.14")</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card card-warning">
+                    <h4>⚠️ Python Gotcha</h4>
+                    <p>Python booleans are capitalized: <code>True</code> and <code>False</code> (not <code>true</code>/<code>false</code>). This trips up everyone coming from JS or C#.</p>
+                </div>
+            </section>
+
+            <!-- Strings -->
+            <section id="strings" class="lesson-section">
+                <h2>Strings &amp; Interpolation</h2>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead><tr><th>Operation</th><th>🐍 Python</th><th>⚡ JavaScript</th><th>🔷 C#</th></tr></thead>
+                        <tbody>
+                            <tr><td>String interpolation</td><td><code>f"Hello, {name}"</code></td><td><code>`Hello, ${name}`</code></td><td><code>$"Hello, {name}"</code></td></tr>
+                            <tr><td>Concatenation</td><td><code>"Hi " + name</code></td><td><code>"Hi " + name</code></td><td><code>"Hi " + name</code></td></tr>
+                            <tr><td>Length</td><td><code>len(s)</code></td><td><code>s.length</code></td><td><code>s.Length</code></td></tr>
+                            <tr><td>Uppercase</td><td><code>s.upper()</code></td><td><code>s.toUpperCase()</code></td><td><code>s.ToUpper()</code></td></tr>
+                            <tr><td>Lowercase</td><td><code>s.lower()</code></td><td><code>s.toLowerCase()</code></td><td><code>s.ToLower()</code></td></tr>
+                            <tr><td>Trim whitespace</td><td><code>s.strip()</code></td><td><code>s.trim()</code></td><td><code>s.Trim()</code></td></tr>
+                            <tr><td>Contains</td><td><code>"lo" in s</code></td><td><code>s.includes("lo")</code></td><td><code>s.Contains("lo")</code></td></tr>
+                            <tr><td>Split</td><td><code>s.split(",")</code></td><td><code>s.split(",")</code></td><td><code>s.Split(',')</code></td></tr>
+                            <tr><td>Replace</td><td><code>s.replace("a", "b")</code></td><td><code>s.replace("a", "b")</code></td><td><code>s.Replace("a", "b")</code></td></tr>
+                            <tr><td>Substring / Slice</td><td><code>s[1:4]</code></td><td><code>s.slice(1, 4)</code></td><td><code>s.Substring(1, 3)</code></td></tr>
+                            <tr><td>Multi-line string</td><td><code>"""multi\nline"""</code></td><td><code>`multi\nline`</code></td><td><code>@"multi\nline"</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Conditionals -->
+            <section id="conditionals" class="lesson-section">
+                <h2>Conditionals</h2>
+                <div class="code-tabs" data-title="if / else / else if">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">if score >= 90:
+    grade = "A"
+elif score >= 80:
+    grade = "B"
+else:
+    grade = "C"
+
+# Ternary
+result = "pass" if score >= 60 else "fail"</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">if (score >= 90) {
+    grade = "A";
+} else if (score >= 80) {
+    grade = "B";
+} else {
+    grade = "C";
+}
+
+// Ternary
+const result = score >= 60 ? "pass" : "fail";</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">if (score >= 90) {
+    grade = "A";
+} else if (score >= 80) {
+    grade = "B";
+} else {
+    grade = "C";
+}
+
+// Ternary
+string result = score >= 60 ? "pass" : "fail";</code></pre>
+                    </div>
+                </div>
+
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead><tr><th>Operator</th><th>🐍 Python</th><th>⚡ JavaScript</th><th>🔷 C#</th></tr></thead>
+                        <tbody>
+                            <tr><td>Equals</td><td><code>==</code></td><td><code>===</code> (strict)</td><td><code>==</code></td></tr>
+                            <tr><td>Not equals</td><td><code>!=</code></td><td><code>!==</code></td><td><code>!=</code></td></tr>
+                            <tr><td>And</td><td><code>and</code></td><td><code>&amp;&amp;</code></td><td><code>&amp;&amp;</code></td></tr>
+                            <tr><td>Or</td><td><code>or</code></td><td><code>||</code></td><td><code>||</code></td></tr>
+                            <tr><td>Not</td><td><code>not</code></td><td><code>!</code></td><td><code>!</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Loops -->
+            <section id="loops" class="lesson-section">
+                <h2>Loops</h2>
+                <div class="code-tabs" data-title="For Loops &amp; While Loops">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># For loop (range)
+for i in range(5):         # 0, 1, 2, 3, 4
+    print(i)
+
+# For loop (over collection)
+for item in items:
+    print(item)
+
+# For loop (with index)
+for i, item in enumerate(items):
+    print(f"{i}: {item}")
+
+# While loop
+while count &lt; 10:
+    count += 1
+
+# Break and continue
+for x in items:
+    if x == "skip": continue
+    if x == "stop": break</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// For loop (classic)
+for (let i = 0; i &lt; 5; i++) {
+    console.log(i);
+}
+
+// For...of (over collection)
+for (const item of items) {
+    console.log(item);
+}
+
+// forEach (with index)
+items.forEach((item, i) =&gt; {
+    console.log(`${i}: ${item}`);
+});
+
+// While loop
+while (count &lt; 10) {
+    count++;
+}
+
+// Break and continue work the same</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// For loop (classic)
+for (int i = 0; i &lt; 5; i++) {
+    Console.WriteLine(i);
+}
+
+// Foreach (over collection)
+foreach (var item in items) {
+    Console.WriteLine(item);
+}
+
+// For loop with index
+for (int i = 0; i &lt; items.Count; i++) {
+    Console.WriteLine($"{i}: {items[i]}");
+}
+
+// While loop
+while (count &lt; 10) {
+    count++;
+}
+
+// Break and continue work the same</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Functions -->
+            <section id="functions" class="lesson-section">
+                <h2>Functions</h2>
+                <div class="code-tabs" data-title="Defining &amp; Calling Functions">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Basic function
+def greet(name):
+    return f"Hello, {name}!"
+
+# Default parameters
+def greet(name, greeting="Hello"):
+    return f"{greeting}, {name}!"
+
+# Multiple return values
+def divide(a, b):
+    return a // b, a % b
+
+quotient, remainder = divide(17, 5)
+
+# Lambda
+double = lambda x: x * 2</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// Basic function
+function greet(name) {
+    return `Hello, ${name}!`;
+}
+
+// Default parameters
+function greet(name, greeting = "Hello") {
+    return `${greeting}, ${name}!`;
+}
+
+// Arrow function
+const double = (x) =&gt; x * 2;
+
+// Async function
+async function fetchData(url) {
+    const res = await fetch(url);
+    return await res.json();
+}</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// Basic method
+static string Greet(string name) {
+    return $"Hello, {name}!";
+}
+
+// Default parameters
+static string Greet(string name, string greeting = "Hello") {
+    return $"{greeting}, {name}!";
+}
+
+// Expression body
+static int Double(int x) =&gt; x * 2;
+
+// Void (no return value)
+static void PrintMessage(string msg) {
+    Console.WriteLine(msg);
+}
+
+// Async method
+static async Task&lt;string&gt; FetchData(string url) {
+    return await client.GetStringAsync(url);
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Collections -->
+            <section id="collections" class="lesson-section">
+                <h2>Collections</h2>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead><tr><th>Operation</th><th>🐍 Python (list)</th><th>⚡ JS (Array)</th><th>🔷 C# (List&lt;T&gt;)</th></tr></thead>
+                        <tbody>
+                            <tr><td>Create</td><td><code>[1, 2, 3]</code></td><td><code>[1, 2, 3]</code></td><td><code>new List&lt;int&gt; {1, 2, 3}</code></td></tr>
+                            <tr><td>Access</td><td><code>items[0]</code></td><td><code>items[0]</code></td><td><code>items[0]</code></td></tr>
+                            <tr><td>Length</td><td><code>len(items)</code></td><td><code>items.length</code></td><td><code>items.Count</code></td></tr>
+                            <tr><td>Add</td><td><code>items.append(x)</code></td><td><code>items.push(x)</code></td><td><code>items.Add(x)</code></td></tr>
+                            <tr><td>Remove</td><td><code>items.remove(x)</code></td><td><code>items.splice(i, 1)</code></td><td><code>items.Remove(x)</code></td></tr>
+                            <tr><td>Find index</td><td><code>items.index(x)</code></td><td><code>items.indexOf(x)</code></td><td><code>items.IndexOf(x)</code></td></tr>
+                            <tr><td>Contains</td><td><code>x in items</code></td><td><code>items.includes(x)</code></td><td><code>items.Contains(x)</code></td></tr>
+                            <tr><td>Sort</td><td><code>items.sort()</code></td><td><code>items.sort()</code></td><td><code>items.Sort()</code></td></tr>
+                            <tr><td>Filter</td><td><code>[x for x in items if x &gt; 5]</code></td><td><code>items.filter(x =&gt; x &gt; 5)</code></td><td><code>items.Where(x =&gt; x &gt; 5)</code></td></tr>
+                            <tr><td>Map / Transform</td><td><code>[x * 2 for x in items]</code></td><td><code>items.map(x =&gt; x * 2)</code></td><td><code>items.Select(x =&gt; x * 2)</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead><tr><th>Operation</th><th>🐍 Python (dict)</th><th>⚡ JS (Object / Map)</th><th>🔷 C# (Dictionary)</th></tr></thead>
+                        <tbody>
+                            <tr><td>Create</td><td><code>{"a": 1, "b": 2}</code></td><td><code>{a: 1, b: 2}</code></td><td><code>new Dictionary&lt;string,int&gt; {{"a",1}}</code></td></tr>
+                            <tr><td>Access</td><td><code>d["key"]</code></td><td><code>obj.key</code> or <code>obj["key"]</code></td><td><code>d["key"]</code></td></tr>
+                            <tr><td>Safe access</td><td><code>d.get("key", default)</code></td><td><code>obj?.key ?? default</code></td><td><code>d.TryGetValue("key", out val)</code></td></tr>
+                            <tr><td>Set value</td><td><code>d["key"] = val</code></td><td><code>obj.key = val</code></td><td><code>d["key"] = val</code></td></tr>
+                            <tr><td>Delete</td><td><code>del d["key"]</code></td><td><code>delete obj.key</code></td><td><code>d.Remove("key")</code></td></tr>
+                            <tr><td>Keys</td><td><code>d.keys()</code></td><td><code>Object.keys(obj)</code></td><td><code>d.Keys</code></td></tr>
+                            <tr><td>Values</td><td><code>d.values()</code></td><td><code>Object.values(obj)</code></td><td><code>d.Values</code></td></tr>
+                            <tr><td>Contains key</td><td><code>"key" in d</code></td><td><code>"key" in obj</code></td><td><code>d.ContainsKey("key")</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Classes -->
+            <section id="classes" class="lesson-section">
+                <h2>Classes &amp; OOP</h2>
+                <div class="code-tabs" data-title="Class Definition">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">class Animal:
+    def __init__(self, name, sound):
+        self.name = name
+        self.sound = sound
+
+    def speak(self):
+        return f"{self.name} says {self.sound}!"
+
+    def __str__(self):
+        return f"Animal({self.name})"
+
+class Dog(Animal):              # Inheritance
+    def __init__(self, name):
+        super().__init__(name, "Woof")
+
+    def speak(self):            # Override
+        return f"{self.name} barks loudly!"
+
+dog = Dog("Rex")
+print(dog.speak())</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">class Animal {
+    constructor(name, sound) {
+        this.name = name;
+        this.sound = sound;
+    }
+
+    speak() {
+        return `${this.name} says ${this.sound}!`;
+    }
+
+    toString() {
+        return `Animal(${this.name})`;
+    }
+}
+
+class Dog extends Animal {       // Inheritance
+    constructor(name) {
+        super(name, "Woof");
+    }
+
+    speak() {                    // Override
+        return `${this.name} barks loudly!`;
+    }
+}
+
+const dog = new Dog("Rex");
+console.log(dog.speak());</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">class Animal {
+    public string Name { get; set; }
+    public string Sound { get; set; }
+
+    public Animal(string name, string sound) {
+        Name = name; Sound = sound;
+    }
+
+    public virtual string Speak()    // virtual = overridable
+        =&gt; $"{Name} says {Sound}!";
+
+    public override string ToString()
+        =&gt; $"Animal({Name})";
+}
+
+class Dog : Animal {                 // Inheritance
+    public Dog(string name) : base(name, "Woof") { }
+
+    public override string Speak()   // Override
+        =&gt; $"{Name} barks loudly!";
+}
+
+var dog = new Dog("Rex");
+Console.WriteLine(dog.Speak());</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Error Handling -->
+            <section id="errors" class="lesson-section">
+                <h2>Error Handling</h2>
+                <div class="code-tabs" data-title="Try / Catch / Finally">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python">try:
+    result = int(input("Number: "))
+    print(10 / result)
+except ValueError:
+    print("Not a number!")
+except ZeroDivisionError:
+    print("Can't divide by zero!")
+except Exception as e:
+    print(f"Error: {e}")
+finally:
+    print("Always runs")
+
+# Raise an exception
+raise ValueError("Invalid input")</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">try {
+    const num = parseInt(input);
+    if (isNaN(num)) throw new Error("Not a number!");
+    console.log(10 / num);
+} catch (err) {
+    console.log(`Error: ${err.message}`);
+} finally {
+    console.log("Always runs");
+}
+
+// Throw an error
+throw new Error("Invalid input");</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">try {
+    int num = int.Parse(Console.ReadLine()!);
+    Console.WriteLine(10 / num);
+}
+catch (FormatException) {
+    Console.WriteLine("Not a number!");
+}
+catch (DivideByZeroException) {
+    Console.WriteLine("Can't divide by zero!");
+}
+catch (Exception ex) {
+    Console.WriteLine($"Error: {ex.Message}");
+}
+finally {
+    Console.WriteLine("Always runs");
+}
+
+// Throw an exception
+throw new ArgumentException("Invalid input");</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- File I/O & JSON -->
+            <section id="fileio" class="lesson-section">
+                <h2>File I/O &amp; JSON</h2>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead><tr><th>Operation</th><th>🐍 Python</th><th>⚡ JavaScript (Node)</th><th>🔷 C#</th></tr></thead>
+                        <tbody>
+                            <tr><td>Read file</td><td><code>open(f).read()</code></td><td><code>fs.readFileSync(f,"utf-8")</code></td><td><code>File.ReadAllText(f)</code></td></tr>
+                            <tr><td>Write file</td><td><code>open(f,"w").write(s)</code></td><td><code>fs.writeFileSync(f, s)</code></td><td><code>File.WriteAllText(f, s)</code></td></tr>
+                            <tr><td>File exists?</td><td><code>os.path.exists(f)</code></td><td><code>fs.existsSync(f)</code></td><td><code>File.Exists(f)</code></td></tr>
+                            <tr><td>Parse JSON</td><td><code>json.loads(s)</code></td><td><code>JSON.parse(s)</code></td><td><code>JsonSerializer.Deserialize&lt;T&gt;(s)</code></td></tr>
+                            <tr><td>To JSON string</td><td><code>json.dumps(obj)</code></td><td><code>JSON.stringify(obj)</code></td><td><code>JsonSerializer.Serialize(obj)</code></td></tr>
+                            <tr><td>Pretty JSON</td><td><code>json.dumps(obj, indent=2)</code></td><td><code>JSON.stringify(obj, null, 2)</code></td><td><code>new JsonSerializerOptions {WriteIndented=true}</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- APIs -->
+            <section id="apis" class="lesson-section">
+                <h2>API Requests</h2>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead><tr><th>Operation</th><th>🐍 Python</th><th>⚡ JavaScript</th><th>🔷 C#</th></tr></thead>
+                        <tbody>
+                            <tr><td>HTTP library</td><td><code>requests</code> (pip install)</td><td><code>fetch()</code> (built-in)</td><td><code>HttpClient</code> (built-in)</td></tr>
+                            <tr><td>GET request</td><td><code>requests.get(url)</code></td><td><code>await fetch(url)</code></td><td><code>await client.GetAsync(url)</code></td></tr>
+                            <tr><td>Parse JSON</td><td><code>response.json()</code></td><td><code>await response.json()</code></td><td><code>JsonDocument.Parse(text)</code></td></tr>
+                            <tr><td>Status code</td><td><code>response.status_code</code></td><td><code>response.status</code></td><td><code>(int)response.StatusCode</code></td></tr>
+                            <tr><td>Success check</td><td><code>status_code == 200</code></td><td><code>response.ok</code></td><td><code>response.IsSuccessStatusCode</code></td></tr>
+                            <tr><td>Query params</td><td><code>params={...}</code></td><td><code>URLSearchParams</code></td><td><code>HttpUtility.ParseQueryString</code></td></tr>
+                            <tr><td>Env variable</td><td><code>os.environ.get(key)</code></td><td><code>process.env.KEY</code></td><td><code>Environment.GetEnvironmentVariable</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Page Navigation">
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Troubleshooting guide for common setup and environment issues with Python, JavaScript (Node.js), and C# (.NET). Fix PATH errors, permission problems, and version conflicts.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Troubleshooting Guide - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li aria-current="page">Troubleshooting Guide</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🔧 Troubleshooting Guide</h1>
+                <p class="lead">Stuck on a setup issue? You're not alone. This page covers the most common environment problems beginners run into — and how to fix them.</p>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary><h2 style="display: inline; margin: 0;">📑 Jump To</h2></summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#general" class="toc-link">General Issues</a></li>
+                        <li><a href="#python" class="toc-link">Python Issues</a></li>
+                        <li><a href="#javascript" class="toc-link">JavaScript / Node.js Issues</a></li>
+                        <li><a href="#csharp" class="toc-link">C# / .NET Issues</a></li>
+                        <li><a href="#vscode" class="toc-link">VS Code Issues</a></li>
+                        <li><a href="#still-stuck" class="toc-link">Still Stuck?</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- General Issues -->
+            <section id="general" class="lesson-section">
+                <h2>🌐 General Issues</h2>
+
+                <div class="card">
+                    <h3>"command not found" or "is not recognized"</h3>
+                    <p><strong>What it means:</strong> Your terminal can't find the program you're trying to run. The program either isn't installed, or it's not on your system PATH.</p>
+                    <p><strong>What to check:</strong></p>
+                    <ul>
+                        <li>Did you install the software? Go back to <a href="lesson_02.html">Lesson 1.2</a> and run through the steps.</li>
+                        <li>Did you restart your terminal after installing? Many installers modify the PATH, but existing terminal sessions don't see the change.</li>
+                        <li>On Windows, did you check "Add to PATH" during installation? If not, uninstall and reinstall with that option selected.</li>
+                    </ul>
+
+                    <h4>How to check your PATH</h4>
+                    <div class="code-tabs" data-title="Check PATH">
+                        <div class="tab-panel" data-lang="python" data-label="Windows">
+                            <pre><code class="language-python"># In PowerShell or Command Prompt:
+echo %PATH%
+
+# Or in PowerShell:
+$env:PATH -split ";"</code></pre>
+                        </div>
+                        <div class="tab-panel" data-lang="javascript" data-label="macOS">
+                            <pre><code class="language-javascript">// In Terminal:
+// echo $PATH
+// Or see it split by colons:
+// echo $PATH | tr ':' '\n'</code></pre>
+                        </div>
+                        <div class="tab-panel" data-lang="csharp" data-label="Linux">
+                            <pre><code class="language-csharp">// In Terminal:
+// echo $PATH
+// Or see it split by colons:
+// echo $PATH | tr ':' '\n'</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>"Permission denied" errors</h3>
+                    <p><strong>What it means:</strong> Your user account doesn't have permission to read, write, or execute a file or folder.</p>
+                    <p><strong>Fixes:</strong></p>
+                    <ul>
+                        <li><strong>Windows:</strong> Run your terminal as Administrator (right-click → "Run as administrator").</li>
+                        <li><strong>macOS / Linux:</strong> Prefix the command with <code>sudo</code> (e.g., <code>sudo npm install -g ...</code>). Use sparingly — only for global installs.</li>
+                        <li>Make sure you're working inside a folder <em>you</em> own, like your home directory or Desktop, not a system folder.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Wrong version installed</h3>
+                    <p><strong>What it means:</strong> You have an older version of a tool that doesn't support features used in this course.</p>
+                    <p><strong>How to check versions:</strong></p>
+                    <div class="code-tabs" data-title="Version Checks">
+                        <div class="tab-panel" data-lang="python" data-label="Python">
+                            <pre><code class="language-python"># Need 3.10 or higher
+python --version
+# or on some systems:
+python3 --version</code></pre>
+                        </div>
+                        <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                            <pre><code class="language-javascript">// Need Node.js 18 or higher
+// node --version
+// npm --version</code></pre>
+                        </div>
+                        <div class="tab-panel" data-lang="csharp" data-label="C#">
+                            <pre><code class="language-csharp">// Need .NET SDK 8 or higher
+// dotnet --version
+// dotnet --list-sdks</code></pre>
+                        </div>
+                    </div>
+                    <p><strong>Fix:</strong> Download and install the latest version from the official site. The new install will usually replace the old one automatically.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Multiple versions conflicting</h3>
+                    <p><strong>Symptoms:</strong> Commands run a different version than expected, or libraries installed for one version aren't available in another.</p>
+                    <p><strong>Common scenario:</strong> You have both <code>python</code> (pointing to Python 2) and <code>python3</code> (pointing to Python 3) on your system.</p>
+                    <p><strong>Fixes:</strong></p>
+                    <ul>
+                        <li>Always use <code>python3</code> and <code>pip3</code> on macOS/Linux to be explicit.</li>
+                        <li>On Windows, use the Python Launcher: <code>py -3 script.py</code>.</li>
+                        <li>For Node.js, consider using <a href="https://github.com/nvm-sh/nvm" target="_blank" rel="noopener">nvm</a> (Node Version Manager) to switch between versions.</li>
+                        <li>For .NET, use <code>dotnet --list-sdks</code> to see all installed versions, and set the version in a <code>global.json</code> file if needed.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Python Issues -->
+            <section id="python" class="lesson-section">
+                <h2>🐍 Python Issues</h2>
+
+                <div class="card">
+                    <h3>"python" opens the Microsoft Store (Windows)</h3>
+                    <p><strong>What's happening:</strong> Windows 10/11 ships with a stub <code>python.exe</code> that redirects to the Microsoft Store instead of running Python.</p>
+                    <p><strong>Fix:</strong></p>
+                    <ul>
+                        <li>Open <strong>Settings → Apps → Advanced app settings → App execution aliases</strong>.</li>
+                        <li>Turn <strong>off</strong> the two entries for <code>python.exe</code> and <code>python3.exe</code>.</li>
+                        <li>Make sure Python is installed from <a href="https://www.python.org/downloads/" target="_blank" rel="noopener">python.org</a> with "Add to PATH" checked.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>"ModuleNotFoundError: No module named ..."</h3>
+                    <p><strong>What it means:</strong> Python can't find a library you're trying to import.</p>
+                    <p><strong>Fixes:</strong></p>
+                    <ul>
+                        <li>Install the module: <code>pip install module_name</code> (or <code>pip3 install module_name</code>).</li>
+                        <li>Make sure you're using the same Python that <code>pip</code> is linked to: <code>python -m pip install module_name</code>.</li>
+                        <li>If you're inside a virtual environment, make sure it's activated.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>IndentationError / TabError</h3>
+                    <p><strong>What it means:</strong> Python uses indentation to define code blocks, and your spacing is inconsistent.</p>
+                    <p><strong>Fixes:</strong></p>
+                    <ul>
+                        <li>In VS Code, set "Insert Spaces" to true and "Tab Size" to 4 (the Python standard).</li>
+                        <li>Turn on "Render Whitespace" in VS Code to see spaces vs. tabs.</li>
+                        <li>Never mix tabs and spaces in the same file.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>SyntaxError: invalid syntax (unexpected token)</h3>
+                    <p><strong>Common causes:</strong></p>
+                    <ul>
+                        <li>Missing colon at the end of <code>if</code>, <code>for</code>, <code>while</code>, <code>def</code>, or <code>class</code> lines.</li>
+                        <li>Using curly braces <code>{ }</code> instead of indentation (mixing up with JS or C#).</li>
+                        <li>Using <code>&&</code> or <code>||</code> instead of Python's <code>and</code> / <code>or</code>.</li>
+                        <li>Forgetting parentheses around <code>print()</code> (Python 2 habit).</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- JavaScript / Node.js Issues -->
+            <section id="javascript" class="lesson-section">
+                <h2>⚡ JavaScript / Node.js Issues</h2>
+
+                <div class="card">
+                    <h3>"ReferenceError: require is not defined" (ES Modules)</h3>
+                    <p><strong>What's happening:</strong> You're using <code>import</code>/<code>export</code> syntax (ES Modules) but Node.js defaults to CommonJS (<code>require</code>).</p>
+                    <p><strong>Fix:</strong> Add <code>"type": "module"</code> to your <code>package.json</code>, or name your file with a <code>.mjs</code> extension.</p>
+                </div>
+
+                <div class="card">
+                    <h3>"SyntaxError: Cannot use import statement outside a module"</h3>
+                    <p><strong>Same root cause as above.</strong> Node.js doesn't recognize <code>import</code> without being told to use ES Modules.</p>
+                    <p><strong>Quick fix:</strong> Run with <code>node --experimental-modules file.js</code> on older Node versions, or add <code>"type": "module"</code> to <code>package.json</code>.</p>
+                </div>
+
+                <div class="card">
+                    <h3>npm EACCES permission error (macOS/Linux)</h3>
+                    <p><strong>What's happening:</strong> npm is trying to install global packages in a system-owned directory.</p>
+                    <p><strong>Fix (recommended):</strong> Change npm's default directory to a user-owned folder:</p>
+                    <pre><code>mkdir ~/.npm-global
+npm config set prefix '~/.npm-global'
+# Add to your shell profile (~/.bashrc or ~/.zshrc):
+export PATH=~/.npm-global/bin:$PATH</code></pre>
+                    <p>Then restart your terminal.</p>
+                </div>
+
+                <div class="card">
+                    <h3>"TypeError: fetch is not a function" (older Node.js)</h3>
+                    <p><strong>What's happening:</strong> The built-in <code>fetch</code> API was added in Node.js 18. Older versions don't have it.</p>
+                    <p><strong>Fix:</strong> Upgrade to Node.js 18+ (recommended for this course), or install the <code>node-fetch</code> package as a workaround.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Unexpected token / missing semicolons</h3>
+                    <p><strong>Common in this course:</strong> If you're switching between Python and JavaScript, you might forget semicolons (optional but recommended in JS) or accidentally use Python syntax like <code>elif</code> instead of <code>else if</code>.</p>
+                    <p><strong>Tip:</strong> Install the ESLint extension in VS Code — it will underline syntax issues in real time.</p>
+                </div>
+            </section>
+
+            <!-- C# / .NET Issues -->
+            <section id="csharp" class="lesson-section">
+                <h2>🔷 C# / .NET Issues</h2>
+
+                <div class="card">
+                    <h3>"dotnet: command not found"</h3>
+                    <p><strong>Fix:</strong> Install the <a href="https://dotnet.microsoft.com/en-us/download" target="_blank" rel="noopener">.NET SDK</a> (not just the Runtime). After installing, restart your terminal. On Linux, you may need to add <code>~/.dotnet</code> to your PATH manually.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Top-level statements vs. traditional Main method</h3>
+                    <p><strong>What's happening:</strong> Starting with .NET 6, C# supports "top-level statements" — you can write code directly in <code>Program.cs</code> without a <code>class</code> and <code>Main()</code> method. This course uses that style.</p>
+                    <p><strong>If you see errors about missing <code>Main</code>:</strong></p>
+                    <ul>
+                        <li>Make sure you're on .NET 6 or later (<code>dotnet --version</code>).</li>
+                        <li>Your project file (<code>.csproj</code>) should target <code>net8.0</code> or higher.</li>
+                        <li>Only one file in the project can use top-level statements.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>"CS0246: The type or namespace name could not be found"</h3>
+                    <p><strong>What it means:</strong> You're referencing a type that C# doesn't know about — usually a missing <code>using</code> directive or NuGet package.</p>
+                    <p><strong>Fixes:</strong></p>
+                    <ul>
+                        <li>Add the correct <code>using</code> statement at the top of your file (e.g., <code>using System.Text.Json;</code>).</li>
+                        <li>If it's a third-party library, install the NuGet package: <code>dotnet add package PackageName</code>.</li>
+                        <li>VS Code's C# Dev Kit can auto-suggest missing usings — look for the lightbulb icon.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>"error NETSDK1045: The current .NET SDK does not support targeting"</h3>
+                    <p><strong>What's happening:</strong> The project targets a newer .NET version than what you have installed.</p>
+                    <p><strong>Fix:</strong> Either install the required SDK version, or change the <code>TargetFramework</code> in your <code>.csproj</code> file to match your installed version.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Build succeeded but nothing happens</h3>
+                    <p><strong>Common cause:</strong> You're running <code>dotnet build</code> instead of <code>dotnet run</code>. Build only compiles; run both compiles and executes.</p>
+                    <p><strong>Also check:</strong> Make sure you're in the correct project folder (the one containing the <code>.csproj</code> file).</p>
+                </div>
+            </section>
+
+            <!-- VS Code Issues -->
+            <section id="vscode" class="lesson-section">
+                <h2>💻 VS Code Issues</h2>
+
+                <div class="card">
+                    <h3>Extensions not working or not suggesting completions</h3>
+                    <p><strong>Fixes:</strong></p>
+                    <ul>
+                        <li>Make sure you have the recommended extensions: <strong>Python</strong> (Microsoft), <strong>C# Dev Kit</strong> (Microsoft), and <strong>ESLint</strong>.</li>
+                        <li>Reload VS Code: press <kbd>Ctrl+Shift+P</kbd> → "Developer: Reload Window".</li>
+                        <li>For Python, make sure the correct interpreter is selected: <kbd>Ctrl+Shift+P</kbd> → "Python: Select Interpreter".</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Terminal in VS Code uses wrong shell</h3>
+                    <p><strong>Fix:</strong> Open Settings → search for "Terminal Default Profile" → set it to your preferred shell (PowerShell on Windows, bash or zsh on macOS/Linux).</p>
+                </div>
+
+                <div class="card">
+                    <h3>File encoding issues (weird characters in output)</h3>
+                    <p><strong>What's happening:</strong> Your file might be saved in a different encoding than expected.</p>
+                    <p><strong>Fix:</strong> Click the encoding indicator in VS Code's bottom-right status bar → "Reopen with Encoding" → choose <strong>UTF-8</strong>. Then "Save with Encoding" → <strong>UTF-8</strong>.</p>
+                </div>
+            </section>
+
+            <!-- Still Stuck -->
+            <section id="still-stuck" class="lesson-section card">
+                <h2>🆘 Still Stuck?</h2>
+                <p>If none of the above solved your problem, here's what to do next:</p>
+                <ol>
+                    <li><strong>Read the error message carefully.</strong> The last line of an error traceback usually tells you exactly what went wrong.</li>
+                    <li><strong>Copy the error message and search for it.</strong> Paste it into Google or Stack Overflow — chances are someone has had the same issue.</li>
+                    <li><strong>Check official documentation:</strong>
+                        <ul>
+                            <li><a href="https://docs.python.org/3/" target="_blank" rel="noopener">Python Docs</a></li>
+                            <li><a href="https://nodejs.org/en/docs" target="_blank" rel="noopener">Node.js Docs</a></li>
+                            <li><a href="https://learn.microsoft.com/en-us/dotnet/csharp/" target="_blank" rel="noopener">C# / .NET Docs</a></li>
+                        </ul>
+                    </li>
+                    <li><strong>Ask for help.</strong> Visit the <a href="https://rays-home.netlify.app/contact">contact page</a> and describe what you tried and what error you're seeing.</li>
+                </ol>
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Using Errors as Teaching Moments</summary>
+                    <div class="note-content">
+                        <p>When students encounter these issues in class, resist the urge to just fix it for them. Walk them through the diagnostic process: reading the error, identifying the key phrase, and searching for a solution. This builds the troubleshooting muscle that separates beginners from competent developers.</p>
+                    </div>
+                </details>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Page Navigation">
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

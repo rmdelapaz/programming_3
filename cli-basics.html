@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A beginner-friendly guide to the command line. Learn to navigate folders, create files, and run Python, JavaScript, and C# programs from the terminal.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Command Line Basics - Programming Fundamentals</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Three Language Programming</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li aria-current="page">Command Line Basics</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>💻 Command Line Basics</h1>
+                <p class="lead">The terminal might look scary at first, but it's one of the most powerful tools a developer has. This guide covers everything you need to navigate, create files, and run your programs.</p>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary><h2 style="display: inline; margin: 0;">📑 Jump To</h2></summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#what-is-it" class="toc-link">What Is the Command Line?</a></li>
+                        <li><a href="#opening" class="toc-link">Opening Your Terminal</a></li>
+                        <li><a href="#navigation" class="toc-link">Navigating the File System</a></li>
+                        <li><a href="#files" class="toc-link">Creating &amp; Managing Files</a></li>
+                        <li><a href="#running" class="toc-link">Running Your Programs</a></li>
+                        <li><a href="#shortcuts" class="toc-link">Time-Saving Shortcuts</a></li>
+                        <li><a href="#common-mistakes" class="toc-link">Common Mistakes</a></li>
+                        <li><a href="#cheatsheet" class="toc-link">Quick Reference</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- What Is It -->
+            <section id="what-is-it" class="lesson-section card">
+                <h2>🤔 What Is the Command Line?</h2>
+                <p>The <strong>command line</strong> (also called the <strong>terminal</strong>, <strong>shell</strong>, or <strong>console</strong>) is a text-based way to interact with your computer. Instead of clicking icons and menus, you type commands and press Enter.</p>
+                <p>It might feel slower at first, but once you learn the basics, it's actually <em>faster</em> for many tasks — especially running code. Every professional developer uses the command line daily.</p>
+                <p><strong>Key vocabulary:</strong></p>
+                <ul>
+                    <li><strong>Terminal</strong> — The application window where you type commands.</li>
+                    <li><strong>Shell</strong> — The program that interprets your commands (bash, zsh, PowerShell).</li>
+                    <li><strong>Prompt</strong> — The text that appears before your cursor, showing you where you are (e.g., <code>C:\Users\you&gt;</code> or <code>~/projects$</code>).</li>
+                    <li><strong>Directory</strong> — Another word for "folder."</li>
+                    <li><strong>Path</strong> — The address of a file or folder (e.g., <code>/home/user/projects/hello.py</code>).</li>
+                </ul>
+            </section>
+
+            <!-- Opening -->
+            <section id="opening" class="lesson-section">
+                <h2>🚪 Opening Your Terminal</h2>
+
+                <div class="card">
+                    <h3>Windows</h3>
+                    <ul>
+                        <li><strong>PowerShell:</strong> Press <kbd>Win</kbd>, type "PowerShell", press Enter.</li>
+                        <li><strong>Command Prompt:</strong> Press <kbd>Win+R</kbd>, type <code>cmd</code>, press Enter.</li>
+                        <li><strong>VS Code:</strong> Press <kbd>Ctrl+`</kbd> (backtick) to open the built-in terminal.</li>
+                    </ul>
+                    <p><em>This course recommends PowerShell or the VS Code terminal on Windows.</em></p>
+                </div>
+
+                <div class="card">
+                    <h3>macOS</h3>
+                    <ul>
+                        <li><strong>Terminal.app:</strong> Open Finder → Applications → Utilities → Terminal.</li>
+                        <li><strong>Spotlight:</strong> Press <kbd>Cmd+Space</kbd>, type "Terminal", press Enter.</li>
+                        <li><strong>VS Code:</strong> Press <kbd>Ctrl+`</kbd> to open the built-in terminal.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Linux</h3>
+                    <ul>
+                        <li>Press <kbd>Ctrl+Alt+T</kbd> on most distributions.</li>
+                        <li>Or find "Terminal" in your applications menu.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Navigation -->
+            <section id="navigation" class="lesson-section">
+                <h2>🧭 Navigating the File System</h2>
+                <p>These are the commands you'll use constantly. They work the same in almost every terminal.</p>
+
+                <div class="card">
+                    <h3>Where am I? — <code>pwd</code></h3>
+                    <p><strong>P</strong>rint <strong>W</strong>orking <strong>D</strong>irectory. Shows the full path to your current location.</p>
+                    <div class="code-tabs" data-title="Print Working Directory">
+                        <div class="tab-panel" data-lang="python" data-label="macOS/Linux">
+                            <pre><code class="language-python"># Type:
+# pwd
+
+# Output example:
+# /home/yourname/projects</code></pre>
+                        </div>
+                        <div class="tab-panel" data-lang="javascript" data-label="Windows (PowerShell)">
+                            <pre><code class="language-javascript">// Type:
+// pwd
+// (or: Get-Location)
+
+// Output example:
+// C:\Users\yourname\projects</code></pre>
+                        </div>
+                        <div class="tab-panel" data-lang="csharp" data-label="Windows (cmd)">
+                            <pre><code class="language-csharp">// Type:
+// cd
+// (with no arguments, cmd shows current directory)
+
+// Output example:
+// C:\Users\yourname\projects</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>What's in here? — <code>ls</code> / <code>dir</code></h3>
+                    <p><strong>L</strong>i<strong>s</strong>t the contents of the current directory.</p>
+                    <div class="code-tabs" data-title="List Directory">
+                        <div class="tab-panel" data-lang="python" data-label="macOS/Linux">
+                            <pre><code class="language-python"># List files and folders:
+# ls
+
+# With details (size, date, permissions):
+# ls -la
+
+# Show only .py files:
+# ls *.py</code></pre>
+                        </div>
+                        <div class="tab-panel" data-lang="javascript" data-label="Windows (PowerShell)">
+                            <pre><code class="language-javascript">// List files and folders:
+// ls
+// (or: Get-ChildItem)
+// (or: dir)
+
+// Show only .js files:
+// ls *.js</code></pre>
+                        </div>
+                        <div class="tab-panel" data-lang="csharp" data-label="Windows (cmd)">
+                            <pre><code class="language-csharp">// List files and folders:
+// dir
+
+// Show only .cs files:
+// dir *.cs</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Go somewhere — <code>cd</code></h3>
+                    <p><strong>C</strong>hange <strong>D</strong>irectory. Move into a folder, move up, or jump to a specific path.</p>
+                    <pre><code># Move into a folder:
+cd projects
+
+# Move up one level:
+cd ..
+
+# Move up two levels:
+cd ../..
+
+# Go to your home directory:
+cd ~
+
+# Go to a specific path:
+cd /home/yourname/projects/my-app</code></pre>
+                    <p><strong>Pro tip:</strong> Type the first few letters of a folder name and press <kbd>Tab</kbd> — the terminal will auto-complete it for you.</p>
+                </div>
+            </section>
+
+            <!-- Files -->
+            <section id="files" class="lesson-section">
+                <h2>📁 Creating &amp; Managing Files</h2>
+
+                <div class="card">
+                    <h3>Create a folder — <code>mkdir</code></h3>
+                    <p><strong>M</strong>a<strong>k</strong>e <strong>Dir</strong>ectory. Creates a new folder.</p>
+                    <pre><code># Create a single folder:
+mkdir my-project
+
+# Create nested folders at once:
+mkdir -p my-project/src/utils</code></pre>
+                    <p>On Windows cmd, use <code>mkdir my-project\src\utils</code> (backslashes, and it auto-creates parents).</p>
+                </div>
+
+                <div class="card">
+                    <h3>Create / view a file</h3>
+                    <div class="code-tabs" data-title="Create and View Files">
+                        <div class="tab-panel" data-lang="python" data-label="macOS/Linux">
+                            <pre><code class="language-python"># Create an empty file:
+# touch hello.py
+
+# View a file's contents:
+# cat hello.py
+
+# View a long file with scrolling:
+# less hello.py</code></pre>
+                        </div>
+                        <div class="tab-panel" data-lang="javascript" data-label="Windows (PowerShell)">
+                            <pre><code class="language-javascript">// Create an empty file:
+// New-Item hello.js
+
+// View a file's contents:
+// Get-Content hello.js
+// (or: cat hello.js)</code></pre>
+                        </div>
+                        <div class="tab-panel" data-lang="csharp" data-label="Windows (cmd)">
+                            <pre><code class="language-csharp">// Create an empty file:
+// type nul > hello.cs
+
+// View a file's contents:
+// type hello.cs</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Copy, move, and delete</h3>
+                    <div class="table-wrap">
+                        <table class="comparison-table">
+                            <thead><tr><th>Action</th><th>macOS / Linux</th><th>Windows (PowerShell)</th><th>Windows (cmd)</th></tr></thead>
+                            <tbody>
+                                <tr><td>Copy a file</td><td><code>cp file.py backup.py</code></td><td><code>Copy-Item file.js backup.js</code></td><td><code>copy file.cs backup.cs</code></td></tr>
+                                <tr><td>Move / rename</td><td><code>mv old.py new.py</code></td><td><code>Move-Item old.js new.js</code></td><td><code>move old.cs new.cs</code></td></tr>
+                                <tr><td>Delete a file</td><td><code>rm file.py</code></td><td><code>Remove-Item file.js</code></td><td><code>del file.cs</code></td></tr>
+                                <tr><td>Delete a folder</td><td><code>rm -r folder/</code></td><td><code>Remove-Item -Recurse folder</code></td><td><code>rmdir /s folder</code></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>⚠️ <strong>Be careful with delete commands.</strong> There's no recycle bin in the terminal — deleted files are gone for good.</p>
+                </div>
+            </section>
+
+            <!-- Running Programs -->
+            <section id="running" class="lesson-section">
+                <h2>▶️ Running Your Programs</h2>
+                <p>This is what you'll do most often in this course: write code in VS Code, then switch to the terminal to run it.</p>
+
+                <div class="code-tabs" data-title="Running Programs">
+                    <div class="tab-panel" data-lang="python" data-label="Python">
+                        <pre><code class="language-python"># Run a Python file:
+# python hello.py
+# (or on macOS/Linux:)
+# python3 hello.py
+
+# Run with arguments:
+# python hello.py --name Ray
+
+# Start an interactive Python session:
+# python
+# (type exit() to leave)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="javascript" data-label="JavaScript">
+                        <pre><code class="language-javascript">// Run a JavaScript file with Node.js:
+// node hello.js
+
+// Run with arguments:
+// node hello.js --name Ray
+
+// Start an interactive Node session (REPL):
+// node
+// (press Ctrl+C twice to leave)</code></pre>
+                    </div>
+                    <div class="tab-panel" data-lang="csharp" data-label="C#">
+                        <pre><code class="language-csharp">// First, create a project (if you haven't):
+// dotnet new console -n MyApp
+// cd MyApp
+
+// Run the project:
+// dotnet run
+
+// Build without running:
+// dotnet build</code></pre>
+                    </div>
+                </div>
+
+                <details class="instructor-note">
+                    <summary>🎓 Instructor Note: Terminal Workflow</summary>
+                    <div class="note-content">
+                        <p>Demonstrate the "edit-save-switch-run" loop early and often. Many beginners forget to save their file before running, or they run the command in the wrong directory. Encourage using VS Code's built-in terminal so they don't have to switch windows.</p>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Shortcuts -->
+            <section id="shortcuts" class="lesson-section card">
+                <h2>⌨️ Time-Saving Shortcuts</h2>
+                <p>These keyboard tricks will make you faster in the terminal immediately:</p>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead><tr><th>Shortcut</th><th>What It Does</th></tr></thead>
+                        <tbody>
+                            <tr><td><kbd>Tab</kbd></td><td>Auto-complete file and folder names. Press twice to see all options.</td></tr>
+                            <tr><td><kbd>↑</kbd> / <kbd>↓</kbd></td><td>Scroll through your command history. Re-run previous commands quickly.</td></tr>
+                            <tr><td><kbd>Ctrl+C</kbd></td><td>Cancel the currently running command. Use when a program is stuck.</td></tr>
+                            <tr><td><kbd>Ctrl+L</kbd></td><td>Clear the screen (same as typing <code>clear</code>).</td></tr>
+                            <tr><td><kbd>Ctrl+A</kbd></td><td>Move cursor to the beginning of the line.</td></tr>
+                            <tr><td><kbd>Ctrl+E</kbd></td><td>Move cursor to the end of the line.</td></tr>
+                            <tr><td><code>history</code></td><td>Show all recent commands. On Windows PowerShell: <code>Get-History</code>.</td></tr>
+                            <tr><td><code>clear</code></td><td>Clear the terminal screen. On Windows cmd: <code>cls</code>.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Common Mistakes -->
+            <section id="common-mistakes" class="lesson-section">
+                <h2>🚫 Common Mistakes</h2>
+
+                <div class="card">
+                    <h3>Running code from the wrong directory</h3>
+                    <p>If you see "file not found" when running <code>python hello.py</code>, you're probably in the wrong folder. Use <code>pwd</code> to check where you are and <code>ls</code> to confirm your file is there.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Forgetting to save before running</h3>
+                    <p>Your terminal runs whatever is saved on disk, not what's on screen in your editor. Press <kbd>Ctrl+S</kbd> (or <kbd>Cmd+S</kbd> on Mac) before switching to the terminal.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Spaces in folder names</h3>
+                    <p>Folder names with spaces cause problems in the terminal. Use hyphens or underscores instead: <code>my-project</code> not <code>my project</code>. If you must use a path with spaces, wrap it in quotes: <code>cd "My Documents"</code>.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Backslashes vs. forward slashes</h3>
+                    <p>Windows uses backslashes (<code>\</code>) in paths; macOS and Linux use forward slashes (<code>/</code>). PowerShell accepts both. If you copy a path from Windows Explorer, it will have backslashes — that's fine in PowerShell but won't work in bash/zsh.</p>
+                </div>
+            </section>
+
+            <!-- Quick Reference -->
+            <section id="cheatsheet" class="lesson-section">
+                <h2>📋 Quick Reference</h2>
+                <div class="table-wrap">
+                    <table class="comparison-table">
+                        <thead><tr><th>Task</th><th>macOS / Linux</th><th>Windows (PowerShell)</th></tr></thead>
+                        <tbody>
+                            <tr><td>Where am I?</td><td><code>pwd</code></td><td><code>pwd</code></td></tr>
+                            <tr><td>List files</td><td><code>ls</code></td><td><code>ls</code> or <code>dir</code></td></tr>
+                            <tr><td>Change directory</td><td><code>cd folder</code></td><td><code>cd folder</code></td></tr>
+                            <tr><td>Go up one level</td><td><code>cd ..</code></td><td><code>cd ..</code></td></tr>
+                            <tr><td>Home directory</td><td><code>cd ~</code></td><td><code>cd ~</code></td></tr>
+                            <tr><td>Create folder</td><td><code>mkdir name</code></td><td><code>mkdir name</code></td></tr>
+                            <tr><td>Create file</td><td><code>touch file.txt</code></td><td><code>New-Item file.txt</code></td></tr>
+                            <tr><td>View file</td><td><code>cat file.txt</code></td><td><code>cat file.txt</code></td></tr>
+                            <tr><td>Copy file</td><td><code>cp a.txt b.txt</code></td><td><code>cp a.txt b.txt</code></td></tr>
+                            <tr><td>Move / rename</td><td><code>mv a.txt b.txt</code></td><td><code>mv a.txt b.txt</code></td></tr>
+                            <tr><td>Delete file</td><td><code>rm file.txt</code></td><td><code>rm file.txt</code></td></tr>
+                            <tr><td>Clear screen</td><td><code>clear</code></td><td><code>cls</code> or <code>clear</code></td></tr>
+                            <tr><td>Run Python</td><td><code>python3 file.py</code></td><td><code>python file.py</code></td></tr>
+                            <tr><td>Run JavaScript</td><td><code>node file.js</code></td><td><code>node file.js</code></td></tr>
+                            <tr><td>Run C#</td><td><code>dotnet run</code></td><td><code>dotnet run</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Page Navigation">
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/code-tabs.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

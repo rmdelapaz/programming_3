@@ -136,9 +136,7 @@
 - [x] lesson_27.html — Code Review and Next Steps ✅
 
 ### Other
-- [ ] favicon.png (needs design/creation)
-- [ ] Review and test all interactive components in browser
-- [ ] Verify prev/next navigation links across all lessons
+- [ ] See Supplementary Pages and Remaining Tasks sections below
 
 ## Key Decisions
 - Blue branding (kept from template)
@@ -154,6 +152,23 @@
 ## Session Log
 - **Session 1 (2026-04-13):** Built infrastructure + lessons 1-15
 - **Session 2 (2026-04-13):** Built lessons 16-24
-- **Session 3 (2026-04-13):** Built lessons 25-27 (capstone module complete)
+- **Session 3 (2026-04-13):** Built lessons 25-27 (capstone module complete), built cheatsheet.html, common-errors.html, glossary.html
+- **Session 4 (2026-04-13):** Built troubleshooting.html, bonus-projects.html, cli-basics.html; added Supplementary Resources section to index.html
+
+## Supplementary Pages
+
+### High Value (build now)
+- [x] `cheatsheet.html` — Cross-language syntax quick-reference ("Rosetta Stone") ✅
+- [x] `common-errors.html` — 15-20 most frequent beginner errors with explanations and fixes ✅
+- [x] `glossary.html` — Every programming term from the course with trilingual examples ✅
+
+### Nice-to-Have — ALL COMPLETE ✅
+- [x] `troubleshooting.html` — Environment setup troubleshooting FAQ (PATH issues, permissions, version conflicts) ✅
+- [x] `bonus-projects.html` — 10 graded project ideas beyond capstone, organized by difficulty ✅
+- [x] `cli-basics.html` — Terminal primer for true beginners (cd, ls, mkdir, running scripts) ✅
 
 ## Remaining Tasks
+- [ ] favicon.png (needs design/creation)
+- [ ] Review and test all interactive components in browser
+- [ ] Verify prev/next navigation links across all lessons
+- [x] Add supplementary pages to index.html navigation ✅
